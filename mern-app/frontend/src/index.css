@@ -1,4 +1,16 @@
+
+/*IDK that we need to use this one. Just stick to APP.CSS for now*/
+
+/*
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #74a4bc;
+  --color-secondary: #7798ab;
+  --color-tertiary: #B80C09;
+  --color-background: #FFF2F1;
+  --color-dark: #0D1B1E;
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -68,3 +80,4 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+*/
