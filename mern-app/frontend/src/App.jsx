@@ -4,9 +4,9 @@ import './App.css'
 import LoginPage from "./pages/LoginPage.jsx";
 import Home from "./pages/Home.jsx";
 import CreateProfile from "./pages/CreateProfile.jsx";
-import Register from './pages/register.jsx';
-import ManageEvents from './pages/manageevents.jsx';
-import VolunteerHistory from './pages/volunteerhistory.jsx';
+import Register from './pages/Register.jsx';
+import ManageEvents from './pages/ManageEvents.jsx';
+import VolunteerHistory from './pages/VolunteerHistory.jsx';
 import VolunteerMatch from './pages/VolunteerMatch.jsx';
 import PrimaryButton from './components/Buttons'
 
