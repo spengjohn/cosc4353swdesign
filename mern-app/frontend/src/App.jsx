@@ -8,7 +8,7 @@ import Register from './pages/Register.jsx';
 import ManageEvents from './pages/ManageEvents.jsx';
 import VolunteerHistory from './pages/VolunteerHistory.jsx';
 import VolunteerMatch from './pages/VolunteerMatch.jsx';
-import PrimaryButton from './components/Buttons'
+import Test from './pages/Test.jsx';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -23,6 +23,7 @@ function App() {
           <Link className="mr-4" to="/manageevents">Manage Events</Link>
           <Link className="mr-4" to="/volunteerhistory">Volunteer History</Link>
           <Link className="mr-4" to="/volunteermatch">Volunteer Match</Link>
+          <Link className='mr-4' to="/test">Testing Page</Link>
         </nav>
 
         <Routes>
@@ -33,6 +34,7 @@ function App() {
           <Route path="/manageevents" element={<ManageEvents />} />
           <Route path="/volunteerhistory" element={<VolunteerHistory />} />
           <Route path="/volunteermatch" element={<VolunteerMatch />} />
+          <Route path='/test' element={<Test />}/>
         </Routes>
     </Router>
 
