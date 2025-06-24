@@ -2,17 +2,17 @@ import PrimaryButton from "../components/Buttons";
 import { SecondaryButton } from "../components/Buttons";
 import Field from "../components/Field";
 import DropdownMenu from "../components/DropdownMenu";
-
+import Selector from "../components/Selector";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[color:var(--color-background)] p-8">
-      <h2 className="text-2xl mb-4">Dropdown</h2>
-      <p className="mb-4">Click on the button to open the dropdown menu.</p>
-      <DropdownMenu />
+    <div className="min-h-screen bg-white p-8">
+      <h1 className="text-2xl mb-4">Selector Test</h1>
+      <Selector />
     </div>
   );
 }
+
 
 
 /*export default function Home() {
