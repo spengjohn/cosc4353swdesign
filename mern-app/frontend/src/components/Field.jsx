@@ -7,11 +7,12 @@ export default function Field({
   placeholder = "",
   required = false,
   className = "",
+  labelClass = "",
 }) {
   return (
     <div className={` ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium mb-1">
+        <label htmlFor={name} className={`block text-md font-medium ${labelClass}`}>
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>

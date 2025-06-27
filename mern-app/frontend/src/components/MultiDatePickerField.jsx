@@ -1,23 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 import DatePicker from "react-multi-date-picker";
-//import "react-multi-date-picker/styles/colors/teal.css"
 
-export default function MultiDatePickerField({ label }) {
-  const [dates, setDates] = useState([]);
-
+export default function MultiDatePickerField({
+  label,
+  value,
+  onChange,
+  name,
+  format = "YYYY-MM-DD",
+  minDate = new Date(),  // default to today
+}) {
   return (
     <div className="mb-4">
       {label && (
-        <label className="block mb-1 text-sm font-medium">{label}</label>
+        <label className="block mb-1 text-sm font-medium" htmlFor={name}>
+          {label}
+        </label>
       )}
       <DatePicker
+        id={name}
+        name={name}
         multiple
-        value={dates}
-        onChange={setDates}
-        format="YYYY-MM-DD"
-        className=""//"teal" // style container
+        value={value}
+        onChange={onChange}
+        format={format}
+        minDate={minDate}
       />
     </div>
   );
 }
+
 
