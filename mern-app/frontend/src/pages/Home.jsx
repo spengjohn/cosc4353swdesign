@@ -4,11 +4,28 @@ import Field from "../components/Field";
 import DropdownMenu from "../components/DropdownMenu";
 import Selector from "../components/Selector";
 
-export default function App() {
+const states = [
+  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+];
+ // from DB or static
+
+
+export default function Home() {
+  const handleStateSelect = (state) => {
+    console.log("Selected state:", state);
+    // update form input or context state
+  };
+
   return (
     <div className="min-h-screen bg-white p-8">
       <h1 className="text-2xl mb-4">Selector Test</h1>
-      <Selector />
+      <Selector items={states} onSelect={(selected) => console.log("Selected items:", selected)}>Select some States:</Selector>
+      <h1 className="text-2xl mb-4">Drop down test</h1>
+      <DropdownMenu items={states} onSelect={handleStateSelect}>Select a State:</DropdownMenu>
     </div>
   );
 }

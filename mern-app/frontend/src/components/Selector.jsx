@@ -1,22 +1,24 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function Selector() {
+export default function Selector({ items = [], onSelect, name = "selectedOptions", children }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const dropdownRef = useRef();
-
-  const options = ["meow", "bark", "moo"];
 
   const toggleDropdown = () => setOpen((prev) => !prev);
 
   const handleSelect = (option) => {
     if (!selected.includes(option)) {
-      setSelected([...selected, option]);
+      const newSelected = [...selected, option];
+      setSelected(newSelected);
+      if (onSelect) onSelect(newSelected);
     }
   };
 
   const removeOption = (option) => {
-    setSelected(selected.filter((o) => o !== option));
+    const newSelected = selected.filter((o) => o !== option);
+    setSelected(newSelected);
+    if (onSelect) onSelect(newSelected);
   };
 
   useEffect(() => {
@@ -36,18 +38,19 @@ export default function Selector() {
         className="bg-secondary text-white px-4 py-2 rounded cursor-pointer hover:bg-primary transition"
         onClick={toggleDropdown}
       >
-        Select Skills
+        {children}
       </div>
 
       {/* Dropdown List */}
       {open && (
-        <div className="absolute mt-2 w-full bg-white border rounded shadow z-10">
-          {options.map((opt) => (
+        <div className="absolute mt-2 w-full bg-white border rounded shadow z-10 max-h-60 overflow-auto">
+          {items.map((opt) => (
             <button
               key={opt}
               onClick={() => handleSelect(opt)}
               className="block w-full text-left px-4 py-2 hover:bg-gray-100 disabled:opacity-50"
               disabled={selected.includes(opt)}
+              type="button"
             >
               {opt}
             </button>
@@ -64,14 +67,18 @@ export default function Selector() {
           >
             {opt}
             <button
+              type="button"
               onClick={() => removeOption(opt)}
-              className="ml-1 text-xs bg-white text-primary rounded-full px-1 hover:bg-gray-200"
+              className="ml-1 text-xs bg-white text-tertiary rounded-full px-1 hover:bg-gray-200"
             >
               ✕
             </button>
           </span>
         ))}
       </div>
+
+      {/* Hidden input for form submission */}
+      <input type="hidden" name={name} value={selected.join(",")} />
     </div>
   );
 }
