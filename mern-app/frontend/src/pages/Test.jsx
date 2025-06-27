@@ -14,6 +14,7 @@ const states = [
 ];
  // from DB or static
 
+import ProfileEditingCard from "../components/ProfileEditingCard";
 
 export default function Test() {
   const handleStateSelect = (state) => {
@@ -31,6 +32,17 @@ export default function Test() {
       <Selector items={states} onSelect={(selected) => console.log("Selected items:", selected)}>Select some States:</Selector>
       <h1 className="text-2xl mb-4">Drop down test</h1>
       <DropdownMenu items={states} onSelect={handleStateSelect}>Select a State:</DropdownMenu>
+    
+      <br></br>
+      <Field
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="example@email.com"
+        required
+      />
+      <MultiDatePickerField label="Availablility" />
+      <ProfileEditingCard />
     </div>
   );
 }
