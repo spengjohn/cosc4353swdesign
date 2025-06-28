@@ -4,17 +4,62 @@ import Field from "../components/Field";
 import MultiDatePickerField from "../components/MultiDatePickerField";
 import DropdownMenu from "../components/DropdownMenu";
 import Selector from "../components/Selector";
+import ProfileEditingCard from "../components/ProfileEditingCard";
+import ProfileCard from "../components/ProfileCard";
 
 const states = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  "AL",
+  "AK",
+  "AZ",
+  "AR",
+  "CA",
+  "CO",
+  "CT",
+  "DE",
+  "FL",
+  "GA",
+  "HI",
+  "ID",
+  "IL",
+  "IN",
+  "IA",
+  "KS",
+  "KY",
+  "LA",
+  "ME",
+  "MD",
+  "MA",
+  "MI",
+  "MN",
+  "MS",
+  "MO",
+  "MT",
+  "NE",
+  "NV",
+  "NH",
+  "NJ",
+  "NM",
+  "NY",
+  "NC",
+  "ND",
+  "OH",
+  "OK",
+  "OR",
+  "PA",
+  "RI",
+  "SC",
+  "SD",
+  "TN",
+  "TX",
+  "UT",
+  "VT",
+  "VA",
+  "WA",
+  "WV",
+  "WI",
+  "WY",
 ];
- // from DB or static
-
-import ProfileEditingCard from "../components/ProfileEditingCard";
+// from DB or static
 
 export default function Test() {
   const handleStateSelect = (state) => {
@@ -26,13 +71,27 @@ export default function Test() {
       <h1 className="text-2xl p-4">This is where we test things out:</h1>
       <PrimaryButton>Test Button</PrimaryButton>
       <SecondaryButton>Secondary Test Button</SecondaryButton>
-      <Field labelClass="text-2xl p-4" label="Email" name="email" type="email" placeholder="example@email.com" required/>
-      <MultiDatePickerField label="Availablility"/>
+      <Field
+        labelClass="text-2xl p-4"
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="example@email.com"
+        required
+      />
+      <MultiDatePickerField label="Availablility" />
       <h1 className="text-2xl mb-4">Selector Test</h1>
-      <Selector items={states} onSelect={(selected) => console.log("Selected items:", selected)}>Select some States:</Selector>
+      <Selector
+        items={states}
+        onSelect={(selected) => console.log("Selected items:", selected)}
+      >
+        Select some States:
+      </Selector>
       <h1 className="text-2xl mb-4">Drop down test</h1>
-      <DropdownMenu items={states} onSelect={handleStateSelect}>Select a State:</DropdownMenu>
-    
+      <DropdownMenu items={states} onSelect={handleStateSelect}>
+        Select a State:
+      </DropdownMenu>
+
       <br></br>
       <Field
         label="Email"
@@ -43,6 +102,7 @@ export default function Test() {
       />
       <MultiDatePickerField label="Availablility" />
       <ProfileEditingCard />
+      <ProfileCard />
     </div>
   );
 }
