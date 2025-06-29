@@ -7,6 +7,14 @@ import Selector from "../components/Selector";
 import ProfileEditingCard from "../components/ProfileEditingCard";
 import ProfileCard from "../components/ProfileCard";
 
+const sampleUser = {
+  name: "John Doe",
+  city: "Albuquerque",
+  state: "NM",
+  skills: ["Gardening", "Cooking", "Baking", "Running", "Woodworking"],
+  preferences: "Gardening assignments preferred.",
+};
+
 const states = [
   "AL",
   "AK",
@@ -102,7 +110,7 @@ export default function Test() {
       />
       <MultiDatePickerField label="Availablility" />
       <ProfileEditingCard />
-      <ProfileCard />
+      <ProfileCard user={sampleUser} />
     </div>
   );
 }

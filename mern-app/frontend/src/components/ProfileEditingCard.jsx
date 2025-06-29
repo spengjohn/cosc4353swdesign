@@ -3,6 +3,8 @@ import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
 import DropdownMenu from "./DropdownMenu";
 import Selector from "./Selector";
+import TertiaryButton from "./TertiaryButton";
+import PrimaryButton from "./Buttons";
 
 const states = [
   "AL",
@@ -147,6 +149,13 @@ export default function ProfileEditingCard() {
               <p>Availability</p>
               <MultiDatePickerField required />
             </div>
+          </div>
+          <div className={"flex gap-8"}>
+            <TertiaryButton className={"flex-1"}>Cancel</TertiaryButton>
+            <div className={"flex-1"}></div>
+            <PrimaryButton type="submit" className={"flex-1"}>
+              Save
+            </PrimaryButton>
           </div>
         </div>
       </form>
