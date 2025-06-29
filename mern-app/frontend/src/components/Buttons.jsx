@@ -11,8 +11,8 @@ export default function PrimaryButton({ children, onClick, className = "" }) {
   return (
     <button
       onClick={handleClick}
-      className={`bg-secondary text-white px-4 py-2 rounded border-2  border-solid hover:bg-primary transition-all 
-        ${clicked ? "border-white" : "border-primary"} ${className}`}
+      className={`font-semibold bg-white text-secondary px-4 py-2 rounded border-2  border-solid hover:bg-secondary transition-all hover:text-white
+        ${clicked ? "border-white" : "border-secondary"} ${className}`}
     >
       {children}
     </button>

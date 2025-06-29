@@ -25,7 +25,7 @@ export default function Field({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+        className="bg-white w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
       />
     </div>
   );
