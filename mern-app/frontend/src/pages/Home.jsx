@@ -22,10 +22,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-8">
-      <h1 className="text-2xl mb-4">Selector Test</h1>
-      <Selector items={states} onSelect={(selected) => console.log("Selected items:", selected)}>Select some States:</Selector>
-      <h1 className="text-2xl mb-4">Drop down test</h1>
-      <DropdownMenu items={states} onSelect={handleStateSelect}>Select a State:</DropdownMenu>
+      <h1 className="text-2xl mb-4">Home...</h1>
+      
     </div>
   );
 }
