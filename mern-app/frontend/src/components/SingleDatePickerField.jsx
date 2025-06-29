@@ -1,7 +1,6 @@
-import React from "react";
 import DatePicker from "react-multi-date-picker";
 
-export default function MultiDatePickerField({
+export default function SingleDatePickerField({
   label,
   value,
   onChange,
@@ -19,7 +18,6 @@ export default function MultiDatePickerField({
       <DatePicker
         id={name}
         name={name}
-        multiple
         value={value}
         onChange={onChange}
         format={format}
@@ -29,5 +27,3 @@ export default function MultiDatePickerField({
     </div>
   );
 }
-
-

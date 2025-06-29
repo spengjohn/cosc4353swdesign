@@ -9,22 +9,31 @@ import ManageEvents from './pages/ManageEvents.jsx';
 import VolunteerHistory from './pages/VolunteerHistory.jsx';
 import VolunteerMatch from './pages/VolunteerMatch.jsx';
 import Test from './pages/Test.jsx';
+import cooglinklogo from "./assets/cooglinklogo.png"
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
       <Router>
-        <nav className="p-4 bg-primary text-dark">
-          <Link className="mr-4" to="/">Home</Link>
-          <Link className="mr-4" to="/login">Login</Link>
-          <Link className="mr-4" to="/register">Register</Link>
-          <Link className="mr-4" to="/createprofile">Create Profile</Link>
-          <Link className="mr-4" to="/manageevents">Manage Events</Link>
-          <Link className="mr-4" to="/volunteerhistory">Volunteer History</Link>
-          <Link className="mr-4" to="/volunteermatch">Volunteer Match</Link>
-          <Link className='mr-4' to="/test">Testing Page</Link>
+        <nav className="p-4 bg-primary text-dark flex items-center justify-between">
+          {/* Left: Logo */}
+          <div>
+            <img src={cooglinklogo} alt="Logo" className="h-20" />
+          </div>
+        {/* Right: Navigation Links */}
+          <div className="space-x-4 font-semibold">
+            <Link to="/">Home</Link>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
+            <Link to="/createprofile">Create Profile</Link>
+            <Link to="/manageevents">Manage Events</Link>
+            <Link to="/volunteerhistory">Volunteer History</Link>
+            <Link to="/volunteermatch">Volunteer Match</Link>
+            <Link to="/test">Testing Page</Link>
+          </div>
         </nav>
+
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -37,31 +46,6 @@ function App() {
           <Route path='/test' element={<Test />}/>
         </Routes>
     </Router>
-
-    
-    /*
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>*/
   )
 }
 

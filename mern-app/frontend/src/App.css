@@ -2,11 +2,27 @@
 
 @theme {
   --color-primary: #74a4bc;
-  --color-secondary: #7798ab;
+  --color-secondary: #2A5167;  /*#7798ab;*/
   --color-tertiary: #B80C09;
   --color-background: #FFF2F1;
   --color-dark: #0D1B1E;
 }
+
+/* App.css */
+
+html, body {
+  height: 100%;
+  overflow-y: scroll;        /* allow scrolling */
+  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari */
+}
+
+
 /*
 #root {
   max-width: 1280px;
