@@ -4,7 +4,7 @@ import Field from "../components/Field";
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <br />
       <div className="w-full max-w-sm">
         <Field

@@ -4,7 +4,7 @@ import Field from "../components/Field";
 
 export default function Register() {
   return (
-    <div className="flex flex-col items-center">
+    <div className="p-8 flex flex-col items-center">
       <br />
       <div className="w-full max-w-sm">
         <Field

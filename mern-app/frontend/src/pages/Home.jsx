@@ -21,8 +21,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-2xl mb-4">Home...</h1>
+    <div className="">
+      <h1 className="text-2xl">Home...</h1>
       
     </div>
   );
