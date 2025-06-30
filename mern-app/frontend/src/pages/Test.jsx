@@ -7,7 +7,7 @@ import DropdownMenu from "../components/DropdownMenu";
 import Selector from "../components/Selector";
 import ProfileEditingCard from "../components/ProfileEditingCard";
 import ProfileCard from "../components/ProfileCard";
-
+import CommentBox from "../components/CommentBox";
 const sampleUser = {
   name: "John Doe",
   city: "Albuquerque",
@@ -33,6 +33,7 @@ export default function Test() {
   };
   return (
     <div className="">
+      <CommentBox/>
       <h1 className="text-2xl">This is where we test things out:</h1>
       <PrimaryButton>Test Button</PrimaryButton>
       <SecondaryButton>Secondary Test Button</SecondaryButton>
