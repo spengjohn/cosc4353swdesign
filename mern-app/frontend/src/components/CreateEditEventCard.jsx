@@ -1,136 +1,140 @@
 import React from "react";
+import Field from "./Field";
+import MultiDatePickerField from "./MultiDatePickerField";
+import Selector from "./Selector";
+import DropdownMenu from "./DropdownMenu";
+import PrimaryButton from "./Buttons";
+import TertiaryButton from "./TertiaryButton";
 
-const CreateEditEventCard = ({ onCancel, onSubmit, formData, setFormData }) => {
+export default function CreateEditEventCard({ onCancel, onSubmit, formData, setFormData }) {
+  const handleRemoveDate = (dateToRemove) => {
+    const newDates = formData.dates.filter((d) => d !== dateToRemove);
+    setFormData({ ...formData, dates: newDates });
+  };
+
+  const formatDate = (d) => {
+    try {
+      const dateObj = typeof d === "string" ? new Date(d) : d?.toDate?.() || d;
+      return dateObj?.toLocaleDateString("en-US");
+    } catch {
+      return d?.toString?.() || "";
+    }
+  };
+
   return (
-    <div className="max-w-xl w-full bg-white shadow-xl rounded-2xl p-6">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Create / Edit Event</h2>
+    <div className="bg-white text-secondary px-6 py-4 rounded border-2 border-solid flex flex-col w-full max-w-2xl">
+      <h2 className="text-2xl font-bold mb-4">Create / Edit Event</h2>
 
-      <div className="grid grid-cols-2 gap-4">
-        {/* Event Name */}
-        <div className="col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">
-            Event Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="Event Name"
-            maxLength={100}
-            required
-            className="w-full p-2 border rounded"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      <div className="flex flex-col gap-4">
+        <Field
+          label="Event Name"
+          name="name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="Community Clean-Up"
+          required
+        />
+
+        <div className="relative z-20 bg-white border border-gray-300 rounded-md p-2 shadow-lg">
+          <MultiDatePickerField
+            label="Event Dates"
+            value={formData.dates}
+            onChange={(dates) => setFormData({ ...formData, dates })}
+            name="event_dates"
           />
+          {formData.dates?.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {formData.dates.map((date, i) => (
+                <span
+                  key={i}
+                  className="flex items-center bg-primary text-white text-sm px-3 py-1 rounded-full"
+                >
+                  {formatDate(date)}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveDate(date)}
+                    className="ml-2 text-xs bg-white text-primary rounded-full px-1 hover:bg-gray-200"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Event Date */}
-        <div className="col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">
-            Event Date <span className="text-red-500">*</span>
-          </label>
-          <div className="border rounded p-2 text-gray-500 text-sm">
-            [ Calendar Component Placeholder ]
-          </div>
-        </div>
+        <Field
+          label="Location"
+          name="address"
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          placeholder="123 Main St"
+          required
+        />
 
-        {/* Location */}
-        <div className="col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">
-            Location <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            placeholder="Full Address"
-            required
-            className="w-full p-2 border rounded"
-            value={formData.address || ""}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          />
-        </div>
-
-        {/* City */}
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">City</label>
-          <input
-            type="text"
-            placeholder="City"
-            className="w-full p-2 border rounded"
+        <div className="flex gap-4">
+          <Field
+            className="flex-1"
+            label="City"
+            name="city"
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            placeholder="Houston"
+            required
           />
-        </div>
-
-        {/* State */}
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">State</label>
-          <input
-            type="text"
-            placeholder="State"
-            className="w-full p-2 border rounded"
+          <Field
+            className="flex-1"
+            label="State"
+            name="state"
             value={formData.state}
             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-          />
-        </div>
-
-        {/* Description */}
-        <div className="col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">
-            Event Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            placeholder="Event Description"
+            placeholder="TX"
             required
-            className="w-full p-2 border rounded h-24"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
         </div>
 
-        {/* Skills */}
-        <div className="col-span-2">
-          <label className="block mb-1 font-medium text-gray-700">
-            Required Skills <span className="text-red-500">*</span>
-          </label>
-          <div className="p-2 border rounded text-gray-500 text-sm">
-            [ Skills Multi-Select Placeholder ]
+        <Field
+          label="Event Description"
+          name="description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          placeholder="Help clean the local park..."
+          required
+        />
+
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <label className="text-md font-medium block mb-1">
+              Required Skills <span className="text-red-500">*</span>
+            </label>
+            <Selector
+              items={["Teamwork", "Coordination", "Physical Work", "People Skills"]}
+              onSelect={(skills) => setFormData({ ...formData, skills })}
+              name="skills"
+            >
+              Select Skills
+            </Selector>
+          </div>
+
+          <div className="flex-1">
+            <label className="text-md font-medium block mb-1">
+              Urgency <span className="text-red-500">*</span>
+            </label>
+            <DropdownMenu
+              items={["Low", "Medium", "High"]}
+              onSelect={(urgency) => setFormData({ ...formData, urgency })}
+              name="urgency"
+            >
+              {formData.urgency || "Select Urgency"}
+            </DropdownMenu>
           </div>
         </div>
 
-        {/* Urgency */}
-        <div className="col-span-2 flex justify-between items-center">
-          <label className="text-gray-700 font-medium">
-            Urgency <span className="text-red-500">*</span>
-          </label>
-          <select
-            required
-            className="p-2 border rounded w-1/2"
-            value={formData.urgency}
-            onChange={(e) => setFormData({ ...formData, urgency: e.target.value })}
-          >
-            <option value="">Select urgency</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-
-        {/* Buttons */}
-        <div className="col-span-2 flex justify-end space-x-4 mt-4">
-          <button
-            className="px-4 py-2 rounded bg-red-100 text-red-700 hover:bg-red-200"
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-            onClick={onSubmit}
-          >
-            Create
-          </button>
+        <div className="flex justify-end gap-4 mt-6">
+          <TertiaryButton onClick={onCancel}>Cancel</TertiaryButton>
+          <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
         </div>
       </div>
     </div>
   );
-};
-
-export default CreateEditEventCard;
+}
