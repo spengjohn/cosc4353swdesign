@@ -1,3 +1,3 @@
 export default function VolunteerMatch() {
-  return <h1 className="text-2xl p-4">VolunteerMatch Page in progress...</h1>;
+  return <h1 className="text-2xl">VolunteerMatch Page in progress...</h1>;
 }

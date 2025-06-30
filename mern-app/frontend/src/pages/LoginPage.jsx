@@ -4,7 +4,7 @@ import Field from "../components/Field";
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center text-secondary w-full max-w-sm mx-auto">
       <br />
       <div className="w-full max-w-sm">
         <Field
@@ -28,7 +28,7 @@ export default function LoginPage() {
         <PrimaryButton>Log in</PrimaryButton>
       </div>
 
-      <p className="text-base p-4">
+      <p className="text-base p-4 w-full max-w-sm text-center">
         Don’t have an account?{" "}
         <Link to="/register" className="text-blue-500 underline hover:text-blue-700">
           Sign up

@@ -4,7 +4,7 @@ import Field from "../components/Field";
 
 export default function Register() {
   return (
-    <div className="p-8 flex flex-col items-center">
+    <div className="flex flex-col items-center text-secondary w-full max-w-sm mx-auto">
       <br />
       <div className="w-full max-w-sm">
         <Field
@@ -28,7 +28,7 @@ export default function Register() {
         <PrimaryButton>Sign up</PrimaryButton>
       </div>
 
-      <p className="text-base p-4">
+      <p className="text-base p-4 w-full max-w-sm text-center">
         Have an account?{" "}
         <Link to="/login" className="text-blue-500 underline hover:text-blue-700">
           Log in

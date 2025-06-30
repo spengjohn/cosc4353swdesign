@@ -32,8 +32,8 @@ export default function Test() {
     // update form input or context state
   };
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-2xl p-4">This is where we test things out:</h1>
+    <div className="">
+      <h1 className="text-2xl">This is where we test things out:</h1>
       <PrimaryButton>Test Button</PrimaryButton>
       <SecondaryButton>Secondary Test Button</SecondaryButton>
       <Field
