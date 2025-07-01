@@ -26,6 +26,9 @@ const states = [
 ];
 // from DB or static
 
+import ExampleForm from "../components/ExampleForm";
+
+
 export default function Test() {
   const handleStateSelect = (state) => {
     console.log("Selected state:", state);
@@ -33,7 +36,9 @@ export default function Test() {
   };
   return (
     <>
-    
+    <ExampleForm/>
+    <br/>
+    <ProfileEditingCard/>
     </>
     
     
