@@ -22,21 +22,29 @@ const EventCard = ({ event, isExpanded, onToggle }) => {
     if (confirm) alert(`Deleted "${event.name}".`);
   };
 
+  const goToMatchingPage = (e) => {
+    e.stopPropagation();
+    window.location.href = "/volunteermatch";
+  };  
+
   return (
     <>
       <div
-        className="w-[360px] bg-white shadow-md rounded p-4 cursor-pointer border border-blue-300 transition-all duration-300 relative"
+        className="w-full max-w-md bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
+        style={{ borderColor: "#72A7BC" }}
         onClick={onToggle}
       >
+        {/* Urgency Badge */}
         <div
-          className={`absolute top-2 right-2 px-3 py-1 text-xs font-semibold border rounded-full ${urgencyStyle}`}
+          className={`absolute top-3 right-4 px-3 py-1 text-sm font-semibold border rounded-full ${urgencyStyle}`}
         >
           {event.urgency}
         </div>
 
+        {/* Event title and arrow */}
         <div className="flex justify-between items-start">
           <button
-            className="text-left text-lg font-semibold text-blue-700 hover:underline"
+            className="text-left text-xl font-semibold text-[#72A7BC] hover:underline"
             onClick={(e) => {
               e.stopPropagation();
               setShowModal(true);
@@ -44,41 +52,72 @@ const EventCard = ({ event, isExpanded, onToggle }) => {
           >
             {event.name}
           </button>
-          <span className="text-xl mt-5">{isExpanded ? "▾" : "▸"}</span>
+          <span className="text-2xl mt-7">{isExpanded ? "▾" : "▸"}</span>
         </div>
 
-        <p className="mt-2 text-sm">
+        {/* Date and time */}
+        <p className="mt-2 text-base text-gray-700">
           <strong>Date:</strong> {event.day} {event.date} &nbsp;
           <strong>Time:</strong> {event.time}
         </p>
 
+        {/* Short description always visible */}
+        <p className="mt-1 text-gray-700 text-base">
+          <strong>Description:</strong> {event.description}
+        </p>
+
+        {/* Expanded details */}
         <div
           className={`overflow-hidden transition-all duration-300 ${
-            isExpanded ? "max-h-96 mt-4" : "max-h-0"
+            isExpanded ? "max-h-[500px] mt-4" : "max-h-0"
           }`}
         >
-          <p className="text-sm"><strong>Description:</strong> {event.description}</p>
-          <p className="text-sm"><strong>Location:</strong> {event.location}</p>
-          <p className="text-sm"><strong>Required Skills:</strong> {event.skills.join(", ")}</p>
-          <p className="text-sm"><strong>Urgency:</strong> {event.urgency}</p>
+          <p className="text-base text-gray-700"><strong>Location:</strong> {event.location}</p>
+          <p className="text-base text-gray-700"><strong>Required Skills:</strong> {event.skills.join(", ")}</p>
+          <p className="text-base text-gray-700"><strong>Urgency:</strong> {event.urgency}</p>
 
-          <div className="mt-4 flex justify-end gap-3">
+          {/* Edit & Delete buttons */}
+          <div className="mt-5 flex justify-end gap-4">
             <button
               onClick={handleEdit}
-              className="text-sm px-3 py-1 rounded border border-blue-500 text-blue-600 hover:bg-blue-100"
+              className="text-sm px-4 py-2 rounded border border-blue-500 text-blue-600 hover:bg-blue-100"
             >
               ✏️ Edit
             </button>
             <button
               onClick={handleDelete}
-              className="text-sm px-3 py-1 rounded border border-red-500 text-red-600 hover:bg-red-100"
+              className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
             >
               🗑 Delete
+            </button>
+          </div>
+
+          {/* Match Volunteer button */}
+          <div className="mt-6 pt-4 border-t">
+            <button
+              onClick={goToMatchingPage}
+              className="w-full text-base py-3 rounded border transition font-medium"
+              style={{
+                backgroundColor: "#72A7BC",
+                color: "white",
+                borderColor: "#72A7BC",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = "white";
+                e.target.style.color = "#72A7BC";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = "#72A7BC";
+                e.target.style.color = "white";
+              }}
+            >
+              Match Volunteer →
             </button>
           </div>
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 backdrop-blur-lg bg-black/10 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl max-w-xl w-full shadow-2xl">
@@ -105,38 +144,3 @@ const EventCard = ({ event, isExpanded, onToggle }) => {
 };
 
 export default EventCard;
-
-
-// example
-export const sampleEvents = [
-  {
-    name: "Community Clean-Up",
-    description: "Join us in cleaning up the local park.",
-    location: "Downtown Houston",
-    skills: ["Teamwork", "Physical Work"],
-    urgency: "Medium",
-    date: "2025-07-30",
-    day: "Wednesday",
-    time: "10:00 AM",
-  },
-  {
-    name: "Food Bank Volunteering",
-    description: "Help sort food donations.",
-    location: "Food Bank Warehouse",
-    skills: ["Packing", "Coordination"],
-    urgency: "High",
-    date: "2025-08-05",
-    day: "Friday",
-    time: "1:30 PM",
-  },
-  {
-    name: "School Supply Drive",
-    description: "Distribute supplies to children.",
-    location: "Houston Elementary",
-    skills: ["Organization", "People Skills"],
-    urgency: "Low",
-    date: "2025-08-10",
-    day: "Monday",
-    time: "8:00 AM",
-  },
-];
