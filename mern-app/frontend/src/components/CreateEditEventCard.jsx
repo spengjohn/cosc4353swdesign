@@ -1,24 +1,15 @@
 import React from "react";
 import Field from "./Field";
-import MultiDatePickerField from "./MultiDatePickerField";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Selector from "./Selector";
 import DropdownMenu from "./DropdownMenu";
 import PrimaryButton from "./Buttons";
 import TertiaryButton from "./TertiaryButton";
 
 export default function CreateEditEventCard({ onCancel, onSubmit, formData, setFormData }) {
-  const handleRemoveDate = (dateToRemove) => {
-    const newDates = formData.dates.filter((d) => d !== dateToRemove);
-    setFormData({ ...formData, dates: newDates });
-  };
-
-  const formatDate = (d) => {
-    try {
-      const dateObj = typeof d === "string" ? new Date(d) : d?.toDate?.() || d;
-      return dateObj?.toLocaleDateString("en-US");
-    } catch {
-      return d?.toString?.() || "";
-    }
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, date });
   };
 
   return (
@@ -35,33 +26,38 @@ export default function CreateEditEventCard({ onCancel, onSubmit, formData, setF
           required
         />
 
-        <div className="relative z-20 bg-white border border-gray-300 rounded-md p-2 shadow-lg">
-          <MultiDatePickerField
-            label="Event Dates"
-            value={formData.dates}
-            onChange={(dates) => setFormData({ ...formData, dates })}
-            name="event_dates"
+        {/* Date & Time Picker */}
+        <div className="flex flex-col">
+          <label className="text-md font-medium block mb-1">
+            Event Date & Time <span className="text-red-500">*</span>
+          </label>
+          <DatePicker
+            selected={formData.date ? new Date(formData.date) : null}
+            onChange={handleDateChange}
+            showTimeSelect
+            timeFormat="hh:mm aa"
+            timeIntervals={15}
+            dateFormat="MMMM d, yyyy h:mm aa"
+            placeholderText="Select date and time"
+            className="w-full border border-gray-300 rounded-md p-2"
+            minDate={new Date()}
+            required
           />
-          {formData.dates?.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {formData.dates.map((date, i) => (
-                <span
-                  key={i}
-                  className="flex items-center bg-primary text-white text-sm px-3 py-1 rounded-full"
-                >
-                  {formatDate(date)}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveDate(date)}
-                    className="ml-2 text-xs bg-white text-primary rounded-full px-1 hover:bg-gray-200"
-                  >
-                    ✕
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Max Volunteers field */}
+        <Field
+          label="Max Volunteers"
+          name="max_volunteers"
+          type="number"
+          min="1"
+          value={formData.max_volunteers || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, max_volunteers: parseInt(e.target.value) })
+          }
+          placeholder="Enter a number"
+          required
+        />
 
         <Field
           label="Location"
