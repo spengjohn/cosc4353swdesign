@@ -4,6 +4,11 @@ import Field from "../components/Field";
 import DropdownMenu from "../components/DropdownMenu";
 import Selector from "../components/Selector";
 
+
+import { useState } from "react";
+import NotificationPanel from "../components/NotificationPanel";
+import { sampleNotifications } from "../data/sampleNotifications";
+
 const states = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
   "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -19,12 +24,9 @@ export default function Home() {
     console.log("Selected state:", state);
     // update form input or context state
   };
-
+const [showPanel, setShowPanel] = useState(false);
   return (
-    <div className="">
-      <h1 className="text-2xl">Home...</h1>
-      
-    </div>
+    <></>
   );
 }
 
