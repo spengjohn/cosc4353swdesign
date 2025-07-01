@@ -5,13 +5,59 @@ import DropdownMenu from "./DropdownMenu";
 import Selector from "./Selector";
 import TertiaryButton from "./TertiaryButton";
 import PrimaryButton from "./Buttons";
+import CommentBox from "./CommentBox";
 
 const states = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  "AL",
+  "AK",
+  "AZ",
+  "AR",
+  "CA",
+  "CO",
+  "CT",
+  "DE",
+  "FL",
+  "GA",
+  "HI",
+  "ID",
+  "IL",
+  "IN",
+  "IA",
+  "KS",
+  "KY",
+  "LA",
+  "ME",
+  "MD",
+  "MA",
+  "MI",
+  "MN",
+  "MS",
+  "MO",
+  "MT",
+  "NE",
+  "NV",
+  "NH",
+  "NJ",
+  "NM",
+  "NY",
+  "NC",
+  "ND",
+  "OH",
+  "OK",
+  "OR",
+  "PA",
+  "RI",
+  "SC",
+  "SD",
+  "TN",
+  "TX",
+  "UT",
+  "VT",
+  "VA",
+  "WA",
+  "WV",
+  "WI",
+  "WY",
 ];
 
 const skills = [
@@ -79,9 +125,12 @@ export default function ProfileEditingCard() {
                 placeholder="Albuquerque"
                 required
               />
-              <div className={"flex-1 self-baseline-last"}>
+              <div className={"flex-1 self-baseline-last flex-col flex"}>
+                <div>
+                  State<span className="text-red-500">*</span>
+                </div>
                 <DropdownMenu items={states} onSelect={handleStateSelect}>
-                  State
+                  State select
                 </DropdownMenu>
               </div>
             </div>
@@ -89,19 +138,22 @@ export default function ProfileEditingCard() {
           <div></div>
           <div className={"flex flex-2 row-span-full gap-4"}>
             <div className={"flex-1 flex flex-col "}>
-              <Selector className={"self-baseline"} items={skills}>
-                Skills
-              </Selector>
-              <Field
-                className={""}
-                label="Preferences"
-                name="preferences"
-                type="text"
-                placeholder="Gardening, cooking..."
-              />
+              <div>
+                Skills<span className="text-red-500">*</span>
+                <Selector className={"self-baseline"} items={skills}>
+                  Skill select
+                </Selector>
+                <CommentBox
+                  label="Preferences"
+                  name="preferences"
+                  placeholder="Gardening, cooking..."
+                />
+              </div>
             </div>
             <div className={"flex-1"}>
-              <p>Availability</p>
+              <p>
+                Availability <span className="text-red-500">*</span>
+              </p>
               <MultiDatePickerField required />
             </div>
           </div>
