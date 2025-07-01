@@ -32,6 +32,12 @@ export default function Test() {
     // update form input or context state
   };
   return (
+    <>
+    
+    </>
+    
+    
+    /*
     <div className="">
       <CommentBox/>
       <h1 className="text-2xl">This is where we test things out:</h1>
@@ -74,5 +80,5 @@ export default function Test() {
       <ProfileEditingCard />
       <ProfileCard user={sampleUser} />
     </div>
-  );
+  */);
 }

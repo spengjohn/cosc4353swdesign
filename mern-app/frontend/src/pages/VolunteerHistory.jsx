@@ -1,35 +1,38 @@
-import AttendanceCard from "../components/AttendanceCard.jsx";
-import { sampleAttend } from "../data/sampleAttend.js";
 import { useState } from "react";
-
-const user = {
-  name: "John Doe"
-};
+import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
+import PrimaryButton from "../components/Buttons";
 
 export default function VolunteerHistory() {
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+
+  const dummyVolunteers = [
+    { id: 1, name: "John Doe" },
+    { id: 2, name: "Jane Smith" },
+  ];
 
   return (
-    <div className="min-h-screen max-w-4xl mx-auto px-4 py-10">
-      <div className=" flex flex-col items-center">
-        <div className="text-4xl font-bold mb-6 text-secondary text-center flex flex-col items-center">
-          <h1>{user.name}</h1>
-          <h1>Attendance</h1>
-        </div>
-        
-        <div className="flex flex-col gap-4">
-          {sampleAttend.map((event, index) => (
-            <AttendanceCard
-              key={index}
-              event={event}
-              isExpanded={expandedIndex === index}
-              onToggle={() =>
-                setExpandedIndex(expandedIndex === index ? null : index)
-              }
-            />
-          ))}
-        </div>
-      </div>
+    <div>
+      <h1 className="text-2xl mb-4">Volunteer List</h1>
+      <ul className="space-y-2">
+        {dummyVolunteers.map((v) => (
+          <li key={v.id}>
+            <PrimaryButton
+              onClick={() => setSelectedVolunteer(v)}
+              className="text-blue-600 underline"
+            >
+              View {v.name}'s History
+            </PrimaryButton>
+          </li>
+        ))}
+      </ul>
+
+      {selectedVolunteer && (
+        <VolunteerHistoryModal
+          user={selectedVolunteer}
+          onClose={() => setSelectedVolunteer(null)}
+        />
+      )}
     </div>
   );
 }
+
