@@ -11,6 +11,7 @@ import ManageEvents from './pages/ManageEvents.jsx';
 import VolunteerMatch from './pages/VolunteerMatch.jsx';
 import Test from './pages/Test.jsx';
 import EmailVerification from './pages/EmailVerification.jsx';
+import ManageProfile from './pages/ManageProfile.jsx';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="/manageevents" element={<ManageEvents />} />
+            <Route path='/manageprofile' element={<ManageProfile/>} />
             { /* Turned into a pop-up window  <Route path="/volunteerhistory" element={<VolunteerHistory />} />*/}
             <Route path="/volunteermatch" element={<VolunteerMatch />} />
             <Route path='/test' element={<Test />}/>
