@@ -83,7 +83,7 @@ export default function ManageEventsPage() {
       </h1>
 
       <p className="text-center text-gray-600 mb-6 italic">
-        "You have {events.length} upcoming {events.length === 1 ? "event" : "events"}"
+        There are {events.length} upcoming {events.length === 1 ? "event" : "events"}.
       </p>
 
       <div className="flex justify-center mb-10">

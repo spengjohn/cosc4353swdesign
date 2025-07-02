@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import PrimaryButton from "./Buttons";
+import TertiaryButton from "./TertiaryButton";
 
 const urgencyColors = {
   High: "bg-red-100 text-red-700 border-red-400",
@@ -78,18 +80,18 @@ const EventCard = ({ event, isExpanded, onToggle }) => {
 
           {/* Edit & Delete buttons */}
           <div className="mt-5 flex justify-end gap-4">
-            <button
+            <PrimaryButton
               onClick={handleEdit}
-              className="text-sm px-4 py-2 rounded border border-blue-500 text-blue-600 hover:bg-blue-100"
+              className="text-sm px-4 py-2 rounded"
             >
               ✏️ Edit
-            </button>
-            <button
+            </PrimaryButton>
+            <TertiaryButton
               onClick={handleDelete}
-              className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
+              className="text-sm px-4 py-2 rounded"
             >
               🗑 Delete
-            </button>
+            </TertiaryButton>
           </div>
 
           {/* Match Volunteer button */}

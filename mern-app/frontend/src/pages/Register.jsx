@@ -5,30 +5,33 @@ import Field from "../components/Field";
 export default function Register() {
   return (
     <div className="flex flex-col items-center text-secondary w-full max-w-sm mx-auto">
-      <br />
+      <h1 className="text-3xl mb-12 font-semibold">Register an Account:</h1>
       <div className="w-full max-w-sm">
-        <Field
-          label="Email"
-          name="email"
-          type="email"
-          placeholder="Example@email.com"
-          required
-        />
-        <br />
-        <Field
-          label="Password"
-          name="password"
-          type="password"
-          placeholder="Password"
-          required
-        />
+        <div className="text-xl mb-4">
+          <Field
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Example@email.com"
+            required
+          />
+        </div>
+        <div className="text-xl mb-4">
+          <Field
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            required
+          />
+        </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 text-xl">
         <PrimaryButton>Sign up</PrimaryButton>
       </div>
 
-      <p className="text-base p-4 w-full max-w-sm text-center">
+      <p className="text-lg p-4 w-full max-w-sm text-center">
         Have an account?{" "}
         <Link to="/login" className="text-blue-500 underline hover:text-blue-700">
           Log in
