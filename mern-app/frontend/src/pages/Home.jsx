@@ -41,16 +41,18 @@
 // // }*/
 
 import { useState } from "react";
+import EventCard from "../components/EventCard";
+import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
 
 const sampleEvents = [
   {
     name: "Community Clean-Up",
-    day: "Sat",
-    date: "July 6",
-    time: "9:00 AM",
-    location: "123 Main St, Houston",
-    description: "Join us to help clean up the park!",
-    skills: ["Teamwork", "Cleaning"],
+    date: "2025-07-30",
+    day: "Wednesday",
+    time: "10:00 AM",
+    location: "Downtown Houston",
+    description: "Join us in cleaning up the local park.",
+    skills: ["Teamwork", "Physical Work"],
     urgency: "Medium",
   },
 ];
@@ -62,43 +64,6 @@ export default function Home() {
 
   const currentUser = {
     name: "Jane Smith",
-  };
-
-  const urgencyColors = {
-    High: "bg-red-100 text-red-700 border-red-400",
-    Medium: "bg-yellow-100 text-yellow-800 border-yellow-400",
-    Low: "bg-green-100 text-green-700 border-green-400",
-  };
-
-  const EventCard = ({ event, isExpanded, onToggle }) => {
-    const urgencyStyle = urgencyColors[event.urgency] || "bg-gray-100 text-gray-700 border-gray-300";
-
-    return (
-      <div
-        className="w-full max-w-md bg-white shadow-md rounded-xl p-6 cursor-pointer border relative transition duration-300"
-        style={{ borderColor: "#72A7BC" }}
-        onClick={onToggle}
-      >
-        <div className={`absolute top-3 right-4 px-3 py-1 text-sm font-semibold border rounded-full ${urgencyStyle}`}>
-          {event.urgency}
-        </div>
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold text-secondary">{event.name}</h3>
-          <span className="text-2xl mt-7">{isExpanded ? "▾" : "▸"}</span>
-        </div>
-        <p className="mt-2 text-base text-gray-700">
-          <strong>Date:</strong> {event.day} {event.date} <strong>Time:</strong> {event.time}
-        </p>
-        <p className="mt-1 text-gray-700 text-base">
-          <strong>Description:</strong> {event.description}
-        </p>
-        <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? "max-h-[500px] mt-4" : "max-h-0"}`}>
-          <p><strong>Location:</strong> {event.location}</p>
-          <p><strong>Required Skills:</strong> {event.skills.join(", ")}</p>
-          <p><strong>Urgency:</strong> {event.urgency}</p>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -116,7 +81,7 @@ export default function Home() {
 
       {role === "admin" ? (
         <>
-          {/* admin tools */}
+          {/* admin profile and tools */}
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-secondary">My Profile & Admin Tools</h2>
             <div className="flex flex-wrap gap-4">
@@ -127,11 +92,8 @@ export default function Home() {
                 🤝 Volunteer Matching
               </a>
               <a href="/volunteerhistory" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
-                📋 View Submission History
+                📋 View Volunteer History
               </a>
-              {/*<a href="/reports" className="bg-secondary hover:bg-primary text-white px-4 py-2 rounded text-sm">
-                📈 Generate Reports
-              </a>   use this later !!!! */}
             </div>
           </div>
 
@@ -154,7 +116,10 @@ export default function Home() {
                 key={idx}
                 event={event}
                 isExpanded={expandedIndex === idx}
-                onToggle={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
+                onToggle={() =>
+                  setExpandedIndex(expandedIndex === idx ? null : idx)
+                }
+                showActions={false}
               />
             ))}
           </div>
@@ -185,41 +150,15 @@ export default function Home() {
             event={sampleEvents[0]}
             isExpanded={expandedIndex === 0}
             onToggle={() => setExpandedIndex(expandedIndex === 0 ? null : 0)}
+            showActions={false}
           />
 
           {/* history modal */}
           {showHistory && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white max-w-4xl w-full mx-auto px-4 py-10 rounded-lg shadow-lg relative max-h-[90vh] overflow-y-auto">
-                <button
-                  onClick={() => setShowHistory(false)}
-                  className="absolute top-3 right-4 text-gray-500 hover:text-black text-xl"
-                >✕</button>
-                <div className="text-4xl font-bold mb-6 text-secondary text-center">
-                  <h1>{currentUser.name}</h1>
-                  <h1>Attendance</h1>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="w-full bg-white shadow-md rounded p-4 border">
-                    <div className="flex justify-between">
-                      <h3 className="font-semibold text-lg">Community Clean-Up</h3>
-                      <div className="text-sm font-semibold px-2 py-1 rounded text-green-600 border border-green-600">
-                        Attended
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2">
-                      <strong>Date:</strong> June 15 <strong>Time:</strong> 10:00 AM
-                    </p>
-                    <div className="mt-2 text-sm">
-                      <p><strong>Description:</strong> Park cleanup event.</p>
-                      <p><strong>Location:</strong> 123 Main St</p>
-                      <p><strong>Skills:</strong> Teamwork</p>
-                      <p><strong>Urgency:</strong> Medium</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <VolunteerHistoryModal
+              user={currentUser}
+              onClose={() => setShowHistory(false)}
+            />
           )}
         </>
       )}
