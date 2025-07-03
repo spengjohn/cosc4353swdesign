@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 
 const Field = forwardRef(
   (
@@ -31,7 +31,6 @@ const Field = forwardRef(
           name={name}
           type={type}
           placeholder={placeholder}
-          required={required}
           ref={ref}
           {...rest}
           className="bg-white w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"

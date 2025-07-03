@@ -1,29 +1,34 @@
-import DatePicker from "react-multi-date-picker";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function SingleDatePickerField({
   label,
   value,
   onChange,
   name,
-  format = "YYYY-MM-DD",
-  minDate = new Date(),  // default to today
+  minDate = new Date(),
+  className = "",
+  placeholder = "Select a date",
+  errorMessage = "",
 }) {
   return (
-    <div className="mb-4">
+    <div className={`mb-4 ${className}`}>
       {label && (
-        <label className="block mb-1 text-sm font-medium" htmlFor={name}>
+        <label htmlFor={name} className="block mb-1 text-sm font-medium">
           {label}
         </label>
       )}
       <DatePicker
-        id={name}
-        name={name}
-        value={value}
+        selected={value}
         onChange={onChange}
-        format={format}
+        name={name}
         minDate={minDate}
-        className="" // doesn't seem to play well with tailwindcss or vite...
+        placeholderText={placeholder}
+        className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary"
       />
+      {errorMessage && (
+        <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+      )}
     </div>
   );
 }

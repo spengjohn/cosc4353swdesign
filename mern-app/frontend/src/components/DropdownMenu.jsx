@@ -1,16 +1,21 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function DropdownMenu({ children, items = [], onSelect, name = "dropdownValue" }) {
+
+export default function DropdownMenu({
+  children,
+  items = [],
+  onSelect,
+  selected,
+  name = "dropdownValue",
+  errorMessage
+}) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
   const dropdownRef = useRef();
 
   const toggleDropdown = () => setOpen((prev) => !prev);
-
   const handleSelect = (value) => {
-    setSelected(value);
+    onSelect?.(value);
     setOpen(false);
-    if (onSelect) onSelect(value);
   };
 
   useEffect(() => {
@@ -48,11 +53,9 @@ export default function DropdownMenu({ children, items = [], onSelect, name = "d
         </div>
       )}
 
-      {/* Hidden input for form submission */}
-      {selected && (
-        <input type="hidden" name={name} value={selected} />
+      {errorMessage && (
+        <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
       )}
     </div>
   );
 }
-

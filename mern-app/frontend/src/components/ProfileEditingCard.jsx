@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
 import DropdownMenu from "./DropdownMenu";
@@ -6,68 +6,251 @@ import Selector from "./Selector";
 import TertiaryButton from "./TertiaryButton";
 import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
+import states from "../data/states";
+import skills from "../data/skills";
+import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
 
-const states = [
-  "AL",
-  "AK",
-  "AZ",
-  "AR",
-  "CA",
-  "CO",
-  "CT",
-  "DE",
-  "FL",
-  "GA",
-  "HI",
-  "ID",
-  "IL",
-  "IN",
-  "IA",
-  "KS",
-  "KY",
-  "LA",
-  "ME",
-  "MD",
-  "MA",
-  "MI",
-  "MN",
-  "MS",
-  "MO",
-  "MT",
-  "NE",
-  "NV",
-  "NH",
-  "NJ",
-  "NM",
-  "NY",
-  "NC",
-  "ND",
-  "OH",
-  "OK",
-  "OR",
-  "PA",
-  "RI",
-  "SC",
-  "SD",
-  "TN",
-  "TX",
-  "UT",
-  "VT",
-  "VA",
-  "WA",
-  "WV",
-  "WI",
-  "WY",
-];
 
-const skills = [
-  "Gardening",
-  "Cooking",
-  "Cleaning",
-  "Baking",
-  "Fundraising",
-  "Art",
-];
+export default function ProfileEditingCard({ defaultValues = {} }) {
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    
+  } = useForm({
+    defaultValues: {
+      name: "",
+      address1: "",
+      address2: "",
+      zipcode: "",
+      city: "",
+      state: "",
+      skills: [],
+      preferences: "",
+      availableDates: [],
+      ...defaultValues,
+    },
+  });
+
+  const onSubmit = (data) => {
+    const cleaned = {
+    ...data,
+    availableDates: data.availableDates.map((date) =>
+      date?.format?.("YYYY-MM-DD") ?? ""
+    ),
+    name: sanitizeInput(data.name, { allowCharacters: "'-" }),
+    address1: sanitizeInput(data.address1),
+    address2: sanitizeInput(data.address2),
+    zipcode: sanitizeInput(data.zipcode),
+    city: sanitizeInput(data.city),
+    preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
+  };
+
+  console.log("Sanitized data:", cleaned);
+  // Send `cleaned` to backend instead of raw `data`
+};
+
+  return (
+    <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex">
+        <div className="flex flex-col size-full gap-2">
+          <div className="flex flex-3 flex-col gap-2">
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Name is required.",
+                maxLength: { value: 50, message: "Name cannot exceed 50 characters."},
+               }}
+              render={({ field }) => (
+                <Field 
+                required
+                maxLength={50} 
+                label="Name" 
+                placeholder="John Doe" 
+                errorMessage={errors.name?.message} 
+                {...field} 
+                />
+              )}
+            />
+
+            <Controller
+              name="address1"
+              control={control}
+              rules={{ required: "Address is required." ,
+                maxLength: { value: 100, message: "Address 1 cannot exceed 100 characters."},
+              }}
+              render={({ field }) => (
+                <Field 
+                required
+                maxLength={100}
+                label="Address 1" 
+                placeholder="Penny Lane" 
+                errorMessage={errors.address1?.message} 
+                {...field} 
+                />
+              )}
+            />
+
+            <div className="flex gap-4">
+              <Controller
+                name="address2"
+                control={control}
+                rules={{ maxLength: { value: 100, message: "Address 2 cannot exceed 100 characters."},
+              }}
+                render={({ field }) => (
+                  <Field 
+                  maxLength={100}
+                  className="flex-3" 
+                  label="Address 2" 
+                  placeholder="Mailbox 1" 
+                  {...field} 
+                  />
+                )}
+              />
+              <Controller
+                name="zipcode"
+                control={control}
+                rules={{ required: "Zipcode is required.",
+                  minLength: { value: 5, message: "Your zipcode must be at least 5 digits." },
+                  maxLength: { value: 9, message: "Your zipcode cannot exceed 9 digits." },
+                 }}
+                render={({ field }) => (
+                  <Field
+                    required
+                    minLength={5}
+                    maxLength={9}
+                    className="flex-1"
+                    label="Zipcode"
+                    type="number"
+                    placeholder="12345"
+                    errorMessage={errors.zipcode?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <Controller
+                name="city"
+                control={control}
+                rules={{ required: "City is required." }}
+                render={({ field }) => (
+                  <Field
+                    required
+                    className="flex-3"
+                    label="City"
+                    placeholder="Albuquerque"
+                    errorMessage={errors.city?.message}
+                    {...field}
+                  />
+                )}
+              />
+
+              <Controller
+                name="state"
+                control={control}
+                rules={{ required: "State is required." }}
+                render={({ field }) => (
+                  <div className="flex-1 self-baseline-last flex-col flex">
+                    <label className="block text-md font-medium mb-1">
+                      State<span className="text-red-500"> *</span>
+                    </label>
+                    <DropdownMenu
+                      required
+                      items={states}
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      errorMessage={errors.state?.message}
+                    >
+                      {field.value || "State select"}
+                    </DropdownMenu>
+                  </div>
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-2 row-span-full gap-4">
+            <div className="flex-1 flex flex-col">
+              <label className="block text-md font-medium">
+                Skills<span className="text-red-500"> *</span>
+              </label>
+              <Controller
+                name="skills"
+                control={control}
+                rules={{ required: "Select at least one skill." }}
+                render={({ field }) => (
+                  <Selector
+                    items={skills}
+                    value={field.value}
+                    onChange={field.onChange}
+                    name="skills"
+                    errorMessage={errors.skills?.message}
+                    className="self-baseline"
+                  >
+                    {field.value?.length ? "Edit Skills" : "Skill select"}
+                  </Selector>
+                )}
+              />
+              <Controller
+                name="preferences"
+                control={control}
+                render={({ field }) => (
+                  <CommentBox label="Preferences" placeholder="Gardening, cooking..." {...field} />
+                )}
+              />
+            </div>
+
+            <div className="flex-1">
+              <label className="block text-md font-medium mb-1">
+                Availability<span className="text-red-500"> *</span>
+              </label>
+              <Controller
+                name="availableDates"
+                control={control}
+                rules={{ required: "Please select at least one date." }}
+                render={({ field }) => (
+                  <MultiDatePickerField
+                    label="Availability"
+                    name="availableDates"
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={errors.availableDates?.message}
+                  />
+                )}
+              />
+
+            </div>
+          </div>
+
+          <div className="flex gap-8 mt-4">
+            <TertiaryButton type="button" className="flex-1">
+              Cancel
+            </TertiaryButton>
+            <div className="flex-1" />
+            <PrimaryButton type="submit" className="flex-1">
+              Save
+            </PrimaryButton>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+/*import { useState } from "react";
+import Field from "./Field";
+import MultiDatePickerField from "./MultiDatePickerField";
+import DropdownMenu from "./DropdownMenu";
+import Selector from "./Selector";
+import TertiaryButton from "./TertiaryButton";
+import PrimaryButton from "./Buttons";
+import CommentBox from "./CommentBox";
+import states from "../data/states"
+import skills from "../data/skills"
+
 
 const handleStateSelect = (state) => {
   console.log("Selected state:", state);
@@ -79,12 +262,12 @@ export default function ProfileEditingCard() {
     <div
       className={`bg-white text-secondary px-4 py-2 rounded border-2 border-solid  w-lg`}
     >
-      <form action="" classname={`flex`}>
+      <form action="" className={`flex`}>
         <div className={"flex flex-col size-full gap-2"}>
           <div className={"flex flex-3 flex-col gap-2"}>
             {/* <div className="">
             <img src={examplepic} width={200} height={200}></img>
-          </div> */}
+          </div> //}
             <Field
               label="Name"
               name="name"
@@ -168,4 +351,4 @@ export default function ProfileEditingCard() {
       </form>
     </div>
   );
-}
+}*/
