@@ -56,7 +56,7 @@ const sampleEvents = [
 ];
 
 export default function Home() {
-  const [role] = useState("volunteer"); // modify to "volunteer" or "admin" to test
+  const [role] = useState("admin"); // modify to "volunteer" or "admin" to test
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -83,7 +83,7 @@ export default function Home() {
           {event.urgency}
         </div>
         <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold text-[#72A7BC]">{event.name}</h3>
+          <h3 className="text-xl font-semibold text-secondary">{event.name}</h3>
           <span className="text-2xl mt-7">{isExpanded ? "▾" : "▸"}</span>
         </div>
         <p className="mt-2 text-base text-gray-700">
@@ -120,7 +120,7 @@ export default function Home() {
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-secondary">My Profile & Admin Tools</h2>
             <div className="flex flex-wrap gap-4">
-              <a href="/profile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
+              <a href="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
                 👤 View My Profile
               </a>
               <a href="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
@@ -129,9 +129,9 @@ export default function Home() {
               <a href="/volunteerhistory" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
                 📋 View Submission History
               </a>
-              <a href="/reports" className="bg-secondary hover:bg-primary text-white px-4 py-2 rounded text-sm">
+              {/*<a href="/reports" className="bg-secondary hover:bg-primary text-white px-4 py-2 rounded text-sm">
                 📈 Generate Reports
-              </a>
+              </a>   use this later !!!! */}
             </div>
           </div>
 
@@ -164,7 +164,7 @@ export default function Home() {
           {/* volunteer tools */}
           <div className="max-w-xl w-full flex justify-start gap-4 mb-2">
             <a
-              href="/profile"
+              href="/manageprofile"
               className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
             >
               View My Profile

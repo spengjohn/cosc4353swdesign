@@ -46,7 +46,7 @@ const EventCard = ({ event, isExpanded, onToggle }) => {
         {/* Event title and arrow */}
         <div className="flex justify-between items-start">
           <button
-            className="text-left text-xl font-semibold text-[#72A7BC] hover:underline"
+            className="text-left text-xl font-semibold text-secondary hover:underline"
             onClick={(e) => {
               e.stopPropagation();
               setShowModal(true);
