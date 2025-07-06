@@ -8,6 +8,7 @@ import Selector from "../components/Selector";
 import ProfileEditingCard from "../components/ProfileEditingCard";
 import ProfileCard from "../components/ProfileCard";
 import CommentBox from "../components/CommentBox";
+import CreateEditEventCard from "../components/CreateEditEventCard";
 const sampleUser = {
   name: "John Doe",
   city: "Albuquerque",
@@ -35,11 +36,12 @@ export default function Test() {
     // update form input or context state
   };
   return (
-    <>
-    <ExampleForm/>
+    <div className="flex flex-col items-center">
+    <MultiDatePickerField/>
     <br/>
     <ProfileEditingCard/>
-    </>
+    
+    </div >
     
     
     /*
