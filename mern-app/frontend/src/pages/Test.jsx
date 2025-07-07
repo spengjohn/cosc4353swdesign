@@ -9,6 +9,8 @@ import ProfileEditingCard from "../components/ProfileEditingCard";
 import ProfileCard from "../components/ProfileCard";
 import CommentBox from "../components/CommentBox";
 import CreateEditEventCard from "../components/CreateEditEventCard";
+import TestButton from "../components/TestButton";
+
 const sampleUser = {
   name: "John Doe",
   city: "Albuquerque",
@@ -37,7 +39,7 @@ export default function Test() {
   };
   return (
     <div className="flex flex-col items-center">
-    <MultiDatePickerField/>
+    <TestButton/>
     <br/>
     <ProfileEditingCard/>
     
