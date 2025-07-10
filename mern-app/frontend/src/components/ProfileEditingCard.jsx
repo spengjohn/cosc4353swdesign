@@ -1,6 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
-import { fetchUserProfile } from "../api/user"; // your API helper
+import { fetchUserProfile, updateUserProfile } from "../api/user"; // your API helper
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
 import DropdownMenu from "./DropdownMenu";
@@ -62,12 +62,21 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     loadProfile();
   }, [setValue]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const cleaned = {
     ...data,
-    availableDates: data.availableDates.map((date) =>
-      date?.format?.("YYYY-MM-DD") ?? ""
-    ),
+    availableDates: data.availableDates.map((d) => {
+  try {
+    // react-multi-date-picker DateObject has `.toDate()` method
+    const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
+    return jsDate instanceof Date && !isNaN(jsDate)
+      ? jsDate.toISOString().split("T")[0]
+      : "";
+  } catch {
+    return "";
+  }
+}),
+
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
     address2: sanitizeInput(data.address2),
@@ -77,17 +86,18 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
     isProfileComplete: true,
     }
-    /*
+    console.log("Sanitized data:", cleaned);
+  // Send `cleaned` to backend instead of raw `data`
+    
     try {
       const result = await updateUserProfile("1", cleaned); // mock ID for now
       console.log("Profile updated:", result);
     } catch (err) {
       console.error("Error updating profile:", err);
-    }*/
+    }
   };
 
-  console.log("Sanitized data:", cleaned);
-  // Send `cleaned` to backend instead of raw `data`
+  
 
 
   return (

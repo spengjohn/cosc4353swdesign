@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const fetchUserProfile = async (userId) => {
-    const res = await axios.get(`/api/user/${userId}`);
+    const res = await axios.get(`/api/users/${userId}`);
     return res.data;
     /*
   try {
@@ -15,7 +15,7 @@ export const fetchUserProfile = async (userId) => {
 
 export const updateUserProfile = async (userId, profileData) => {
   try {
-    const response = await axios.put(`/api/users/${userId}`, profileData);
+    const response = await axios.post(`/api/users/${userId}`, profileData);
     return response.data;
   } catch (error) {
     console.error("Failed to update user profile:", error);
