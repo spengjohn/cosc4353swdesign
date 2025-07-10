@@ -17,7 +17,7 @@ app.use(cors({
 app.use(express.json()); // For JSON request bodies
 
 
-app.use("api/profile", profileRoutes)
+app.use("/api/profile", profileRoutes)
 
 
 if (process.env.NODE_ENV !== 'test') {
