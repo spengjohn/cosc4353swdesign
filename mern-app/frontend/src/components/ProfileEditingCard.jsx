@@ -1,6 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
-import { fetchUserProfile, updateUserProfile } from "../api/user"; // your API helper
+//import { fetchUserProfile, updateUserProfile } from "../api/user"; // your API helper
+import { fetchUserProfile, updateUserProfile } from "../api/profile";
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
 import DropdownMenu from "./DropdownMenu";
@@ -39,7 +40,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const profile = await fetchUserProfile("1"); // use real user ID later
+        const profile = await fetchUserProfile("123"); // use real user ID later
 
         // Convert dates to JS Date objects
         const dates = profile.availableDates?.map(d => new Date(d)) || [];
@@ -64,18 +65,18 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
 
   const onSubmit = async (data) => {
     const cleaned = {
-    ...data,
-    availableDates: data.availableDates.map((d) => {
-  try {
-    // react-multi-date-picker DateObject has `.toDate()` method
-    const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
-    return jsDate instanceof Date && !isNaN(jsDate)
-      ? jsDate.toISOString().split("T")[0]
-      : "";
-  } catch {
-    return "";
-  }
-}),
+      ...data,
+      availableDates: data.availableDates.map((d) => {
+        try {
+          // react-multi-date-picker DateObject has `.toDate()` method
+          const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
+          return jsDate instanceof Date && !isNaN(jsDate)
+            ? jsDate.toISOString().split("T")[0]
+            : "";
+        } catch {
+          return "";
+        }
+    }),
 
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
@@ -84,7 +85,6 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     city: sanitizeInput(data.city),
     state: sanitizeInput(data.state),
     preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
-    isProfileComplete: true,
     }
     console.log("Sanitized data:", cleaned);
   // Send `cleaned` to backend instead of raw `data`

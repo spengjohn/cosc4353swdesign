@@ -1,4 +1,4 @@
-import axios from 'axios';
+/*import axios from 'axios';
 
 export const fetchUserProfile = async (userId) => {
     const res = await axios.get(`/api/users/${userId}`);
@@ -10,7 +10,7 @@ export const fetchUserProfile = async (userId) => {
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
     throw error;
-  }*/
+  }
 };
 
 export const updateUserProfile = async (userId, profileData) => {
@@ -22,3 +22,4 @@ export const updateUserProfile = async (userId, profileData) => {
     throw error;
   }
 };
+*/
