@@ -6,12 +6,12 @@ import profileRoutes from "./routes/profile.js";
 dotenv.config();
 
 const app = express();
-const FRONT_PORT = process.env.FRONT_PORT;
+const FRONT_URL = process.env.FRONT_URL;
 const PORT = process.env.PORT;
 const dbUri = process.env.MONGO_UIR;
 
 app.use(cors({
-  origin: `http://localhost:${FRONT_PORT}`, // Adjust if your frontend is on a different port
+  origin: `${FRONT_URL}`, // Adjust if your frontend is on a different port
   credentials: true
 }));
 app.use(express.json()); // For JSON request bodies
