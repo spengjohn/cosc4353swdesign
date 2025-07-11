@@ -1,4 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
+import { useEffect } from "react";
+//import { fetchUserProfile, updateUserProfile } from "../api/user"; // your API helper
+import { fetchUserProfile, updateUserProfile } from "../api/profile";
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
 import DropdownMenu from "./DropdownMenu";
@@ -16,11 +19,11 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
-    
   } = useForm({
     defaultValues: {
-      name: "",
+      fullName: "",
       address1: "",
       address2: "",
       zipcode: "",
@@ -33,23 +36,69 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     },
   });
 
-  const onSubmit = (data) => {
+  // Load profile data once on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profile = await fetchUserProfile("123"); // use real user ID later
+
+        // Convert dates to JS Date objects
+        const dates = profile.availableDates?.map(d => new Date(d)) || [];
+
+        // Set values
+        setValue("fullName", profile.fullName);
+        setValue("address1", profile.address1);
+        setValue("address2", profile.address2);
+        setValue("zipcode", profile.zipcode);
+        setValue("city", profile.city);
+        setValue("state", profile.state);
+        setValue("skills", profile.skills);
+        setValue("preferences", profile.preferences);
+        setValue("availableDates", dates);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      }
+    };
+
+    loadProfile();
+  }, [setValue]);
+
+  const onSubmit = async (data) => {
     const cleaned = {
-    ...data,
-    availableDates: data.availableDates.map((date) =>
-      date?.format?.("YYYY-MM-DD") ?? ""
-    ),
-    name: sanitizeInput(data.name, { allowCharacters: "'-" }),
+      ...data,
+      availableDates: data.availableDates.map((d) => {
+        try {
+          // react-multi-date-picker DateObject has `.toDate()` method
+          const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
+          return jsDate instanceof Date && !isNaN(jsDate)
+            ? jsDate.toISOString().split("T")[0]
+            : "";
+        } catch {
+          return "";
+        }
+    }),
+
+    fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
     address2: sanitizeInput(data.address2),
     zipcode: sanitizeInput(data.zipcode),
     city: sanitizeInput(data.city),
+    state: sanitizeInput(data.state),
     preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
+    }
+    console.log("Sanitized data:", cleaned);
+  // Send `cleaned` to backend instead of raw `data`
+    
+    try {
+      const result = await updateUserProfile("1", cleaned); // mock ID for now
+      console.log("Profile updated:", result);
+    } catch (err) {
+      console.error("Error updating profile:", err);
+    }
   };
 
-  console.log("Sanitized data:", cleaned);
-  // Send `cleaned` to backend instead of raw `data`
-};
+  
+
 
   return (
     <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-lg">
@@ -57,7 +106,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
         <div className="flex flex-col size-full gap-2">
           <div className="flex flex-3 flex-col gap-2">
             <Controller
-              name="name"
+              name="fullName"
               control={control}
               rules={{ required: "Name is required.",
                 maxLength: { value: 50, message: "Name cannot exceed 50 characters."},
