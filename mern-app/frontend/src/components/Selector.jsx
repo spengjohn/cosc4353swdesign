@@ -1,24 +1,28 @@
-import { useState, useRef, useEffect } from "react";
-
-export default function Selector({ items = [], onSelect, name = "selectedOptions", children }) {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState([]);
+import { useRef, useEffect } from "react";
+import React from "react";
+export default function Selector({
+  items = [],
+  value = [],
+  onChange,
+  name = "selectedOptions",
+  children,
+  errorMessage,
+}) {
   const dropdownRef = useRef();
+  const [open, setOpen] = React.useState(false);
 
   const toggleDropdown = () => setOpen((prev) => !prev);
 
   const handleSelect = (option) => {
-    if (!selected.includes(option)) {
-      const newSelected = [...selected, option];
-      setSelected(newSelected);
-      if (onSelect) onSelect(newSelected);
+    if (!value.includes(option)) {
+      const newSelected = [...value, option];
+      onChange?.(newSelected);
     }
   };
 
   const removeOption = (option) => {
-    const newSelected = selected.filter((o) => o !== option);
-    setSelected(newSelected);
-    if (onSelect) onSelect(newSelected);
+    const newSelected = value.filter((o) => o !== option);
+    onChange?.(newSelected);
   };
 
   useEffect(() => {
@@ -33,7 +37,7 @@ export default function Selector({ items = [], onSelect, name = "selectedOptions
 
   return (
     <div ref={dropdownRef} className="relative w-64">
-      {/* Selector Button */}
+      {/* Button */}
       <div
         className="bg-secondary text-white px-4 py-2 rounded cursor-pointer hover:bg-primary transition"
         onClick={toggleDropdown}
@@ -41,7 +45,7 @@ export default function Selector({ items = [], onSelect, name = "selectedOptions
         {children}
       </div>
 
-      {/* Dropdown List */}
+      {/* Dropdown */}
       {open && (
         <div className="absolute mt-2 w-full bg-white border rounded shadow z-10 max-h-60 overflow-auto">
           {items.map((opt) => (
@@ -49,7 +53,7 @@ export default function Selector({ items = [], onSelect, name = "selectedOptions
               key={opt}
               onClick={() => handleSelect(opt)}
               className="block w-full text-left px-4 py-2 hover:bg-gray-100 disabled:opacity-50"
-              disabled={selected.includes(opt)}
+              disabled={value.includes(opt)}
               type="button"
             >
               {opt}
@@ -58,9 +62,9 @@ export default function Selector({ items = [], onSelect, name = "selectedOptions
         </div>
       )}
 
-      {/* Selected Tags */}
+      {/* Tags */}
       <div className="mt-2 flex flex-wrap gap-2">
-        {selected.map((opt) => (
+        {value.map((opt) => (
           <span
             key={opt}
             className="flex items-center bg-primary text-white text-sm px-2 py-1 rounded-full"
@@ -76,9 +80,12 @@ export default function Selector({ items = [], onSelect, name = "selectedOptions
           </span>
         ))}
       </div>
-
-      {/* Hidden input for form submission */}
-      <input type="hidden" name={name} value={selected.join(",")} />
+        {/* Error message */}
+      {errorMessage && (
+        <p className="mt-1 text-sm text-red-600">{errorMessage}</p>
+      )}
+      {/* Hidden input to support form submission */}
+      <input type="hidden" name={name} value={value.join(",")} />
     </div>
   );
 }

@@ -8,6 +8,9 @@ import Selector from "../components/Selector";
 import ProfileEditingCard from "../components/ProfileEditingCard";
 import ProfileCard from "../components/ProfileCard";
 import CommentBox from "../components/CommentBox";
+import CreateEditEventCard from "../components/CreateEditEventCard";
+import TestButton from "../components/TestButton";
+
 const sampleUser = {
   name: "John Doe",
   city: "Albuquerque",
@@ -26,15 +29,21 @@ const states = [
 ];
 // from DB or static
 
+import ExampleForm from "../components/ExampleForm";
+
+
 export default function Test() {
   const handleStateSelect = (state) => {
     console.log("Selected state:", state);
     // update form input or context state
   };
   return (
-    <>
+    <div className="flex flex-col items-center">
+    <TestButton/>
+    <br/>
+    <ProfileEditingCard/>
     
-    </>
+    </div >
     
     
     /*

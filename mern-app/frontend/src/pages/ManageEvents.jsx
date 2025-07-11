@@ -82,6 +82,10 @@ export default function ManageEventsPage() {
         Manage Events
       </h1>
 
+      <p className="text-center text-gray-600 mb-6 italic">
+        There are {events.length} upcoming {events.length === 1 ? "event" : "events"}.
+      </p>
+
       <div className="flex justify-center mb-10">
         <PrimaryButton onClick={() => setIsFormOpen(true)}>
           + Create New Event
@@ -99,15 +103,6 @@ export default function ManageEventsPage() {
             }
           />
         ))}
-      </div>
-
-      <div className="mt-12 flex justify-center">
-        <button
-          onClick={() => window.location.href = "/matching-volunteer"}
-          className="bg-secondary hover:bg-primary text-white font-semibold px-6 py-3 rounded-lg shadow-md transition"
-        >
-          Matching Volunteer →
-        </button>
       </div>
 
       {isFormOpen && (
