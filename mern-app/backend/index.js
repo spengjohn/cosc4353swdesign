@@ -3,6 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from "dotenv";
 import profileRoutes from "./routes/profile.js";
+import notificationRoutes from "./routes/notifications.js";
+app.use("/api/notifications", notificationRoutes);
+
 dotenv.config();
 
 const app = express();
