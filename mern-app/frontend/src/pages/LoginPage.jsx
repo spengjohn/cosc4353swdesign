@@ -53,7 +53,7 @@ export default function LoginPage() {
         <div className="mt-6 text-xl">
           <PrimaryButton type="submit">Log in</PrimaryButton>
         </div>
-      </form>
+      </div>
 
       <p className="text-lg p-4 w-full max-w-sm text-center">
         Don’t have an account?{" "}

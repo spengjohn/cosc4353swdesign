@@ -1,5 +1,16 @@
-// models/Event.js
 import mongoose from "mongoose";
+
+const attendanceSchema = new mongoose.Schema({
+  volunteer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
+  },
+  attended: {
+    type: Boolean,
+    default: false,
+  },
+}, { _id: false });
 
 const eventSchema = new mongoose.Schema({
   title: {
@@ -37,17 +48,19 @@ const eventSchema = new mongoose.Schema({
   },
   urgency: {
     type: String,
+    enum: ["Low", "Medium", "High"],
     required: true,
   },
   skillsRequired: [{
     type: String,
     required: true,
   }],
-  assignedVolunteers: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Account",
+  assignedVolunteers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
     unique: true,
   }],
+  attendance: [attendanceSchema],
 }, {
   timestamps: true,
 });

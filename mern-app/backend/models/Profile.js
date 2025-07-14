@@ -49,6 +49,10 @@ const profileSchema = new mongoose.Schema({
   }],
   preferences: String,
   availableDates: [Date],
+  pastEvents: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Event"
+  }],
 }, {
   timestamps: true,
 });
