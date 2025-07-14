@@ -58,8 +58,9 @@ export default function EmailVerification() {
               render={({ field }) => (
                 <Field 
                 required
-                label="code" 
-                placeholder="123456" 
+                label="Code" 
+                placeholder="123456"
+                type="number" 
                 errorMessage={errors.code?.message}
                 {...field}
                 />
