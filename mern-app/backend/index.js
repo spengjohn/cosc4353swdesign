@@ -3,12 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from "dotenv";
 import profileRoutes from "./routes/profile.js";
+import loginRegisterRoutes from "./routes/loginRegister.js";
 dotenv.config();
 
 const app = express();
 const FRONT_PORT = process.env.FRONT_PORT;
 const PORT = process.env.PORT;
 const dbUri = process.env.MONGO_UIR;
+// const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: `http://localhost:${FRONT_PORT}`, // Adjust if your frontend is on a different port
@@ -18,6 +20,7 @@ app.use(express.json()); // For JSON request bodies
 
 
 app.use("/api/profile", profileRoutes)
+app.use("/api/auth", loginRegisterRoutes);
 
 
 if (process.env.NODE_ENV !== 'test') {
