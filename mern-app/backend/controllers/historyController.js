@@ -13,7 +13,7 @@ const history =
     console.log("Returning full history:", history);
     res.json(history);
   } catch (err) {
-    console.error("getProfile error:", err);
+    console.error("getHistory error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -31,7 +31,7 @@ const history =
     console.log("Returning attended history:", history);
     res.json(history);
   } catch (err) {
-    console.error("getProfile error:", err);
+    console.error("getHistory error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
