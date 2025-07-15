@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1752600336440" clover="3.2.0">
-  <project timestamp="1752600336440" name="All files">
-    <metrics statements="37" coveredstatements="31" conditionals="6" coveredconditionals="4" methods="8" coveredmethods="8" elements="51" coveredelements="43" complexity="0" loc="37" ncloc="37" packages="2" files="2" classes="2"/>
+<coverage generated="1752606425349" clover="3.2.0">
+  <project timestamp="1752606425349" name="All files">
+    <metrics statements="49" coveredstatements="43" conditionals="13" coveredconditionals="9" methods="13" coveredmethods="13" elements="75" coveredelements="65" complexity="0" loc="49" ncloc="49" packages="3" files="5" classes="5"/>
     <package name="controllers">
       <metrics statements="36" coveredstatements="30" conditionals="6" coveredconditionals="4" methods="8" coveredmethods="8"/>
       <file name="profileController.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\controllers\profileController.js">
@@ -45,10 +45,34 @@
       </file>
     </package>
     <package name="mocks">
-      <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="mockMatchEvents.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\mocks\mockMatchEvents.js">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="mockMatchProfiles.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\mocks\mockMatchProfiles.js">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
       <file name="mockProfiles.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\mocks\mockProfiles.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils">
+      <metrics statements="10" coveredstatements="10" conditionals="7" coveredconditionals="5" methods="5" coveredmethods="5"/>
+      <file name="matchVolunteers.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\utils\matchVolunteers.js">
+        <metrics statements="10" coveredstatements="10" conditionals="7" coveredconditionals="5" methods="5" coveredmethods="5"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="6" count="54" type="stmt"/>
+        <line num="7" count="74" type="stmt"/>
+        <line num="10" count="66" type="stmt"/>
+        <line num="12" count="54" type="stmt"/>
+        <line num="14" count="54" type="cond" truecount="3" falsecount="0"/>
+        <line num="17" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="18" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="19" count="2" type="stmt"/>
       </file>
     </package>
   </project>

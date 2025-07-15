@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
+
+
 
 const mockEvent = {
   name: "Community Clean-Up",

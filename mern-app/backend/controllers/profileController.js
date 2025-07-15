@@ -49,8 +49,8 @@ export const getHistory = async (req, res) => {
     console.log("GET /api/profile/:accountId");
     console.log("accountId:", accountId);
 
-const history =
-  (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory;
+    const history =
+      (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory;
 
 
     console.log("Returning full history:", history);

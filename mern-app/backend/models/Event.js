@@ -1,17 +1,5 @@
 import mongoose from "mongoose";
 
-const attendanceSchema = new mongoose.Schema({
-  volunteer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Profile",
-    required: true,
-  },
-  attended: {
-    type: Boolean,
-    default: false,
-  },
-}, { _id: false });
-
 const eventSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -60,7 +48,6 @@ const eventSchema = new mongoose.Schema({
     ref: "Profile",
     unique: true,
   }],
-  attendance: [attendanceSchema],
 }, {
   timestamps: true,
 });

@@ -51,8 +51,10 @@ const profileSchema = new mongoose.Schema({
   availableDates: [Date],
   eventHistory: [
     {
-      title: {
-        type: String,
+      event: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
+        unique: true,
         required: true,
       },
       attended: {

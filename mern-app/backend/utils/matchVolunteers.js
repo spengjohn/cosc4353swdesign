@@ -1,5 +1,5 @@
 export function matchVolunteers(profiles, event) {
-  const { date, city, skillsRequired } = event;
+  const { date, city, state, skillsRequired } = event;
 
   return profiles
     .filter(profile => {
@@ -7,10 +7,11 @@ export function matchVolunteers(profiles, event) {
         d => new Date(d).toDateString() === new Date(date).toDateString()
       );
 
-      // Check if profile.skills includes *all* skillsRequired
       const hasAllSkills = skillsRequired.every(skill => profile.skills.includes(skill));
 
-      return isAvailable && hasAllSkills;
+      const isSameState = profile.state === state;
+
+      return isAvailable && hasAllSkills && isSameState;
     })
     .sort((a, b) => {
       const aCityMatch = a.city === city ? 1 : 0;
@@ -18,3 +19,4 @@ export function matchVolunteers(profiles, event) {
       return bCityMatch - aCityMatch; // Prefer same city
     });
 }
+

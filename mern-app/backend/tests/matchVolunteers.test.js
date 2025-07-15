@@ -1,37 +1,67 @@
 import { matchVolunteers } from "../utils/matchVolunteers.js";
-import { mockCompleteProfiles } from "../mocks/mockCompleteProfiles.js";
-import { mockEvent } from "../mocks/mockEvents.js";
+import { mockMatchProfiles } from "../mocks/mockMatchProfiles.js";
+import { mockMatchEvents } from "../mocks/mockMatchEvents.js";
 
-describe("matchVolunteers - Updated for strict skills match", () => {
-  it("returns only volunteers with all required skills, sorted by city match", () => {
-    const matches = matchVolunteers(mockCompleteProfiles, mockEvent);
+describe("matchVolunteers - Updated Strict Matching", () => {
+  it("matches volunteers for Event 1: Community Cooking", () => {
+    const event = mockMatchEvents[1];
+    const matches = matchVolunteers(mockMatchProfiles, event);
 
-    // Alice and Diana have all required skills + city match
-    expect(matches.length).toBe(3);
+    // Alice is the only match (correct state, available, has all skills)
+    expect(matches.length).toBe(2);
     expect(matches[0].fullName).toBe("Alice");
-    expect(matches[1].fullName).toBe("Diana");
+    expect(matches[1].fullName).toBe("Iggy");
 
-    // Bob has all skills but lives in Dallas (city mismatch)
-    expect(matches[2].fullName).toBe("Bob");
-
-    // Charlie missing Spanish, should be excluded
-    expect(matches.find(v => v.fullName === "Charlie")).toBeUndefined();
+    // Diana and Gio are same city but wrong state or skills
+    expect(matches.find(v => v.fullName === "Diana")).toBeUndefined();
+    expect(matches.find(v => v.fullName === "Gio")).toBeUndefined();
   });
 
-  it("excludes volunteers missing any required skill", () => {
-    const eventWithMoreSkills = { ...mockEvent, skillsRequired: ["First Aid", "Spanish", "Cooking"] };
-    const matches = matchVolunteers(mockCompleteProfiles, eventWithMoreSkills);
+  it("matches volunteers for Event 2: Church Gardening", () => {
+    const event = mockMatchEvents[2];
+    const matches = matchVolunteers(mockMatchProfiles, event);
 
-    // Only Diana and Bob have all three skills
-    expect(matches.length).toBe(2);
-    expect(matches.some(v => v.fullName === "Diana")).toBe(true);
-    expect(matches.some(v => v.fullName === "Bob")).toBe(true);
+    // Bob is perfect match (skills, date, city, state)
+    expect(matches.length).toBe(1);
+    expect(matches[0].fullName).toBe("Bob");
+
+    // Eric has skills but wrong state, Hannah has correct state but wrong date
+    expect(matches.find(v => v.fullName === "Eric")).toBeUndefined();
+    expect(matches.find(v => v.fullName === "Hannah")).toBeUndefined();
+  });
+
+  it("matches volunteers for Event 3: Marathon Setup", () => {
+    const event = mockMatchEvents[3];
+    const matches = matchVolunteers(mockMatchProfiles, event);
+
+    // Charlie has *both* First-Aid and Team Skills in TX
+    expect(matches.length).toBe(1);
+    expect(matches[0].fullName).toBe("Charlie")
+    
+  });
+
+  it("excludes volunteers from different states", () => {
+    const event = mockMatchEvents[1]; // TX
+    const matches = matchVolunteers(mockMatchProfiles, event);
+
+    // Diana is from AK, so should be excluded even though city matches
+    expect(matches.find(v => v.fullName === "Diana")).toBeUndefined();
+  });
+
+  it("excludes volunteers without required skills", () => {
+    const event = { ...mockMatchEvents[1], skillsRequired: ["Cooking", "Gardening"] };
+    const matches = matchVolunteers(mockMatchProfiles, event);
+
+    // Nobody has both Cooking + Gardening in TX
+    expect(matches.length).toBe(0);
   });
 
   it("excludes volunteers not available on event date", () => {
-    const eventDifferentDate = { ...mockEvent, date: new Date("2025-08-05") };
-    const matches = matchVolunteers(mockCompleteProfiles, eventDifferentDate);
+    const event = {...mockMatchEvents[2], date: new Date("2025-08-07)")};
+    const matches = matchVolunteers(mockMatchProfiles, event);
 
+    // No One is available on that date
     expect(matches.length).toBe(0);
+    
   });
 });
