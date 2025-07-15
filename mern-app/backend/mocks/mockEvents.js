@@ -1,26 +1,40 @@
-export const mockEvents = [
-  {
-    id: "1",
-    date: new Date("2025-08-01"),
-    city: "Houston",
-    skillsRequired: ["First Aid", "Spanish"],
+export const mockEvents = {
+  bothAttend: {
+
+   title:"Community Cooking",
+   description:"Cooking for the community.",
+   location:"123 ave",
+   city:"Houston",
+   state:"TX",
+   date:"2025-08-01",
+   urgency:"Urgent",
+   skillsRequired:["Cooking"],
+   assignedVolunteers:["789","123"],
   },
-  {
-    id: "2",
-    date: new Date("2025-08-03"),
-    city: "Dallas",
-    skillsRequired: ["Cooking", "Spanish"],
+
+  oneAttend: {
+
+   title:"Substitute Teaching",
+   description:"Library Teaching.",
+   location:"321 ave",
+   city:"Dallas",
+   state:"TX",
+   date:"2025-08-03",
+   urgency:"Not urgent",
+   skillsRequired:["Teaching"],
+   assignedVolunteers:["789"],
   },
-  {
-    id: "3",
-    date: new Date("2025-08-05"),
-    city: "Austin",
-    skillsRequired: ["First Aid", "Gardening"],
+
+    incomplete: {
+
+   title:"",
+   description:"",
+   location:"",
+   city:"",
+   state:"",
+   date:"",
+   urgency:"",
+   skillsRequired:[],
+   assignedVolunteers:[],
   },
-  {
-    id: "4",
-    date: new Date("2025-08-06"),
-    city: "Fort Worth",
-    skillsRequired: ["Teaching"],
-  },
-];
+};

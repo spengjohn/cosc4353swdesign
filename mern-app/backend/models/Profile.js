@@ -49,10 +49,18 @@ const profileSchema = new mongoose.Schema({
   }],
   preferences: String,
   availableDates: [Date],
-  pastEvents: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Event"
-  }],
+  eventHistory: [
+    {
+      title: {
+        type: String,
+        required: true,
+      },
+      attended: {
+        type: Boolean,
+        required: true,
+      }
+    }
+  ]
 }, {
   timestamps: true,
 });

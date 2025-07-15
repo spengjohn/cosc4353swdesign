@@ -43,6 +43,7 @@
 import { useState } from "react";
 import EventCard from "../components/EventCard";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
+import { Link } from "react-router-dom";
 
 const sampleEvents = [
   {
@@ -85,15 +86,16 @@ export default function Home() {
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-secondary">My Profile & Admin Tools</h2>
             <div className="flex flex-wrap gap-4">
-              <a href="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
+              <Link to="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
                 👤 View My Profile
-              </a>
-              <a href="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
+              </Link>
+              <Link to="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
                 🤝 Volunteer Matching
-              </a>
-              <a href="/volunteerhistory" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
+              </Link>
+              {/* THIS NEEDS TO BE CHANGED TO THE HISTORY MODAL POP_UP */}
+              <Link to="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
                 📋 View Volunteer History
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -102,12 +104,12 @@ export default function Home() {
           {/* upcoming events */}
           <h2 className="text-2xl font-semibold text-secondary">Upcoming Events</h2>
           <div className="mb-4">
-            <a
-              href="/manageevents"
+            <Link
+              to="/manageevents"
               className="inline-block bg-primary text-white px-4 py-2 rounded hover:bg-blue-600 text-sm mt-2"
             >
               🛠 Manage Events
-            </a>
+            </Link>
           </div>
 
           <div className="flex flex-wrap gap-4">
@@ -128,12 +130,12 @@ export default function Home() {
         <>
           {/* volunteer tools */}
           <div className="max-w-xl w-full flex justify-start gap-4 mb-2">
-            <a
-              href="/manageprofile"
+            <Link
+              to="/manageprofile"
               className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
             >
               View My Profile
-            </a>
+            </Link>
             <button
               onClick={() => setShowHistory(true)}
               className="text-white bg-secondary hover:bg-primary px-4 py-2 rounded text-sm"

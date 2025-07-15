@@ -1,9 +1,33 @@
 import PrimaryButton from "../components/Buttons";
 import Field from "../components/Field";
 
+import { useForm, Controller } from "react-hook-form";
+import { useEffect } from "react";
+import React, { useState } from 'react';
+import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
+
 export default function EmailVerification() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm();
+  
+  const onSubmit = ({code}) => {
+
+    // if (!code || code.length !== 6) {
+    //   alert('Please enter a valid 6-digit code.');
+    //   return;
+    // }
+
+    if (code === "654321")  {
+      alert("Email verified successfully!")
+    } else {
+      alert("Invalid verification code.")
+    }
+
+  };
+
+
   return (
     <div className="flex items-center justify-center min-h-screen">
+      <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center text-secondary">
         {/* Inline SVG Email Icon */}
         <div className="w-30 h-30 mb-4 text-black-500">
@@ -24,17 +48,28 @@ export default function EmailVerification() {
         </p>
 
         <div className="w-full max-w-sm mb-20 text-xl">
-          <Field
-            label="Verification Code"
-            name="code"
-            type="text"
-            placeholder="Enter code"
-            required
-          />
+        <Controller
+              name="code"
+              control={control}
+              rules={{ required: "Code is required.",
+                minLength: { value: 6, message: "Code must be 6 characters."},
+                maxLength: { value: 6, message: "Code must be 6 characters."},
+               }}
+              render={({ field }) => (
+                <Field 
+                required
+                label="Code" 
+                placeholder="123456"
+                type="number" 
+                errorMessage={errors.code?.message}
+                {...field}
+                />
+              )}
+            />
         </div>
 
         <div className="mt-6 mb-6 w-full max-w-sm text-xl flex flex-col items-center space-y-3">
-          <PrimaryButton>Verify</PrimaryButton>
+          <PrimaryButton type="submit">Verify</PrimaryButton>
 
           <p className="text-md text-gray-600">
             Didn't receive code?{" "}
@@ -43,7 +78,7 @@ export default function EmailVerification() {
             </a>
           </p>
         </div>
-      </div>
+      </div></form>
     </div>
   );
 }
