@@ -11,6 +11,10 @@ export const mockProfiles = {
     preferences: "No pets",
     availableDates: [new Date("2025-08-01"), new Date("2025-08-02")],
     role: "volunteer",
+  eventHistory: [
+    { title: "Community Cooking", attended: true },
+    { title: "Substitute Teaching", attended: false },
+    ]
   },
 
   incomplete: {
@@ -24,6 +28,7 @@ export const mockProfiles = {
     preferences: "",
     availableDates: [],
     role: "volunteer",
+  eventHistory: [],
   },
 
   admin: {
@@ -38,5 +43,10 @@ export const mockProfiles = {
     preferences: "Indoor only",
     availableDates: [new Date()],
     role: "admin",
+  eventHistory: [
+    { title: "Community Cooking", attended: true },
+    { title: "Event Setup", attended: true },
+    { title: "Management Workshop", attended: true },
+    ]
   }
 };
