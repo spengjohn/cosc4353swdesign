@@ -18,6 +18,7 @@ export const getProfile = async (req, res) => {
         skills: [],
         preferences: "",
         availableDates: [],
+        eventHistory: [],
         role: "volunteer",
       };
 
@@ -40,3 +41,41 @@ export const updateProfile = async (req, res) => {
   // Just echo back the updated profile for now (mock)
   res.json({ message: "Mock profile updated", profile: updatedProfile });
 };
+
+
+export const getHistory = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+    console.log("GET /api/profile/:accountId");
+    console.log("accountId:", accountId);
+
+const history =
+  (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory;
+
+
+    console.log("Returning full history:", history);
+    res.json(history);
+  } catch (err) {
+    console.error("getHistory error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getAttendedHistory = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+    console.log("GET /api/profile/:accountId");
+    console.log("accountId:", accountId);
+
+const history =
+  (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory.filter(event => event.attended);
+
+
+    console.log("Returning attended history:", history);
+    res.json(history);
+  } catch (err) {
+    console.error("getHistory error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
