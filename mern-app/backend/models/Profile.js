@@ -47,18 +47,6 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true
   }],
-  attendedEvents: [
-    {
-      title: {
-        type: String,
-        required: true,
-      },
-      attended: {
-        type: Boolean,
-        required: true,
-      }
-    }
-  ],
   preferences: String,
   availableDates: [Date],
   eventHistory: [
