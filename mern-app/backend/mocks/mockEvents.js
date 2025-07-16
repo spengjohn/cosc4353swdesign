@@ -1,4 +1,40 @@
 export const mockEvents = {
+  1 : {
+      title:"Community Cooking",
+      description:"Cooking for the community.",
+      location:"123 ave",
+      city:"Houston",
+      state:"TX",
+      date:"2025-08-01",
+      urgency:"High",
+      skillsRequired:["Cooking"],
+      assignedVolunteers:[""],
+      maxVolunteers: 5,
+  },
+  2 : {
+      title:"Church Gardening",
+      description:"Tending to crops for church.",
+      location:"123 ave",
+      city:"Austin",
+      state:"TX",
+      date:"2025-08-03",
+      urgency:"Low",
+      skillsRequired:["Gardening", "Spanish"],
+      assignedVolunteers:[""],
+      maxVolunteers: 5,
+  },
+  3 : {
+      title:"Marathon Setup",
+      description:"Setup relay station for runners.",
+      location:"123 ave",
+      city:"Dallas",
+      state:"TX",
+      date:"2025-08-05",
+      urgency:"Medium",
+      skillsRequired:["First-Aid", "Team Skills"],
+      assignedVolunteers:[""],
+      maxVolunteers: 5,
+  },
   bothAttend: {
 
    title:"Community Cooking",
@@ -10,6 +46,7 @@ export const mockEvents = {
    urgency:"Urgent",
    skillsRequired:["Cooking"],
    assignedVolunteers:["789","123"],
+   maxVolunteers: 5,
   },
 
   oneAttend: {
@@ -23,9 +60,10 @@ export const mockEvents = {
    urgency:"Not urgent",
    skillsRequired:["Teaching"],
    assignedVolunteers:["789"],
+   maxVolunteers: 5,
   },
 
-    incomplete: {
+  incomplete: {
 
    title:"",
    description:"",
@@ -36,5 +74,6 @@ export const mockEvents = {
    urgency:"",
    skillsRequired:[],
    assignedVolunteers:[],
+   maxVolunteers: 5,
   },
 };

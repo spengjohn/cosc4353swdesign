@@ -1,4 +1,4 @@
-export const mockMatchEvents = {
+/*export const mockMatchEvents = {
     1 : {
         title:"Community Cooking",
         description:"Cooking for the community.",
@@ -32,4 +32,4 @@ export const mockMatchEvents = {
         skillsRequired:["First-Aid", "Team Skills"],
         assignedVolunteers:[""],
     },
-};
+};*/

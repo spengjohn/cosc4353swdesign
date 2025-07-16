@@ -4,6 +4,36 @@ import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
 
 
 
+export default function VolunteerMatch() {
+  const { eventId } = useParams();
+  const navigate = useNavigate();
+  const [selectedVolunteers, setSelectedVolunteers] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+  const [event, setEvent] = useState(null);
+const [matchedVolunteers, setMatchedVolunteers] = useState([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // Fetch matched volunteers
+      const response = await fetch(`/api/volmatch/${1}`);
+      const volunteers = await response.json();
+      setMatchedVolunteers(volunteers);
+
+      // Fetch event separately if needed
+      /*
+      const eventRes = await fetch(`/api/events/${eventId}`);
+      const eventData = await eventRes.json();
+      setEvent(eventData);*/
+    } catch (error) {
+      console.error("Error fetching match data:", error);
+    }
+  };
+
+  fetchData();
+}, [eventId]);
+
 const mockEvent = {
   name: "Community Clean-Up",
   day: "Wednesday",
@@ -15,7 +45,7 @@ const mockEvent = {
   urgency: "Medium",
   maxVolunteers: 5,
 };
-
+/*
 const mockVolunteers = [
   {
     id: 1,
@@ -73,15 +103,7 @@ const mockVolunteers = [
     skills: ["Photography", "Event Planning"],
     preferences: "Loves capturing event moments",
   },
-];
-
-export default function VolunteerMatch() {
-  const { eventId } = useParams();
-  const navigate = useNavigate();
-  const [selectedVolunteers, setSelectedVolunteers] = useState([]);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
-
+];*/
   const handleSelect = (volunteer) => {
     const alreadySelected = selectedVolunteers.some((v) => v.id === volunteer.id);
     if (alreadySelected) {
@@ -105,7 +127,9 @@ export default function VolunteerMatch() {
   const isSelected = (vol) => selectedVolunteers.some((v) => v.id === vol.id);
   const isMaxReached = selectedVolunteers.length >= mockEvent.maxVolunteers;
 
-  return (
+  if (!event) return <div>Loading event info...</div>;
+
+  else return (
     <div className="flex flex-col min-h-screen">
       <div className="flex w-full">
         {/* Event Card */}
@@ -113,7 +137,7 @@ export default function VolunteerMatch() {
           <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Event</h2>
           <div className="bg-white border-2 border-[#3e7b91] rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-xl font-semibold text-[#3e7b91]">{mockEvent.name}</h3>
+              <h3 className="text-xl font-semibold text-[#3e7b91]">{mockEvent.title}</h3>
               <span className="text-sm bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">
                 {mockEvent.urgency}
               </span>
@@ -194,9 +218,9 @@ export default function VolunteerMatch() {
       <div className="px-6 pb-12">
         <h3 className="text-xl font-semibold text-[#3e7b91] mb-3">Please choose volunteers from the list below:</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockVolunteers.map((vol) => (
+          {matchedVolunteers.map((vol) => (
             <div
-              key={vol.id}
+              key={vol.accountId}
               className={`border-2 rounded p-4 shadow-sm flex flex-col justify-between transition duration-200 ${
                 isSelected(vol)
                   ? "border-[#a5c7d4] bg-[#e6f2f5] scale-105 ring-2 ring-[#a5c7d4]"
@@ -205,7 +229,7 @@ export default function VolunteerMatch() {
             >
               <div>
                 <div className="flex justify-between">
-                  <strong>{vol.name}</strong>
+                  <strong>{vol.fullName}</strong>
                   <span className="text-sm text-gray-600">{vol.city}, {vol.state}</span>
                 </div>
                 <p className="text-sm mt-2">

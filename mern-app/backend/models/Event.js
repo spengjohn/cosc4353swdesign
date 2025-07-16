@@ -43,6 +43,10 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   }],
+  maxVolunteers: {
+    type: Int16Array,
+    required: true,
+  },
   assignedVolunteers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",

@@ -1,4 +1,4 @@
-export const mockMatchProfiles = [
+/*export const mockMatchProfiles = [
   {
     accountId: "1",
     fullName: "Alice",
@@ -153,3 +153,4 @@ export const mockMatchProfiles = [
     ]
   },
 ];
+*/
