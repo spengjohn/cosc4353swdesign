@@ -36,7 +36,7 @@ export const mockEvents = {
       maxVolunteers: 5,
   },
   bothAttend: {
-
+    eventId: "234",
    title:"Community Cooking",
    description:"Cooking for the community.",
    location:"123 ave",
@@ -51,6 +51,7 @@ export const mockEvents = {
 
   oneAttend: {
 
+    eventId: "345",
    title:"Substitute Teaching",
    description:"Library Teaching.",
    location:"321 ave",
@@ -63,8 +64,23 @@ export const mockEvents = {
    maxVolunteers: 5,
   },
 
-  incomplete: {
 
+  noAttend: {
+
+    eventId: "456",
+   title:"Cooking Event",
+   description:"Cooking at a community event.",
+   location:"321 dr",
+   city:"Houston",
+   state:"TX",
+   date:"2025-09-03",
+   urgency:"Urgent",
+   skillsRequired:["Cooking"],
+   assignedVolunteers:[],
+  },
+
+    incomplete: {
+    eventId: "567",
    title:"",
    description:"",
    location:"",

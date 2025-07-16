@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
+  eventId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Event",
+    required: true,
+    unique: true,
+  },
   title: {
     type: String,
     required: true,
