@@ -118,7 +118,7 @@ describe("Profile Controller", () => {
 
       expect(res.json).toHaveBeenCalledWith(mockProfiles.admin.eventHistory);
     });
-    it("returns all events from a incomplete profile", async () => {
+    it("handles an incomplete profile safely", async () => {
       const req = { params: { accountId: mockProfiles.incomplete.accountId } };
       const res = mockResponse();
 
@@ -129,16 +129,8 @@ describe("Profile Controller", () => {
   });
   
   describe("getAttendedHistory", () => {
-    it("returns all attended events from a complete volunteer profile with missed attendances", async () => {
-      const req = { params: { accountId: mockProfiles.complete.accountId } };
-      const res = mockResponse();
 
-      await getAttendedHistory(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockProfiles.complete.eventHistory.filter(event => event.attended));
-    });
-
-    it("get attendance properly handles an complete full attendance admin profile", async () => {
+    it("includes attended events", async () => {
       const req = { params: { accountId: mockProfiles.admin.accountId } };
       const res = mockResponse();
 
@@ -147,8 +139,16 @@ describe("Profile Controller", () => {
       expect(res.json).toHaveBeenCalledWith(mockProfiles.admin.eventHistory.filter(event => event.attended));
     });
 
+    it("properly omits unattended events", async () => {
+      const req = { params: { accountId: mockProfiles.complete.accountId } };
+      const res = mockResponse();
 
-    it("get attendance properly handles an incomplete profile", async () => {
+      await getAttendedHistory(req, res);
+
+      expect(res.json).toHaveBeenCalledWith(mockProfiles.complete.eventHistory.filter(event => event.attended));
+    });
+
+    it("handles an incomplete profile safely", async () => {
       const req = { params: { accountId: mockProfiles.incomplete.accountId } };
       const res = mockResponse();
 
