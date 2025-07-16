@@ -3,7 +3,7 @@ import { mockEvents } from "../mocks/mockEvents.js";
 export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    console.log("GET /api/event/:aeventId");
+    console.log("GET /api/events/:eventId");
     console.log("eventId:", eventId);
 
     const event =
@@ -43,7 +43,7 @@ export const updateEvent = async (req, res) => {
 export const getAttendees = async (req, res) => {
   try {
     const { eventId } = req.params;
-    console.log("GET /api/event/:eventId");
+    console.log("GET /api/events/:eventId");
     console.log("eventId:", eventId);
 
 const attendees =

@@ -1,39 +1,37 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
-
-
+import { getMatch } from "../api/volunteerMatch";
+import { fetchEvent } from "../api/event";
 
 export default function VolunteerMatch() {
-  const { eventId } = useParams();
+  const eventId = 1;//useParams();
   const navigate = useNavigate();
   const [selectedVolunteers, setSelectedVolunteers] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [event, setEvent] = useState(null);
-const [matchedVolunteers, setMatchedVolunteers] = useState([]);
+  const [matchedVolunteers, setMatchedVolunteers] = useState([]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      // Fetch matched volunteers
-      const response = await fetch(`/api/volmatch/${1}`);
-      const volunteers = await response.json();
-      setMatchedVolunteers(volunteers);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch matched volunteers
+        const volunteers = await getMatch(eventId);
+        setMatchedVolunteers(volunteers);
 
-      // Fetch event separately if needed
-      /*
-      const eventRes = await fetch(`/api/events/${eventId}`);
-      const eventData = await eventRes.json();
-      setEvent(eventData);*/
-    } catch (error) {
-      console.error("Error fetching match data:", error);
-    }
-  };
+        // Fetch event separately if needed
+        
+        const fetchedEvent = await fetchEvent(eventId);
+        setEvent(fetchedEvent);
+      } catch (error) {
+        console.error("Error fetching match data:", error);
+      }
+    };
 
-  fetchData();
-}, [eventId]);
-
+    fetchData();
+  }, [eventId]);
+/*
 const mockEvent = {
   name: "Community Clean-Up",
   day: "Wednesday",
@@ -44,7 +42,7 @@ const mockEvent = {
   skills: ["Teamwork", "Physical Work"],
   urgency: "Medium",
   maxVolunteers: 5,
-};
+};*/
 /*
 const mockVolunteers = [
   {
@@ -109,7 +107,7 @@ const mockVolunteers = [
     if (alreadySelected) {
       setSelectedVolunteers((prev) => prev.filter((v) => v.id !== volunteer.id));
     } else {
-      if (selectedVolunteers.length < mockEvent.maxVolunteers) {
+      if (event && selectedVolunteers.length < event.maxVolunteers) {
         setSelectedVolunteers((prev) => [...prev, volunteer]);
       }
     }
@@ -125,7 +123,7 @@ const mockVolunteers = [
   };
 
   const isSelected = (vol) => selectedVolunteers.some((v) => v.id === vol.id);
-  const isMaxReached = selectedVolunteers.length >= mockEvent.maxVolunteers;
+  const isMaxReached = event ? selectedVolunteers.length >= event.maxVolunteers : false;
 
   if (!event) return <div>Loading event info...</div>;
 
@@ -137,27 +135,27 @@ const mockVolunteers = [
           <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Event</h2>
           <div className="bg-white border-2 border-[#3e7b91] rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-xl font-semibold text-[#3e7b91]">{mockEvent.title}</h3>
+              <h3 className="text-xl font-semibold text-[#3e7b91]">{event.title}</h3>
               <span className="text-sm bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded">
-                {mockEvent.urgency}
+                {event.urgency}
               </span>
             </div>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Date:</strong> {mockEvent.day} {mockEvent.date}
+              <strong>Date:</strong> {/*event.day*/} {event.date}
               &nbsp;&nbsp;
-              <strong>Time:</strong> {mockEvent.time}
+              <strong>Time:</strong> {"time"}
             </p>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Description:</strong> {mockEvent.description}
+              <strong>Description:</strong> {event.description}
             </p>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Location:</strong> {mockEvent.location}
+              <strong>Location:</strong> {event.location}
             </p>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Required Skills:</strong> {mockEvent.skills.join(", ")}
+              <strong>Required Skills:</strong> {event.skillsRequired.join(", ")}
             </p>
             <p className="text-sm text-gray-700 mt-3">
-              <strong>Max Volunteers:</strong> {mockEvent.maxVolunteers}
+              <strong>Max Volunteers:</strong> {event.maxVolunteers}
             </p>
           </div>
 

@@ -4,7 +4,8 @@ import cors from 'cors';
 import dotenv from "dotenv";
 import profileRoutes from "./routes/profile.js";
 import notificationRoutes from "./routes/notification.js";
-import volunteerMatchRoutes from "./routes/volunteerMatching.js"
+import volunteerMatchRoutes from "./routes/volunteerMatching.js";
+import eventRoutes from "./routes/event.js";
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.use(express.json()); // For JSON request bodies
 app.use("/api/profile", profileRoutes);
 app.use("/api/volmatch", volunteerMatchRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/events", eventRoutes);
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Backend server running at http://localhost:${PORT}`);

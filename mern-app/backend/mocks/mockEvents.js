@@ -1,5 +1,6 @@
 export const mockEvents = {
   1 : {
+      eventId: "1",
       title:"Community Cooking",
       description:"Cooking for the community.",
       location:"123 ave",
@@ -12,6 +13,7 @@ export const mockEvents = {
       maxVolunteers: 5,
   },
   2 : {
+    eventId: "2",
       title:"Church Gardening",
       description:"Tending to crops for church.",
       location:"123 ave",
@@ -24,6 +26,7 @@ export const mockEvents = {
       maxVolunteers: 5,
   },
   3 : {
+    eventId: "3",
       title:"Marathon Setup",
       description:"Setup relay station for runners.",
       location:"123 ave",
