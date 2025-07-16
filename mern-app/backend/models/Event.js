@@ -1,7 +1,12 @@
-// models/Event.js
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
+  eventId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Event",
+    required: true,
+    unique: true,
+  },
   title: {
     type: String,
     required: true,
@@ -37,15 +42,20 @@ const eventSchema = new mongoose.Schema({
   },
   urgency: {
     type: String,
+    enum: ["Low", "Medium", "High"],
     required: true,
   },
   skillsRequired: [{
     type: String,
     required: true,
   }],
-  assignedVolunteers: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Account",
+  maxVolunteers: {
+    type: Int16Array,
+    required: true,
+  },
+  assignedVolunteers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
     unique: true,
   }],
 }, {

@@ -1,5 +1,5 @@
-export const mockProfiles = {
-  1: {
+/*export const mockMatchProfiles = [
+  {
     accountId: "1",
     fullName: "Alice",
     address1: "123 Main St",
@@ -16,7 +16,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  2: {
+  {
     accountId: "2",
     fullName: "Bob",
     address1: "123 Main St",
@@ -33,7 +33,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  3: {
+  {
     accountId: "3",
     fullName: "Charlie",
     address1: "123 Main St",
@@ -50,7 +50,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  4: {
+  {
     accountId: "4",
     fullName: "Diana",
     address1: "123 Main St",
@@ -67,7 +67,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  5: {
+  {
     accountId: "5",
     fullName: "Eric",
     address1: "123 Main St",
@@ -84,7 +84,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  6: {
+  {
     accountId: "6",
     fullName: "Frank",
     address1: "123 Main St",
@@ -101,7 +101,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  7: {
+  {
     accountId: "7",
     fullName: "Gio",
     address1: "123 Main St",
@@ -118,7 +118,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  8: {
+  {
     accountId: "8",
     fullName: "Hannah",
     address1: "123 Main St",
@@ -135,7 +135,7 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  9: {
+  {
     accountId: "9",
     fullName: "Iggy",
     address1: "123 Main St",
@@ -152,54 +152,5 @@ export const mockProfiles = {
     { title: "Substitute Teaching", attended: false },
     ]
   },
-  complete: {
-    accountId: "123",
-    fullName: "Jane Doe",
-    address1: "123 Main St",
-    address2: "Apt 4B",
-    zipcode: "12345",
-    city: "Houston",
-    state: "TX",
-    skills: ["Teaching"],
-    preferences: "No pets",
-    availableDates: [new Date("2025-08-01"), new Date("2025-08-02")],
-    role: "volunteer",
-  eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
-    ]
-  },
-
-  incomplete: {
-    accountId: "456",
-    fullName: "",
-    address1: "",
-    zipcode: "00000",
-    city: "",
-    state: "",
-    skills: [],
-    preferences: "",
-    availableDates: [],
-    role: "volunteer",
-  eventHistory: [],
-  },
-
-  admin: {
-    accountId: "789",
-    fullName: "Admin Person",
-    address1: "789 Admin Ave",
-    address2: "",
-    zipcode: "77777",
-    city: "Austin",
-    state: "TX",
-    skills: ["Management"],
-    preferences: "Indoor only",
-    availableDates: [new Date()],
-    role: "admin",
-  eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Event Setup", attended: true },
-    { title: "Management Workshop", attended: true },
-    ]
-  }
-};
+];
+*/
