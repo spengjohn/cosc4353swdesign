@@ -9,7 +9,7 @@ export const mockEvents = {
       date:"2025-08-01",
       urgency:"High",
       skillsRequired:["Cooking"],
-      assignedVolunteers:[""],
+      assignedVolunteers:["1"],
       maxVolunteers: 5,
   },
   2 : {

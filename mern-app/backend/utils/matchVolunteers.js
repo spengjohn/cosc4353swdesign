@@ -1,8 +1,11 @@
 export function matchVolunteers(profiles, event) {
-  const { date, city, state, skillsRequired } = event;
+  const { date, city, state, skillsRequired, assignedVolunteers } = event;
 
   return profiles
     .filter(profile => {
+      // remove already assigned volunteers from potential matches
+      //if (assignedVolunteers?.includes(profile.accountId)) return false;
+
       const isAvailable = profile.availableDates.some(
         d => new Date(d).toDateString() === new Date(date).toDateString()
       );
