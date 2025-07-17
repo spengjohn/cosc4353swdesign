@@ -28,6 +28,27 @@ export const getEvent = async (req, res) => {
   }
 };
 
+export const getCurrentEvents = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to midnight
+
+    const upcomingEvents = Object.values(mockEvents).filter(event => {
+      // Ensure event.date exists, is not an empty string, and parses to a valid date
+      if (!event.date || event.date.trim() === "") return false;
+
+      const eventDate = new Date(event.date);
+      if (isNaN(eventDate)) return false;
+
+      return eventDate >= today;
+    });
+    res.json(upcomingEvents);
+  }  catch (error) {
+    console.error("fetchCurrentEvents error: ", error);
+    res.status(500).json({error: "Internal server error"});
+  }
+};
+
 export const updateEvent = async (req, res) => {
   const { eventId } = req.params;
   const updatedEvent = req.body;

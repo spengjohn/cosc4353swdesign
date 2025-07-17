@@ -25,7 +25,7 @@ function App() {
             <Route path="/manageevents" element={<ManageEvents />} />
             <Route path='/manageprofile' element={<ManageProfile/>} />
             { /* Turned into a pop-up window  <Route path="/volunteerhistory" element={<VolunteerHistory />} />*/}
-            <Route path="/volunteermatch" element={<VolunteerMatch />} />
+            <Route path="/volunteermatch/:eventId" element={<VolunteerMatch />} />
             <Route path='/test' element={<Test />}/>
           </Route>
           <Route element={<LayoutNoNav/>}>

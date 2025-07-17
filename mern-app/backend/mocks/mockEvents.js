@@ -89,7 +89,7 @@ export const mockEvents = {
    location:"",
    city:"",
    state:"",
-   date:"",
+   date: "",
    urgency:"",
    skillsRequired:[],
    assignedVolunteers:[],

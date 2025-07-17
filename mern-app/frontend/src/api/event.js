@@ -11,6 +11,16 @@ export const fetchEvent = async (eventId) => {
     }
 };
 
+export const fetchCurrentEvents = async () => {
+  try {
+    const response = await axios.get(`/api/events/current`);
+    return response.data;
+  } catch (error) {
+    console.error("failed to fetch current events: ", error);
+    throw error;
+  }
+};
+
 export const updateEvent = async (eventId, eventData) => {
   try {
     const response = await axios.post(`/api/events/${eventId}`, eventData);

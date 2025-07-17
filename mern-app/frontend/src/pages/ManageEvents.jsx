@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
 import CreateEditEventCard from "../components/CreateEditEventCard";
 import PrimaryButton from "../components/Buttons";
-
+import { fetchEvent, updateEvent, fetchCurrentEvents } from "../api/event";
+/*
 const initialEvents = [
   {
     name: "Community Clean-Up",
@@ -34,45 +35,74 @@ const initialEvents = [
     day: "Thursday",
     time: "1:00 PM",
   },
-];
+];*/
 
 export default function ManageEventsPage() {
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    dates: [],
+    eventId: "",
+    title: "",
+    date: [],
     address: "",
     city: "",
     state: "",
     description: "",
-    skills: [],
+    skillsRequired: [],
     urgency: "",
+    maxVolunteers: "",
+    assignedVolunteers: [],
   });
+  // load current events from backend
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const fetched = await fetchCurrentEvents();
+        console.log("Fetched Events:", fetched);
 
+        const sorted = fetched
+        .filter(e => e.date) // ensure date exists
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        setEvents(sorted);
+      } catch (err) {
+        console.error("Error loading events:", err);
+      }
+    };
+
+    loadEvents();
+  }, []);
+  // create the events for display
   const handleCreate = () => {
     const newEvent = {
-      name: formData.name,
+      eventId: formData.eventId,
+      title: formData.title,
       description: formData.description,
       location: formData.address,
-      skills: formData.skills,
+      skillsRequired: formData.skillsRequired,
       urgency: formData.urgency,
-      date: formData.dates?.[0] || "TBD",
-      day: "TBD",
-      time: "TBD",
+      date: formData.date || "TBD",
+      day: formData.date
+      ? new Date(formData.date).toLocaleDateString("en-US", { weekday: "long" })
+      : "TBD",
+      maxVolunteers: "",
+      assignedVolunteers: formData.assignedVolunteers || [],
     };
     setEvents([...events, newEvent]);
     setIsFormOpen(false);
     setFormData({
-      name: "",
-      dates: [],
+      eventId: "",
+      title: "",
+      date: [],
       address: "",
       city: "",
       state: "",
       description: "",
-      skills: [],
+      skillsRequired: [],
       urgency: "",
+      maxVolunteers: "",
+      assignedVolunteers: [],
     });
   };
 
@@ -93,16 +123,16 @@ export default function ManageEventsPage() {
       </div>
 
       <div className="flex flex-col gap-6 items-center">
+
         {events.map((event, idx) => (
-          <EventCard
-            key={idx}
-            event={event}
-            isExpanded={expandedIndex === idx}
-            onToggle={() =>
-              setExpandedIndex(expandedIndex === idx ? null : idx)
-            }
-          />
-        ))}
+  <EventCard
+    key={idx}
+    event={event}
+    isExpanded={expandedIndex === idx}
+    onToggle={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
+  />
+))}
+
       </div>
 
       {isFormOpen && (
