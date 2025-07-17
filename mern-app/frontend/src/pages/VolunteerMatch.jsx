@@ -6,7 +6,7 @@ import { fetchEvent, updateEvent } from "../api/event";
 import { fetchUserProfile } from "../api/profile";
 
 export default function VolunteerMatch() {
-  const eventId = useParams();
+  const {eventId} = useParams();
   const navigate = useNavigate();
   const [selectedVolunteers, setSelectedVolunteers] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);

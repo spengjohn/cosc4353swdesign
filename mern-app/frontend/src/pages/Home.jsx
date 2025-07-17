@@ -47,7 +47,7 @@ import { Link } from "react-router-dom";
 
 const sampleEvents = [
   {
-    name: "Community Clean-Up",
+    title: "Community Clean-Up",
     date: "2025-07-30",
     day: "Wednesday",
     time: "10:00 AM",
