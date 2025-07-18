@@ -1,6 +1,6 @@
-import { getEvent, getAttendees, updateEvent} from "../controllers/eventController.js";
+import { getCurrentEvents, getEvent, getAttendees, updateEvent} from "../controllers/eventController.js";
 import { mockEvents } from "../mocks/mockEvents.js";
-import { jest } from '@jest/globals';
+import { describe, jest } from '@jest/globals';
 
 // Utility to mock Express res
 const mockResponse = () => {
@@ -11,6 +11,22 @@ const mockResponse = () => {
 };
 
 describe("Event Controller", () => {
+  describe("getCurrentEvents", () => {
+    it("returns a complete list of upcoming events based on day called", async () => {
+      const req = {};
+      const res = mockResponse();
+
+      await getCurrentEvents(req, res);
+
+      const today = new Date();
+      const expected = Object.values(mockEvents).filter(event => {
+        const date = new Date(event.date);
+        return event.date && !isNaN(date) && date >= today;
+      });
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+  });
   describe("getEvent", () => {
     it("returns a complete event with attendees", async () => {
       const req = { params: { eventId: mockEvents.bothAttend.eventId } };

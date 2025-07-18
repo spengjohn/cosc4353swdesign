@@ -1,19 +1,19 @@
-// controllers/volunteerMatchingController.js
-import { matchVolunteers } from "../utils/matchVolunteers.js";
-import { mockProfiles } from "../mocks/mockProfiles.js";
-import { mockEvents } from "../mocks/mockEvents.js";
-
+import { mockEvents } from "../mocks/mockEvents";
+import { mockProfiles } from "../mocks/mockProfiles";
+import {matchVolunteers} from "../utils/matchVolunteers.js"
 export const getMatches = async (req, res) => {
-  const { eventId } = req.params;
-  console.log("GET /api/volmatch/:eventId");
-  console.log("eventId: ", eventId);
-  const event = mockEvents[eventId];
-  if (!event) {
-    console.log("Event not found!")
-    return res.status(404).json({ error: "Event not found" });
-  }
+  try {
+    const { eventId } = req.params;
+    const event = mockEvents[eventId];
 
-  const matches = matchVolunteers(Object.values(mockProfiles), event);
-  console.log("Matches found!", matches.map(m => m.fullName));
-  res.json(matches);
+    if (!event || !event.title) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const matches = matchVolunteers(Object.values(mockProfiles), event);
+    res.json(matches); // Array of matches
+  } catch (err) {
+    console.error("getMatches error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
