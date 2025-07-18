@@ -1,5 +1,5 @@
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Field from "./Field";
@@ -7,69 +7,62 @@ import Selector from "./Selector";
 import DropdownMenu from "./DropdownMenu";
 import PrimaryButton from "./Buttons";
 import TertiaryButton from "./TertiaryButton";
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { fetchEvent, updateEvent } from "../api/event";
+import { updateEvent } from "../api/event";
+import states from "../data/states";
+import skills from "../data/skills";
 
 
-
-export default function CreateEditEventCard({ onCancel, onSubmit }) {
+export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
+  const isEditMode = !!event;
+  const eventId = event?.eventId;
   const {
     register,
+    control,
     handleSubmit,
     setValue,
-    watch,
-    trigger,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
+      title: "",
       description: "",
       address: "",
       city: "",
       state: "",
-      skills: [],
+      skillsRequired: [],
       urgency: "",
       date: null,
-      max_volunteers: "",
+      maxVolunteers: "",
+      assignedVolunteers: [],
     },
   });
 
-  const [selectedSkills, setSelectedSkills] = useState([]);
-  const selectedUrgency = watch("urgency");
-  const selectedDate = watch("date");
-
   useEffect(() => {
-    register("skills", {
-      validate: (value) =>
-        Array.isArray(value) && value.length > 0 || "At least one skill is required.",
-    });
-    register("urgency", {
-      required: "Urgency selection is required.",
-    });
-    register("date", {
-      required: "Event date is required.",
-    });
-  }, [register]);
+  if (event) {
+    setValue("title", event.title);
+    setValue("description", event.description);
+    setValue("location", event.location);
+    setValue("city", event.city);
+    setValue("state", event.state);
+    setValue("skillsRequired", event.skillsRequired || []);
+    setValue("urgency", event.urgency);
+    setValue("date", event.date ? new Date(event.date) : null);
+    setValue("maxVolunteers", event.maxVolunteers);
+    setValue("assignedVolunteers", event.assignedVolunteers || []);
+  }
+}, [event, setValue]);
 
-  const handleSkillSelect = (skills) => {
-    setSelectedSkills(skills);
-    setValue("skills", skills, { shouldValidate: true });
-    trigger("skills");
-  };
-
-  const handleUrgencySelect = (urgency) => {
-    setValue("urgency", urgency, { shouldValidate: true });
-    trigger("urgency");
-  };
-
-  const handleDateChange = (date) => {
-    setValue("date", date, { shouldValidate: true });
-    trigger("date");
-  };
-
-  const handleFormSubmit = (data) => {
-    onSubmit(data);
+  const handleFormSubmit = async (data) => {
+    try {
+    if (event) {
+      await updateEvent(eventId, data);
+    } else {
+      onSubmit(data); // fallback create
+      console.log(data);
+    }
+    //navigate("/manageevents"); // or wherever you want to go after submission
+  } catch (err) {
+    console.error("Failed to submit event form", err);
+  }
   };
 
   return (
@@ -77,16 +70,19 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="bg-white text-secondary px-6 py-4 rounded border-2 border-solid flex flex-col w-full max-w-2xl h-[90vh] overflow-auto"
     >
-      <h2 className="text-2xl font-bold mb-4">Create / Edit Event</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {event ? "Edit Event" : "Create Event"}
+      </h2>
+
 
       <div className="flex flex-col gap-4">
         {/* Event Name */}
         <Field
           label="Event Name"
-          name="name"
+          name="title"
           placeholder="Community Clean-Up"
           required
-          {...register("name", {
+          {...register("title", {
             required: "Event name is required.",
             maxLength: {
               value: 100,
@@ -94,34 +90,39 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
             },
           })}
         />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
 
         {/* Event Date & Time */}
         <div className="flex flex-col">
           <label className="text-md font-medium block mb-1">
-            Event Date & Time <span className="text-red-500">*</span>
+            Event Date {/*& Time*/ }<span className="text-red-500">*</span>
           </label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={handleDateChange}
-            showTimeSelect
-            timeFormat="hh:mm aa"
-            timeIntervals={15}
-            dateFormat="MMMM d, yyyy h:mm aa"
-            placeholderText="Select date and time"
-            className="w-full border border-gray-300 rounded-md p-2"
-            minDate={new Date()}
+          <Controller
+            name="date"
+            control={control}
+            rules={{ required: "Event date is required." }}
+            render={({ field }) => (
+              <DatePicker
+                selected={field.value}
+                onChange={field.onChange}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select date"
+                className="w-full border border-gray-300 rounded-md p-2"
+                minDate={new Date()}
+              />
+            )}
           />
           {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
+
         </div>
 
         {/* Max Volunteers */}
         <Field
           label="Max Volunteers"
-          name="max_volunteers"
+          name="maxVolunteers"
           type="number"
           placeholder="Enter a number"
-          {...register("max_volunteers", {
+          {...register("maxVolunteers", {
             required: "Max volunteers is required.",
             min: {
               value: 1,
@@ -129,21 +130,21 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
             },
           })}
         />
-        {errors.max_volunteers && (
-          <p className="text-red-500 text-sm">{errors.max_volunteers.message}</p>
+        {errors.maxVolunteers && (
+          <p className="text-red-500 text-sm">{errors.maxVolunteers.message}</p>
         )}
 
         {/* Location */}
         <Field
           label="Location"
-          name="address"
+          name="location "
           placeholder="123 Main St"
           required
-          {...register("address", {
+          {...register("location", {
             required: "Location is required.",
           })}
         />
-        {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+        {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
 
         {/* City and State */}
         <div className="flex gap-4">
@@ -157,16 +158,28 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
               required: "City is required.",
             })}
           />
-          <Field
-            className="flex-1"
-            label="State"
-            name="state"
-            placeholder="TX"
-            required
-            {...register("state", {
-              required: "State is required.",
-            })}
-          />
+          <Controller
+                name="state"
+                control={control}
+                rules={{ required: "State is required." }}
+                render={({ field }) => (
+                  <div className="flex-1 self-baseline-last flex-col flex">
+                    <label className="block text-md font-medium mb-1">
+                      State<span className="text-red-500"> *</span>
+                    </label>
+                    <DropdownMenu
+                      required
+                      items={states}
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      errorMessage={errors.state?.message}
+                    >
+                      {field.value || "State select"}
+                    </DropdownMenu>
+                  </div>
+                )}
+              />
+            </div>
         </div>
 
         {/* Description */}
@@ -187,14 +200,24 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
             <label className="text-md font-medium block mb-1">
               Required Skills <span className="text-red-500">*</span>
             </label>
-            <Selector
-              items={["Teamwork", "Coordination", "Physical Work", "People Skills"]}
-              name="skills"
-              onSelect={handleSkillSelect}
+            <Controller
+              name="skillsRequired"
+              control={control}
+              rules={{required: "Select at least one skill."}}
+              render={({field})=> (
+                <Selector
+                  items={skills}
+                  name={"skillsRequired"}
+                  value={field.value}
+                  //onSelect={handleSkillSelect}
+                  onChange={field.onChange}
+                  errorMessage={errors.skillsRequired?.message}
             >
-              Select Skills
-            </Selector>
-            {errors.skills && <p className="text-red-500 text-sm">{errors.skills.message}</p>}
+              
+            
+              {field.value?.length ? "Edit Skills" : "Skill select"}
+            </Selector>)}/>
+            {/*errors.skillsRequired && <p className="text-red-500 text-sm">{errors.skillsRequired.message}</p>*/}
           </div>
 
           {/* Urgency */}
@@ -202,14 +225,22 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
             <label className="text-md font-medium block mb-1">
               Urgency <span className="text-red-500">*</span>
             </label>
-            <DropdownMenu
-              items={["Low", "Medium", "High"]}
-              onSelect={handleUrgencySelect}
+            <Controller
               name="urgency"
-            >
-              {selectedUrgency || "Select Urgency"}
-            </DropdownMenu>
+              control={control}
+              rules={{ required: "Urgency is required." }}
+              render={({ field }) => (
+                <DropdownMenu
+                  items={["Low", "Medium", "High"]}
+                  onSelect={field.onChange}
+                  name="urgency"
+                >
+                  {field.value || "Select Urgency"}
+                </DropdownMenu>
+              )}
+            />
             {errors.urgency && <p className="text-red-500 text-sm">{errors.urgency.message}</p>}
+
           </div>
         </div>
 
@@ -220,7 +251,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit }) {
           </TertiaryButton>
           <PrimaryButton type="submit">Submit</PrimaryButton>
         </div>
-      </div>
+      
     </form>
   );
 }

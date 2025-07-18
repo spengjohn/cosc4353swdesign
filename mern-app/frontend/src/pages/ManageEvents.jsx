@@ -1,59 +1,43 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
 import CreateEditEventCard from "../components/CreateEditEventCard";
 import PrimaryButton from "../components/Buttons";
-import { fetchEvent, updateEvent, fetchCurrentEvents } from "../api/event";
-/*
-const initialEvents = [
-  {
-    name: "Community Clean-Up",
-    description: "Join us in cleaning up the local park.",
-    location: "Downtown Houston",
-    skills: ["Teamwork", "Physical Work"],
-    urgency: "Medium",
-    date: "2025-07-30",
-    day: "Wednesday",
-    time: "10:00 AM",
-  },
-  {
-    name: "School Supply Drive",
-    description: "Distribute supplies to children.",
-    location: "Houston Elementary",
-    skills: ["Organization", "People Skills"],
-    urgency: "Low",
-    date: "2025-08-10",
-    day: "Monday",
-    time: "8:00 AM",
-  },
-  {
-    name: "Food Bank Volunteering",
-    description: "Help sort and organize food donations.",
-    location: "Houston Food Bank",
-    skills: ["Coordination", "Packing"],
-    urgency: "High",
-    date: "2025-08-15",
-    day: "Thursday",
-    time: "1:00 PM",
-  },
-];*/
+import { updateEvent, fetchCurrentEvents } from "../api/event";
 
 export default function ManageEventsPage() {
   const [events, setEvents] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);
-  const [formData, setFormData] = useState({
-    eventId: "",
-    title: "",
-    date: [],
-    address: "",
-    city: "",
-    state: "",
-    description: "",
-    skillsRequired: [],
-    urgency: "",
-    maxVolunteers: "",
-    assignedVolunteers: [],
-  });
+
+  const [editEvent, setEditEvent] = useState(null);
+
+  // Open modal with existing event
+  const handleModalEdit = (event) => {
+    setEditEvent(event);
+    setIsFormOpen(true);
+  };
+
+  const handleCreateOrUpdate = async (data) => {
+    try {
+      if (editEvent && editEvent._id) {
+        await updateEvent(editEvent._id, data);  // backend update
+        setEvents(events.map(e => (e._id === editEvent._id ? { ...e, ...data } : e)));  // update UI
+      } else {
+        // temporary local creation since no DB setup yet
+        const newEvent = {
+          ...data,
+          _id: Date.now().toString(),  // mock ID
+          day: new Date(data.date).toLocaleDateString("en-US", { weekday: "long" }),
+        };
+        setEvents(prev => [...prev, newEvent]);
+      }
+      setIsFormOpen(false);
+      setEditEvent(null);
+    } catch (err) {
+      console.error("Create or update failed:", err);
+    }
+  };
+
   // load current events from backend
   useEffect(() => {
     const loadEvents = async () => {
@@ -73,38 +57,6 @@ export default function ManageEventsPage() {
 
     loadEvents();
   }, []);
-  // create the events for display
-  const handleCreate = () => {
-    const newEvent = {
-      eventId: formData.eventId,
-      title: formData.title,
-      description: formData.description,
-      location: formData.address,
-      skillsRequired: formData.skillsRequired,
-      urgency: formData.urgency,
-      date: formData.date || "TBD",
-      day: formData.date
-      ? new Date(formData.date).toLocaleDateString("en-US", { weekday: "long" })
-      : "TBD",
-      maxVolunteers: "",
-      assignedVolunteers: formData.assignedVolunteers || [],
-    };
-    setEvents([...events, newEvent]);
-    setIsFormOpen(false);
-    setFormData({
-      eventId: "",
-      title: "",
-      date: [],
-      address: "",
-      city: "",
-      state: "",
-      description: "",
-      skillsRequired: [],
-      urgency: "",
-      maxVolunteers: "",
-      assignedVolunteers: [],
-    });
-  };
 
   return (
     <div className="min-h-screen max-w-4xl mx-auto px-4 py-10">
@@ -117,7 +69,12 @@ export default function ManageEventsPage() {
       </p>
 
       <div className="flex justify-center mb-10">
-        <PrimaryButton onClick={() => setIsFormOpen(true)}>
+        <PrimaryButton
+          onClick={() => {
+            setEditEvent(null);       // ✅ CLEAR the selected event
+            setIsFormOpen(true);      // ✅ THEN open the form
+          }}
+        >
           + Create New Event
         </PrimaryButton>
       </div>
@@ -130,6 +87,7 @@ export default function ManageEventsPage() {
     event={event}
     isExpanded={expandedIndex === idx}
     onToggle={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
+    onEdit={() => handleModalEdit(event)} // ← this is new
   />
 ))}
 
@@ -139,11 +97,11 @@ export default function ManageEventsPage() {
         <div className="fixed inset-0 z-50 backdrop-blur-lg bg-black/10 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-2xl transform transition-all scale-100 w-full max-w-3xl p-4">
             <CreateEditEventCard
-              formData={formData}
-              setFormData={setFormData}
+              event={editEvent}  // could be null or an object
               onCancel={() => setIsFormOpen(false)}
-              onSubmit={handleCreate}
+              onSubmit={handleCreateOrUpdate}
             />
+
           </div>
         </div>
       )}

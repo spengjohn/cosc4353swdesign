@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {useNavigate} from "react-router-dom";
-import PrimaryButton from "./Buttons";
-import TertiaryButton from "./TertiaryButton";
 
 const urgencyColors = {
   High: "bg-red-100 text-red-700 border-red-400",
@@ -9,16 +7,11 @@ const urgencyColors = {
   Low: "bg-green-100 text-green-700 border-green-400",
 };
 
-const EventCard = ({ event, isExpanded, onToggle, showActions = true }) => {
+const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) => {
   const [showModal, setShowModal] = useState(false);
   const urgencyStyle =
     urgencyColors[event.urgency] || "bg-gray-100 text-gray-700 border-gray-300";
   const navigate = useNavigate();
-
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    alert(`Edit "${event.title}"`);
-  };
 
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -28,8 +21,10 @@ const EventCard = ({ event, isExpanded, onToggle, showActions = true }) => {
 
   const goToMatchingPage = (e) => {
     e.stopPropagation();
-    //window.location.href = "/volunteermatch";
+    setShowModal(false); // close the modal first
+    setTimeout(() => {
     navigate(`/volunteermatch/${event.eventId}`);
+      }, 100); // slight delay allows React to unmount the modal cleanly
   };
 
   return (
@@ -74,7 +69,9 @@ const EventCard = ({ event, isExpanded, onToggle, showActions = true }) => {
               {/* Edit & Delete buttons */}
               <div className="mt-5 flex justify-end gap-4">
                 <button
-                  onClick={handleEdit}
+                  onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(); }}// ← call the passed handler
                   className="text-sm px-4 py-2 rounded border border-blue-500 text-blue-600 hover:bg-blue-100"
                 >
                   ✏️ Edit
