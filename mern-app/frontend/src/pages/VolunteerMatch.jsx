@@ -45,18 +45,6 @@ export default function VolunteerMatch() {
   fetchData();
 }, [eventId]);
 
-/*
-const mockEvent = {
-  name: "Community Clean-Up",
-  day: "Wednesday",
-  date: "2025-07-30",
-  time: "10:00 AM",
-  description: "Join us in cleaning up the local park.",
-  location: "Downtown Houston",
-  skills: ["Teamwork", "Physical Work"],
-  urgency: "Medium",
-  maxVolunteers: 5,
-};*/
   const handleSelect = (volunteer) => {
     const alreadySelected = selectedVolunteers.some((v) => v.accountId === volunteer.accountId);
     if (alreadySelected) {
@@ -69,11 +57,11 @@ const mockEvent = {
   };
 
   const handleViewHistory = (volunteer) => {
-    if (volunteer.name === "John Doe" || volunteer.name === "Jane Smith") {
-      setSelectedVolunteer(volunteer);
-      setShowHistoryModal(true);
-    } else {
-      alert("No volunteer history available.");
+    if (volunteer?.accountId) {
+    setSelectedVolunteer(volunteer);
+    setShowHistoryModal(true);
+  } else {
+    alert("No account ID found for this volunteer.");
     }
   };
 

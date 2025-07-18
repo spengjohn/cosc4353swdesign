@@ -67,8 +67,8 @@ export const getAttendedHistory = async (req, res) => {
     console.log("GET /api/profile/:accountId");
     console.log("accountId:", accountId);
 
-const history =
-  (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory.filter(event => event.attended);
+    const history =
+      (Object.values(mockProfiles).find((p) => p.accountId === accountId) || { eventHistory: [] }).eventHistory.filter(event => event.attended);
 
 
     console.log("Returning attended history:", history);

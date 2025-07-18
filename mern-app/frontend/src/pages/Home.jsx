@@ -1,45 +1,3 @@
-// // import PrimaryButton from "../components/Buttons";
-// // import { SecondaryButton } from "../components/Buttons";
-// // import Field from "../components/Field";
-// // import DropdownMenu from "../components/DropdownMenu";
-// // import Selector from "../components/Selector";
-// // import { useState } from "react";
-// // import NotificationPanel from "../components/NotificationPanel";
-// // import { sampleNotifications } from "../data/sampleNotifications";
-
-// // const states = [
-// //   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-// //   "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-// //   "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-// //   "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-// //   "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-// // ];
-// //  // from DB or static
-
-// // export default function Home() {
-// //   const handleStateSelect = (state) => {
-// //     console.log("Selected state:", state);
-// //     // update form input or context state
-// //   };
-// // const [showPanel, setShowPanel] = useState(false);
-// //   return (
-// //     <></>
-// //   );
-// // }
-
-// // /*export default function Home() {
-// //   return (
-// //     <>
-// //       <h1 className="text-2xl p-4">This is the Home Page!</h1>
-// //       <PrimaryButton>Test Button</PrimaryButton>
-// //       <SecondaryButton>Secondary Test Button</SecondaryButton>
-// //       <br></br>
-// //       <Field label="Email" name="email" type="email" placeholder="example@email.com" required/>
-// //     </>
-    
-// //   );
-// // }*/
-
 import { useState } from "react";
 import EventCard from "../components/EventCard";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
@@ -89,9 +47,9 @@ export default function Home() {
               <Link to="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
                 👤 View My Profile
               </Link>
-              <Link to="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
+              {/*<Link to="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
                 🤝 Volunteer Matching
-              </Link>
+              </Link>*/}
               {/* THIS NEEDS TO BE CHANGED TO THE HISTORY MODAL POP_UP */}
               <Link to="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
                 📋 View Volunteer History

@@ -1,5 +1,14 @@
 import axios from 'axios';
 
+export const fetchUserHistory = async (userId) => {
+  try {
+    const response = await axios.get(`/api/profile/history/${userId}`)
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user history: ", error);
+  }
+};
+
 export const fetchUserProfile = async (userId) => {
     
     try {

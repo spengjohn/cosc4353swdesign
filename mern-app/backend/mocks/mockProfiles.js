@@ -29,8 +29,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-03"), new Date("2025-08-05")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "4", attended: true },
+    { eventId: "5", attended: false },
     ]
   },
   3: {
@@ -46,8 +46,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-01"), new Date("2025-08-05")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "6", attended: true },
+    { eventId: "7", attended: false },
     ]
   },
   4: {
@@ -63,8 +63,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-01"), new Date("2025-08-03")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "7", attended: true },
+    { eventId: "4", attended: false },
     ]
   },
   5: {
@@ -80,8 +80,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-03"),],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "4", attended: true },
+    { eventId: "6", attended: false },
     ]
   },
   6: {
@@ -97,8 +97,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-05")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "6", attended: true },
+    { eventId: "5", attended: false },
     ]
   },
   7: {
@@ -114,8 +114,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-01"), new Date("2025-08-02")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "4", attended: true },
+    { eventId: "7", attended: false },
     ]
   },
   8: {
@@ -131,8 +131,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-06")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "6", attended: true },
+    { eventId: "8", attended: false },
     ]
   },
   9: {
@@ -148,8 +148,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-01"), new Date("2025-08-05")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "7", attended: true },
+    { eventId: "5", attended: false },
     ]
   },
   complete: {
@@ -165,8 +165,8 @@ export const mockProfiles = {
     availableDates: [new Date("2025-08-01"), new Date("2025-08-02")],
     role: "volunteer",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Substitute Teaching", attended: false },
+    { eventId: "6", attended: true },
+    { eventId: "8", attended: false },
     ]
   },
 
@@ -197,9 +197,9 @@ export const mockProfiles = {
     availableDates: [new Date()],
     role: "admin",
   eventHistory: [
-    { title: "Community Cooking", attended: true },
-    { title: "Event Setup", attended: true },
-    { title: "Management Workshop", attended: true },
+    { eventId: "5", attended: true },
+    { eventId: "4", attended: true },
+    { eventId: "7", attended: true },
     ]
   }
 };
