@@ -17,10 +17,10 @@ export default function VolunteerHistoryModal({ user, onClose }) {
         
         console.log(rawHistory);
         const fullEvents = await Promise.all(
-          rawHistory.map(async ({ eventId, attendance }) => {
-            console.log("Raw attendance:", attendance);
+          rawHistory.map(async ({ eventId, attended }) => {
+            console.log("Raw attendance:", attended);
             const event = await fetchEvent(eventId);
-            const isAttended = attendance === true || attendance === "true";
+            const isAttended = attended === true || attended === "true";
             return {
               ...event,
               attendance: isAttended ? "Attended" : "Absent",
