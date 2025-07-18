@@ -38,6 +38,10 @@ export const login = (req, res) => {
 
 export const register = (req, res) => {
   try {
+    if (req.body.forceError) {
+      throw new Error('Forced error for testing');
+    }
+
     const { email, password, role } = req.body;
 
     if (!email || !email.includes('@')) {
