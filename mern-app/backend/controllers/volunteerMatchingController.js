@@ -1,5 +1,5 @@
-import { mockEvents } from "../mocks/mockEvents";
-import { mockProfiles } from "../mocks/mockProfiles";
+import { mockEvents } from "../mocks/mockEvents.js";
+import { mockProfiles } from "../mocks/mockProfiles.js";
 import {matchVolunteers} from "../utils/matchVolunteers.js"
 export const getMatches = async (req, res) => {
   try {

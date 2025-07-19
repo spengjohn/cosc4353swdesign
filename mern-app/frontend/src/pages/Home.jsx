@@ -60,7 +60,7 @@ export default function Home() {
           <hr className="my-6 border-gray-300" />
 
           {/* upcoming events */}
-          <h2 className="text-2xl font-semibold text-secondary">Upcoming Events</h2>
+          <h2 className="text-2xl font-semibold text-secondary">Assigned Upcoming Events</h2>
           <div className="mb-4">
             <Link
               to="/manageevents"
