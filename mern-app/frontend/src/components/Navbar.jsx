@@ -1,12 +1,31 @@
 import { Link } from "react-router-dom";
 import cooglinklogo from "../assets/cooglinklogo.png"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NotificationPanel from "./NotificationPanel";
-import { sampleNotifications } from "../data/sampleNotifications";
+//import { sampleNotifications } from "../data/sampleNotifications";
+import { fetchNotifications } from "../api/notifications";
 
 export default function Navbar() {
+  const [notifications, setNotifications] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
-  const unreadCount = sampleNotifications.filter(n => !n.read).length;
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        /*
+        const accountId = localStorage.getItem("accountId"); // or from context
+        if (!accountId) return;*/
+        const data = await fetchNotifications("1");
+        setNotifications(data);
+      } catch (err) {
+        console.error("Failed to load notifications:", err);
+      }
+    };
+
+    loadNotifications();
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <div className="relative">
@@ -79,7 +98,7 @@ export default function Navbar() {
       {showPanel && (
         <div className="absolute top-full right-4 mt-2 z-50">
           <NotificationPanel
-            notifications={sampleNotifications}
+            notifications={notifications}
             onClose={() => setShowPanel(false)}
           />
         </div>
