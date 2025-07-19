@@ -1,7 +1,7 @@
 export const mockNotifications = [
   {
     id: "1",
-    recipient: "Jane Smith",
+    recipient: "1",
     title: "Reminder",
     body: "You have an upcoming event",
     isRead: false,
@@ -11,7 +11,7 @@ export const mockNotifications = [
   },
   {
     id: "2",
-    recipient: "John Doe",
+    recipient: "2",
     title: "Volunteer",
     body: "You might be interested in this upcoming event",
     isRead: true,

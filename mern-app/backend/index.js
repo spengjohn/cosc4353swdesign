@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from "dotenv";
 import profileRoutes from "./routes/profile.js";
+import notificationRoutes from "./routes/notifications.js";
 dotenv.config();
 
 const app = express();
@@ -17,8 +18,8 @@ app.use(cors({
 app.use(express.json()); // For JSON request bodies
 
 
-app.use("/api/profile", profileRoutes)
-
+app.use("/api/profile", profileRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
