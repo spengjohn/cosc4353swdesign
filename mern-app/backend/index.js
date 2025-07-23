@@ -6,13 +6,16 @@ import loginRegisterRoutes from "./routes/loginRegister.js";
 import notificationRoutes from "./routes/notification.js";
 import volunteerMatchRoutes from "./routes/volunteerMatching.js";
 import eventRoutes from "./routes/event.js";
+import connectDB from './config/db.js';
 
 dotenv.config();
 
 const app = express();
 const FRONT_PORT = process.env.FRONT_PORT;
 const PORT = process.env.PORT;
-const dbUri = process.env.MONGO_UIR;
+const dbUri = process.env.MONGO_URI;
+
+connectDB();
 
 app.use(cors({
   origin: `http://localhost:${FRONT_PORT}`,
