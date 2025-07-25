@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const profileSchema = new mongoose.Schema({
-  accountId: {
+const userProfileSchema = new mongoose.Schema({
+  credentialId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Account",
+    ref: "UserCredentials",
     required: true,
     unique: true,
   },
@@ -32,16 +32,10 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  state: {
-    type: String,
-    required: true,
-    uppercase: true,
-    minlength: 2,
-    maxlength: 2,
-    validate: {
-      validator: v => /^[A-Z]{2}$/.test(v),
-      message: props => `${props.value} is not a valid 2-letter state code!`
-    }
+  stateId: {
+    type: mongoose.Schema.Types.ObjectId,
+        ref: "State",
+        required: true,
   },
   skills: [{
     type: String,
@@ -49,22 +43,9 @@ const profileSchema = new mongoose.Schema({
   }],
   preferences: String,
   availableDates: [Date],
-  eventHistory: [
-    {
-      event: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Event",
-        unique: true,
-        required: true,
-      },
-      attended: {
-        type: Boolean,
-        required: true,
-      }
-    }
-  ]
+  
 }, {
   timestamps: true,
 });
 
-export default mongoose.model("Profile", profileSchema);
+export default mongoose.model("UserProfile", userProfileSchema);

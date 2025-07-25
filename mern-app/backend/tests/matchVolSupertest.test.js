@@ -1,8 +1,6 @@
-// supertest.test.js
 import request from "supertest";
 import express from "express";
-import volunteerMatchRoutes from "../routes/volunteerMatching.js"; // adjust if your route is named differently
-//import { mockProfiles } from "../mocks/mockProfiles.js";
+import volunteerMatchRoutes from "../routes/volunteerMatching.js";
 import { mockEvents } from "../mocks/mockEvents.js";
 
 const app = express();

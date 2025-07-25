@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const accountSchema = new mongoose.Schema({
+const userCredientialsSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -31,4 +31,4 @@ const accountSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.model("Account", accountSchema);
+export default mongoose.model("UserCredentials", userCredientialsSchema);
