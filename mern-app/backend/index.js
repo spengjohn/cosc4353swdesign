@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 const FRONT_PORT = process.env.FRONT_PORT;
 const PORT = process.env.PORT;
-const dbUri = process.env.MONGO_URI;
+//const dbUri = process.env.MONGO_URI;
 
 connectDB();
 
