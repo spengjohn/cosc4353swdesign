@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchUserProfile } from "../api/profile";
 
 const sampleEvents = [
   {
@@ -17,13 +18,27 @@ const sampleEvents = [
 ];
 
 export default function Home() {
-  const [role] = useState("admin"); // modify to "volunteer" or "admin" to test
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [role, setRole] = useState("");
+  const [currentUser, setCurrentUser] = useState({ name: "" });
+  const navigate = useNavigate();
 
-  const currentUser = {
-    name: "Jane Smith",
-  };
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const userRole = localStorage.getItem("userRole");
+    if (!userId) return navigate("/login"); // redirect to login if not authenticated
+
+    setRole(userRole);
+
+    fetchUserProfile(userId)
+      .then((profile) => {
+        setCurrentUser({ name: profile.fullName });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch profile on Home:", err);
+      });
+  }, []);
 
   return (
     <div className="p-6 max-w-screen-lg mx-auto space-y-6">

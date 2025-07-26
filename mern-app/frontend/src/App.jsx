@@ -22,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/manageevents" element={<ManageEvents />} />
             <Route path='/manageprofile' element={<ManageProfile/>} />
             { /* Turned into a pop-up window  <Route path="/volunteerhistory" element={<VolunteerHistory />} />*/}

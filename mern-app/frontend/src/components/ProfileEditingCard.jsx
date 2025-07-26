@@ -12,9 +12,11 @@ import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
 import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
+import { useNavigate } from "react-router-dom";
 
 
 export default function ProfileEditingCard({ defaultValues = {} }) {
+  const navigate = useNavigate();
   const {
     register,
     control,
@@ -40,7 +42,8 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const profile = await fetchUserProfile("123"); // use real user ID later
+        const userId = localStorage.getItem("userId");
+        const profile = await fetchUserProfile(userId);
 
         // Convert dates to JS Date objects
         const dates = profile.availableDates?.map(d => new Date(d)) || [];
@@ -90,8 +93,10 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Send `cleaned` to backend instead of raw `data`
     
     try {
-      const result = await updateUserProfile("1", cleaned); // mock ID for now
+      const userId = localStorage.getItem("userId");
+      const result = await updateUserProfile(userId, cleaned);
       console.log("Profile updated:", result);
+      navigate("/home");
     } catch (err) {
       console.error("Error updating profile:", err);
     }
