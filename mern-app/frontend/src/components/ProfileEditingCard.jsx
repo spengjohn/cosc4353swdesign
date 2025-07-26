@@ -11,12 +11,14 @@ import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
-import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
+import { sanitizeInput} from "../hooks/useSanitize";
 import { useNavigate } from "react-router-dom";
 
 
 export default function ProfileEditingCard({ defaultValues = {} }) {
   const navigate = useNavigate();
+  const userProfileComplete = localStorage.getItem('userProfileComplete') === 'true';
+  const userId = localStorage.getItem("userId");
   const {
     register,
     control,
@@ -41,25 +43,28 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Load profile data once on mount
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        const userId = localStorage.getItem("userId");
-        const profile = await fetchUserProfile(userId);
+      console.log(userProfileComplete);
+      if (userProfileComplete) {
+        try {
+          
+          const profile = await fetchUserProfile(userId);
 
-        // Convert dates to JS Date objects
-        const dates = profile.availableDates?.map(d => new Date(d)) || [];
+          // Convert dates to JS Date objects
+          const dates = profile.availableDates?.map(d => new Date(d)) || [];
 
-        // Set values
-        setValue("fullName", profile.fullName);
-        setValue("address1", profile.address1);
-        setValue("address2", profile.address2);
-        setValue("zipcode", profile.zipcode);
-        setValue("city", profile.city);
-        setValue("state", profile.state);
-        setValue("skills", profile.skills);
-        setValue("preferences", profile.preferences);
-        setValue("availableDates", dates);
-      } catch (err) {
-        console.error("Error loading profile:", err);
+          // Set values
+          setValue("fullName", profile.fullName);
+          setValue("address1", profile.address1);
+          setValue("address2", profile.address2);
+          setValue("zipcode", profile.zipcode);
+          setValue("city", profile.city);
+          setValue("state", profile.state);
+          setValue("skills", profile.skills);
+          setValue("preferences", profile.preferences);
+          setValue("availableDates", dates);
+        } catch (err) {
+          console.error("Error loading profile:", err);
+        }
       }
     };
 
@@ -93,9 +98,10 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Send `cleaned` to backend instead of raw `data`
     
     try {
-      const userId = localStorage.getItem("userId");
+      
       const result = await updateUserProfile(userId, cleaned);
       console.log("Profile updated:", result);
+      localStorage.setItem('userProfileComplete', 'true');
       navigate("/home");
     } catch (err) {
       console.error("Error updating profile:", err);

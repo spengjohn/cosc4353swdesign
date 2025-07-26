@@ -1,14 +1,12 @@
 import PrimaryButton from "../components/Buttons";
 import Field from "../components/Field";
-
+import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
-import React, { useState } from 'react';
-import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
+import { updateCredentials } from "../api/auth";
 
 export default function EmailVerification() {
   const { register, control, handleSubmit, formState: { errors } } = useForm();
-  
+  const navigate = useNavigate();
   const onSubmit = ({code}) => {
 
     // if (!code || code.length !== 6) {
@@ -17,7 +15,12 @@ export default function EmailVerification() {
     // }
 
     if (code === "654321")  {
-      alert("Email verified successfully!")
+      localStorage.setItem("userVerified", "true");
+      // need to set on the database as well
+      const userId = localStorage.getItem('userId');
+      const userProfileComplete = localStorage.getItem('userProfileComplete');
+      updateCredentials(userId, true, userProfileComplete);
+      navigate('/createprofile');
     } else {
       alert("Invalid verification code.")
     }
