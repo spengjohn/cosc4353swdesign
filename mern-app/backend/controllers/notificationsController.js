@@ -1,4 +1,4 @@
-import { mockNotifications } from "../mocks/mockNotifications.js";
+import Notification from "../models/Notification.js";
 
 // Utility to get human-readable time ago string
 function timeAgo(date) {
@@ -13,73 +13,64 @@ function timeAgo(date) {
   return `${days} days ago`;
 }
 
-// GET: All notifications for a user
+// GET: All notifications for a user (from MongoDB)
 export const getNotificationsByRecipient = async (req, res) => {
   try {
     const { recipientId } = req.params;
     console.log("GET /api/notifications/:recipientId");
     console.log("recipientId:", recipientId);
 
-    const userNotifications = mockNotifications
-      .filter((n) => n.recipient === recipientId)
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .map((notif) => ({
-        ...notif,
-        time: timeAgo(new Date(notif.createdAt)),
-      }));
+    const notifications = await Notification.find({ recipient: recipientId }).sort({ createdAt: -1 });
 
-    console.log("Returning notifications:", userNotifications);
-    res.json(userNotifications);
+    const formatted = notifications.map((notif) => ({
+      ...notif.toObject(),
+      time: timeAgo(notif.createdAt),
+    }));
+
+    res.json(formatted);
   } catch (err) {
     console.error("getNotificationsByRecipient error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// POST: Create a new notification
+// POST: Create a new notification (in MongoDB)
 export const createNotification = async (req, res) => {
   try {
-    const { recipient, title, body, message, type } = req.body;
+    const { recipient, message, type } = req.body;
 
-    const newNotification = {
-      id: String(Date.now()),
+    const newNotification = new Notification({
       recipient,
-      title: title || "Notification",
-      body: body || message || "",
+      message,
       type: type || "event assignment",
-      isRead: false,
-      createdAt: new Date(),
-    };
+    });
 
-    mockNotifications.push(newNotification);
+    const saved = await newNotification.save();
 
-    console.log("POST /api/notifications");
-    console.log("Created:", newNotification);
-
-    res.status(201).json(newNotification);
+    res.status(201).json(saved);
   } catch (err) {
     console.error("createNotification error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// PATCH: Mark a notification as read
+// PATCH: Mark a notification as read (in MongoDB)
 export const markNotificationAsRead = async (req, res) => {
   try {
     const { id } = req.params;
     console.log("PATCH /api/notifications/:id/read");
-    console.log("Notification ID:", id);
 
-    const notification = mockNotifications.find((n) => n.id === id);
+    const updated = await Notification.findByIdAndUpdate(
+      id,
+      { isRead: true },
+      { new: true }
+    );
 
-    if (!notification) {
+    if (!updated) {
       return res.status(404).json({ error: "Notification not found" });
     }
 
-    notification.isRead = true;
-
-    console.log("Updated:", notification);
-    res.json(notification);
+    res.json(updated);
   } catch (err) {
     console.error("markNotificationAsRead error:", err);
     res.status(500).json({ error: "Server error" });
