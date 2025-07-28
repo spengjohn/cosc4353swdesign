@@ -23,7 +23,7 @@ export default function ManageEventsPage() {
         await updateEvent(editEvent._id, data);  // backend update
         setEvents(events.map(e => (e._id === editEvent._id ? { ...e, ...data } : e)));  // update UI
       } else {
-        // 🔧 Re-fetch instead of just adding locally
+        // Re-fetch instead of just adding locally
         const fetched = await fetchCurrentEvents();
         const sorted = fetched
           .filter(e => e.date)
@@ -36,6 +36,15 @@ export default function ManageEventsPage() {
       console.error("Create or update failed:", err);
     }
   };
+
+  const handleDelete = async () => {
+    const fetched = await fetchCurrentEvents();
+          const sorted = fetched
+            .filter(e => e.date)
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+          setEvents(sorted);
+};
+
 
   // load current events from backend
   useEffect(() => {
@@ -70,8 +79,8 @@ export default function ManageEventsPage() {
       <div className="flex justify-center mb-10">
         <PrimaryButton
           onClick={() => {
-            setEditEvent(null);       // ✅ CLEAR the selected event
-            setIsFormOpen(true);      // ✅ THEN open the form
+            setEditEvent(null);       // CLEAR the selected event
+            setIsFormOpen(true);      // THEN open the form
           }}
         >
           + Create New Event
@@ -81,14 +90,15 @@ export default function ManageEventsPage() {
       <div className="flex flex-col gap-6 items-center">
 
         {events.map((event, idx) => (
-  <EventCard
-    key={idx}
-    event={event}
-    isExpanded={expandedIndex === idx}
-    onToggle={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
-    onEdit={() => handleModalEdit(event)} // ← this is new
-  />
-))}
+        <EventCard
+          key={idx}
+          event={event}
+          isExpanded={expandedIndex === idx}
+          onToggle={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
+          onEdit={() => handleModalEdit(event)} 
+          onDelete={handleDelete}
+        />
+      ))}
 
       </div>
 
@@ -99,6 +109,7 @@ export default function ManageEventsPage() {
               event={editEvent}  // could be null or an object
               onCancel={() => setIsFormOpen(false)}
               onSubmit={handleCreateOrUpdate}
+              
             />
 
           </div>

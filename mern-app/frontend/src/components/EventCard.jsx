@@ -1,6 +1,6 @@
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
-import { deleteEvent } from "../../../backend/controllers/eventController";
+import { useNavigate } from "react-router-dom";
+import { deleteEvent } from "../api/event.js";
 
 const urgencyColors = {
   High: "bg-red-100 text-red-700 border-red-400",
@@ -8,7 +8,7 @@ const urgencyColors = {
   Low: "bg-green-100 text-green-700 border-green-400",
 };
 
-const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) => {
+const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions = true }) => {
   const [showModal, setShowModal] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const urgencyStyle =
@@ -22,14 +22,15 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
 
 
   const handleDelete = async (e) => {
-  e.stopPropagation();
-  try {
-    await deleteEvent(event._id);
-    navigate("/manageevents", {replace: true});
-  } catch (err) {
-    console.error("Delete failed", err);
-  }
-};
+    //e.stopPropagation();
+    try {
+      await deleteEvent(event._id);
+      setShowModal(false);
+      if (onDelete) onDelete(); // notify parent
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
 
   const goToMatchingPage = (e) => {
     e.stopPropagation();
@@ -42,7 +43,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
   return (
     <>
       <div
-        className="w-full max-w-md pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
+        className="w-96 pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
         style={{ borderColor: "#72A7BC" }}
         onClick={onToggle}
       >
