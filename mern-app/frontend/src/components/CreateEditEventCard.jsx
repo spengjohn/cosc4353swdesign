@@ -1,5 +1,5 @@
 import { Controller, useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect , useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Field from "./Field";
@@ -7,14 +7,17 @@ import Selector from "./Selector";
 import DropdownMenu from "./DropdownMenu";
 import PrimaryButton from "./Buttons";
 import TertiaryButton from "./TertiaryButton";
-import { updateEvent } from "../api/event";
+import { createEvent, updateEvent } from "../api/event";
 import states from "../data/states";
 import skills from "../data/skills";
-
+import { useNavigate } from "react-router-dom";
 
 export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const isEditMode = !!event;
   const eventId = event?.eventId;
+  const [message, setMessage] = useState("");
+  const [messageStyle, setMessageStyle] = useState("text-red-500");
+  const navigate = useNavigate();
   const {
     register,
     control,
@@ -25,7 +28,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
     defaultValues: {
       title: "",
       description: "",
-      address: "",
+      location: "",
       city: "",
       state: "",
       skillsRequired: [],
@@ -52,18 +55,23 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
 }, [event, setValue]);
 
   const handleFormSubmit = async (data) => {
-    try {
-    if (event) {
+  try {
+    if (isEditMode) {
       await updateEvent(eventId, data);
+      setMessage("Event Updated!");
+      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
     } else {
-      onSubmit(data); // fallback create
-      console.log(data);
+      const newEvent = await createEvent(data); // call your real API
+      if (onSubmit) onSubmit(newEvent); // notify parent of new event
+      setMessage("Event Created");
+      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
     }
-    //navigate("/manageevents"); // or wherever you want to go after submission
+    navigate("/manageevents", { replace: true });
   } catch (err) {
     console.error("Failed to submit event form", err);
   }
-  };
+};
+
 
   return (
     <form
@@ -92,10 +100,10 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
         />
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
 
-        {/* Event Date & Time */}
+        {/* Event Date  */}
         <div className="flex flex-col">
           <label className="text-md font-medium block mb-1">
-            Event Date {/*& Time*/ }<span className="text-red-500">*</span>
+            Event Date <span className="text-red-500">*</span>
           </label>
           <Controller
             name="date"
@@ -137,7 +145,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
         {/* Location */}
         <Field
           label="Location"
-          name="location "
+          name="location"
           placeholder="123 Main St"
           required
           {...register("location", {

@@ -12,6 +12,12 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
   const urgencyStyle =
     urgencyColors[event.urgency] || "bg-gray-100 text-gray-700 border-gray-300";
   const navigate = useNavigate();
+  const formattedDate = new Date(event.date).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 
   const handleDelete = (e) => {
     e.stopPropagation();
@@ -53,7 +59,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
         </div>
 
         <p className="mt-2 text-base text-gray-700">
-          <strong>Date:</strong> {event.day} {event.date} {/*<strong>Time:</strong> {event.time}*/}
+          <strong>Date:</strong> {/*event.day*/} {formattedDate} {/*<strong>Time:</strong> {event.time}*/}
         </p>
         <p className="mt-1 text-gray-700 text-base">
           <strong>Description:</strong> {event.description}
@@ -127,7 +133,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
                 ×
               </button>
             </div>
-            <p><strong>Date:</strong> {event.day} {event.date}</p>
+            <p><strong>Date:</strong> {/*event.day*/} {formattedDate}</p>
             {/*<p><strong>Time:</strong> {event.time}</p>*/}
             <p><strong>Location:</strong> {event.location}</p>
             <p><strong>Description:</strong> {event.description}</p>

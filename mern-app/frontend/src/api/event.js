@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export const createEvent = async (eventData) => {
+  try {
+    const response = await axios.post(`/api/events/create`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create event", error);
+    throw error;
+  }
+};
+
 export const fetchEvent = async (eventId) => {
     
     try {

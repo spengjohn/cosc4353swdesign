@@ -23,13 +23,12 @@ export default function ManageEventsPage() {
         await updateEvent(editEvent._id, data);  // backend update
         setEvents(events.map(e => (e._id === editEvent._id ? { ...e, ...data } : e)));  // update UI
       } else {
-        // temporary local creation since no DB setup yet
-        const newEvent = {
-          ...data,
-          _id: Date.now().toString(),  // mock ID
-          day: new Date(data.date).toLocaleDateString("en-US", { weekday: "long" }),
-        };
-        setEvents(prev => [...prev, newEvent]);
+        // 🔧 Re-fetch instead of just adding locally
+        const fetched = await fetchCurrentEvents();
+        const sorted = fetched
+          .filter(e => e.date)
+          .sort((a, b) => new Date(a.date) - new Date(b.date));
+        setEvents(sorted);
       }
       setIsFormOpen(false);
       setEditEvent(null);
