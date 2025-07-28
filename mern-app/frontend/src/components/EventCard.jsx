@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {useNavigate} from "react-router-dom";
+import { deleteEvent } from "../../../backend/controllers/eventController";
 
 const urgencyColors = {
   High: "bg-red-100 text-red-700 border-red-400",
@@ -9,6 +10,7 @@ const urgencyColors = {
 
 const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const urgencyStyle =
     urgencyColors[event.urgency] || "bg-gray-100 text-gray-700 border-gray-300";
   const navigate = useNavigate();
@@ -19,11 +21,15 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
 });
 
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    const confirm = window.confirm(`Are you sure you want to delete "${event.title}"?`);
-    if (confirm) alert(`Deleted "${event.title}".`);
-  };
+  const handleDelete = async (e) => {
+  e.stopPropagation();
+  try {
+    await deleteEvent(event._id);
+    navigate("/manageevents", {replace: true});
+  } catch (err) {
+    console.error("Delete failed", err);
+  }
+};
 
   const goToMatchingPage = (e) => {
     e.stopPropagation();
@@ -82,12 +88,39 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
                 >
                   ✏️ Edit
                 </button>
+                {showConfirm ? (
+                <div className="flex flex-col items-end gap-2">
+                  <p className="text-sm text-gray-700">Are you sure?</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleDelete}
+                      className="text-sm px-3 py-1 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowConfirm(false);
+                      }}
+                      className="text-sm px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <button
-                  onClick={handleDelete}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowConfirm(true);
+                  }}
                   className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
                 >
                   🗑 Delete
                 </button>
+              )}
+
               </div>
 
               {/* Match Volunteer button */}

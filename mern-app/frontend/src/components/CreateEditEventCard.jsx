@@ -57,7 +57,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const handleFormSubmit = async (data) => {
   try {
     if (isEditMode) {
-      await updateEvent(eventId, data);
+      await updateEvent(event._id, data);
       setMessage("Event Updated!");
       setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
     } else {
