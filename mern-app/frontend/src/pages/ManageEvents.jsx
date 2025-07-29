@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import EventCard from "../components/EventCard";
 import CreateEditEventCard from "../components/CreateEditEventCard";
 import PrimaryButton from "../components/Buttons";
-import { updateEvent, fetchCurrentEvents } from "../api/event";
+import { fetchCurrentEvents } from "../api/event";
 
 export default function ManageEventsPage() {
   const [events, setEvents] = useState([]);
@@ -17,20 +17,18 @@ export default function ManageEventsPage() {
     setIsFormOpen(true);
   };
 
-  const handleCreateOrUpdate = async (data) => {
+  const handleCreateOrUpdate = async () => {
     try {
-      if (editEvent && editEvent._id) {
-        await updateEvent(editEvent._id, data);  // backend update
-        setEvents(events.map(e => (e._id === editEvent._id ? { ...e, ...data } : e)));  // update UI
-      } else {
-        // Re-fetch instead of just adding locally
-        const fetched = await fetchCurrentEvents();
-        const sorted = fetched
-          .filter(e => e.date)
-          .sort((a, b) => new Date(a.date) - new Date(b.date));
-        setEvents(sorted);
-      }
+      
+      // Re-fetch instead of just adding locally
+      const fetched = await fetchCurrentEvents();
+      const sorted = fetched
+        .filter(e => e.date)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      setEvents(sorted);
+     
       setIsFormOpen(false);
+      setExpandedIndex(null);
       setEditEvent(null);
     } catch (err) {
       console.error("Create or update failed:", err);

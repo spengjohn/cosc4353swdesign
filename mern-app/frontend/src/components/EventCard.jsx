@@ -36,7 +36,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions 
     e.stopPropagation();
     setShowModal(false); // close the modal first
     setTimeout(() => {
-    navigate(`/volunteermatch/${event.eventId}`);
+    navigate(`/volunteermatch/${event._id}`);
       }, 100); // slight delay allows React to unmount the modal cleanly
   };
 
@@ -89,38 +89,41 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions 
                 >
                   ✏️ Edit
                 </button>
-                {showConfirm ? (
-                <div className="flex flex-col items-end gap-2">
-                  <p className="text-sm text-gray-700">Are you sure?</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleDelete}
-                      className="text-sm px-3 py-1 rounded border border-red-500 text-red-600 hover:bg-red-100"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowConfirm(false);
-                      }}
-                      className="text-sm px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm((prev) => !prev);
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                  >
+                    🗑 Delete
+                  </button>
+
+                  {showConfirm && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md p-3 z-10">
+                      <p className="text-xs text-gray-700 mb-2">Confirm deletion?</p>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={handleDelete}
+                          className="text-sm px-2 py-1 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowConfirm(false);
+                          }}
+                          className="text-sm px-2 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowConfirm(true);
-                  }}
-                  className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
-                >
-                  🗑 Delete
-                </button>
-              )}
+
 
               </div>
 

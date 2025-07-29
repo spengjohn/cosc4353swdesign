@@ -6,7 +6,7 @@ import Field from "./Field";
 import Selector from "./Selector";
 import DropdownMenu from "./DropdownMenu";
 import PrimaryButton from "./Buttons";
-import TertiaryButton from "./TertiaryButton";
+//import TertiaryButton from "./TertiaryButton";
 import { createEvent, updateEvent } from "../api/event";
 import states from "../data/states";
 import skills from "../data/skills";
@@ -14,7 +14,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const isEditMode = !!event;
-  const eventId = event?.eventId;
+  //const eventId = event?.eventId;
+  const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
   const [messageStyle, setMessageStyle] = useState("text-red-500");
   const navigate = useNavigate();
@@ -60,9 +61,10 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
       await updateEvent(event._id, data);
       setMessage("Event Updated!");
       setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+      if (onSubmit) onSubmit();
     } else {
-      const newEvent = await createEvent(data); // call your real API
-      if (onSubmit) onSubmit(newEvent); // notify parent of new event
+      await createEvent(data); // call your real API
+      if (onSubmit) onSubmit(); // notify parent of new event
       setMessage("Event Created");
       setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
     }
@@ -217,7 +219,6 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
                   items={skills}
                   name={"skillsRequired"}
                   value={field.value}
-                  //onSelect={handleSkillSelect}
                   onChange={field.onChange}
                   errorMessage={errors.skillsRequired?.message}
             >
@@ -254,10 +255,56 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-4 mt-6">
-          <TertiaryButton type="button" onClick={onCancel}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowConfirm(true); // show confirmation box only
+            }}
+            className={`
+              text-[#B80C09] border-2 border-[#B80C09] rounded px-4 py-2 font-semibold
+              hover:bg-[#B80C09] hover:text-white transition-all duration-200
+              w-fit
+            `}
+          >
             Cancel
-          </TertiaryButton>
+          </button>
+
           <PrimaryButton type="submit">Submit</PrimaryButton>
+          {showConfirm && (
+            <div className="fixed inset-0 z-50  flex items-center justify-center">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                <p className="text-sm text-gray-800 mb-4">
+                  Confirm cancellation? Unsaved data will be lost.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm(false);
+                      if (onCancel) onCancel();
+                      navigate("/manageevents", { replace: true });
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm(false);
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       
     </form>
