@@ -1,5 +1,6 @@
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { deleteEvent } from "../api/event.js";
 
 const urgencyColors = {
   High: "bg-red-100 text-red-700 border-red-400",
@@ -7,30 +8,42 @@ const urgencyColors = {
   Low: "bg-green-100 text-green-700 border-green-400",
 };
 
-const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) => {
+const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions = true }) => {
   const [showModal, setShowModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const urgencyStyle =
     urgencyColors[event.urgency] || "bg-gray-100 text-gray-700 border-gray-300";
   const navigate = useNavigate();
+  const formattedDate = new Date(event.date).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    const confirm = window.confirm(`Are you sure you want to delete "${event.title}"?`);
-    if (confirm) alert(`Deleted "${event.title}".`);
+
+  const handleDelete = async (e) => {
+    //e.stopPropagation();
+    try {
+      await deleteEvent(event._id);
+      setShowModal(false);
+      if (onDelete) onDelete(); // notify parent
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
   };
 
   const goToMatchingPage = (e) => {
     e.stopPropagation();
     setShowModal(false); // close the modal first
     setTimeout(() => {
-    navigate(`/volunteermatch/${event.eventId}`);
+    navigate(`/volunteermatch/${event._id}`);
       }, 100); // slight delay allows React to unmount the modal cleanly
   };
 
   return (
     <>
       <div
-        className="w-full max-w-md pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
+        className="w-96 pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
         style={{ borderColor: "#72A7BC" }}
         onClick={onToggle}
       >
@@ -53,7 +66,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
         </div>
 
         <p className="mt-2 text-base text-gray-700">
-          <strong>Date:</strong> {event.day} {event.date} {/*<strong>Time:</strong> {event.time}*/}
+          <strong>Date:</strong> {/*event.day*/} {formattedDate} {/*<strong>Time:</strong> {event.time}*/}
         </p>
         <p className="mt-1 text-gray-700 text-base">
           <strong>Description:</strong> {event.description}
@@ -76,12 +89,42 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
                 >
                   ✏️ Edit
                 </button>
-                <button
-                  onClick={handleDelete}
-                  className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
-                >
-                  🗑 Delete
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm((prev) => !prev);
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                  >
+                    🗑 Delete
+                  </button>
+
+                  {showConfirm && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md p-3 z-10">
+                      <p className="text-xs text-gray-700 mb-2">Confirm deletion?</p>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={handleDelete}
+                          className="text-sm px-2 py-1 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowConfirm(false);
+                          }}
+                          className="text-sm px-2 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+
               </div>
 
               {/* Match Volunteer button */}
@@ -127,7 +170,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, showActions = true }) 
                 ×
               </button>
             </div>
-            <p><strong>Date:</strong> {event.day} {event.date}</p>
+            <p><strong>Date:</strong> {/*event.day*/} {formattedDate}</p>
             {/*<p><strong>Time:</strong> {event.time}</p>*/}
             <p><strong>Location:</strong> {event.location}</p>
             <p><strong>Description:</strong> {event.description}</p>

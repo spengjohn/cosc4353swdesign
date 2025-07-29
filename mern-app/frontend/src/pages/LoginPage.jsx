@@ -18,7 +18,10 @@ export default function LoginPage() {
     if (status === 200) {
       localStorage.setItem('userToken', result.token);
       localStorage.setItem('userRole', result.role);
-
+      localStorage.setItem('userId', result.id);
+      localStorage.setItem('userEmail', result.email);
+      localStorage.setItem('userVerified', result.isVerified);
+      localStorage.setItem('userProfileComplete', result.isProfileComplete);
       setMessage("🎉 Welcome! Redirecting ➤");
       setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
 

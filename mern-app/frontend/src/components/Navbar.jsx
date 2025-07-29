@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import cooglinklogo from "../assets/cooglinklogo.png"
 import { useState, useEffect } from "react";
 import NotificationPanel from "./NotificationPanel";
@@ -6,16 +6,17 @@ import NotificationPanel from "./NotificationPanel";
 import { fetchNotifications } from "../api/notifications";
 
 export default function Navbar() {
+  const userId = localStorage.getItem("userId");
   const [notifications, setNotifications] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
-
+  const navigate  = useNavigate();
   useEffect(() => {
     const loadNotifications = async () => {
       try {
         /*
         const accountId = localStorage.getItem("accountId"); // or from context
         if (!accountId) return;*/
-        const data = await fetchNotifications("1");
+        const data = await fetchNotifications(userId);
         setNotifications(data);
       } catch (err) {
         console.error("Failed to load notifications:", err);
@@ -82,7 +83,10 @@ export default function Navbar() {
                     )}
                 </button>
                 {/*  Log Out Button */}
-                <button>
+                <button onClick={() => {
+                  localStorage.clear();
+                  navigate("/login");
+                }}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 -scale-x-100">
                         <path fillRule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 
                         0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 

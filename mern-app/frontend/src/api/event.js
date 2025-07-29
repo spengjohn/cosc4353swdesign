@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export const createEvent = async (eventData) => {
+  try {
+    const response = await axios.post(`/api/events/create`, eventData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create event", error);
+    throw error;
+  }
+};
+
 export const fetchEvent = async (eventId) => {
     
     try {
@@ -31,11 +41,11 @@ export const updateEvent = async (eventId, eventData) => {
   }
 };
 
-export const getAttendees = async (eventId) => {
+export const deleteEvent = async (eventId) => {
     try {
-        const response = await axios.get(`/api/events/attendees/${eventId}`);
+        const response = await axios.post(`/api/events/delete/${eventId}`);
         return response.data;
     } catch (error) {
-        console.error("Failed to fetch list of assigned volunteers: ", error);
+        console.error("Failed to delete event: ", error);
     }
 }
