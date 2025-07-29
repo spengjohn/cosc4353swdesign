@@ -15,7 +15,7 @@ export const createEvent = async (req, res) => {
 export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    console.log("GET /api/events/:eventId");
+    //console.log("GET /api/events/:eventId");
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
     if (!event) return res.status(404).json({ message: "Event not found" });

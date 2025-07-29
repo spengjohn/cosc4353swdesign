@@ -19,10 +19,12 @@ export default function VolunteerMatch() {
     try {
       // 1. Get matched volunteers
       const volunteers = await getMatch(eventId);
+      console.log("matched volunteers: ", volunteers);
       setMatchedVolunteers(volunteers);
 
       // 2. Get event
       const fetchedEvent = await fetchEvent(eventId);
+      console.log("fetched event: ", fetchedEvent);
       setEvent(fetchedEvent);
 
       // 3. Fetch profile details of assigned volunteers (if any)
@@ -31,7 +33,7 @@ export default function VolunteerMatch() {
 
       if (assignedIds.length > 0) {
         const assignedProfiles = await Promise.all(
-          assignedIds.map((accountId) => fetchUserProfile(accountId))
+          assignedIds.map((credentialId) => fetchUserProfile(credentialId))
         );
         setSelectedVolunteers(assignedProfiles);
       } else {
@@ -46,9 +48,9 @@ export default function VolunteerMatch() {
 }, [eventId]);
 
   const handleSelect = (volunteer) => {
-    const alreadySelected = selectedVolunteers.some((v) => v.accountId === volunteer.accountId);
+    const alreadySelected = selectedVolunteers.some((v) => v.credentialId === volunteer.credentialId);
     if (alreadySelected) {
-      setSelectedVolunteers((prev) => prev.filter((v) => v.accountId !== volunteer.accountId));
+      setSelectedVolunteers((prev) => prev.filter((v) => v.credentialId !== volunteer.credentialId));
     } else {
       if (event && selectedVolunteers.length < event.maxVolunteers) {
         setSelectedVolunteers((prev) => [...prev, volunteer]);
@@ -57,7 +59,7 @@ export default function VolunteerMatch() {
   };
 
   const handleViewHistory = (volunteer) => {
-    if (volunteer?.accountId) {
+    if (volunteer?.credentialId) {
     setSelectedVolunteer(volunteer);
     setShowHistoryModal(true);
   } else {
@@ -65,7 +67,7 @@ export default function VolunteerMatch() {
     }
   };
 
-  const isSelected = (vol) => selectedVolunteers.some((v) => v.accountId === vol.accountId);
+  const isSelected = (vol) => selectedVolunteers.some((v) => v.credentialId === vol.credentialId);
   const isMaxReached = event ? selectedVolunteers.length >= event.maxVolunteers : false;
 
   if (!event) return <div>Loading event info...</div>;
@@ -85,8 +87,8 @@ export default function VolunteerMatch() {
             </div>
             <p className="text-sm text-gray-700 mb-1">
               <strong>Date:</strong> {/*event.day*/} {event.date}
-              &nbsp;&nbsp;
-              <strong>Time:</strong> {"time"}
+              {/*&nbsp;&nbsp;
+              <strong>Time:</strong> {"time"}*/}
             </p>
             <p className="text-sm text-gray-700 mb-1">
               <strong>Description:</strong> {event.description}
@@ -117,10 +119,10 @@ export default function VolunteerMatch() {
           {selectedVolunteers.length > 0 && (
           <div className="space-y-2">
             {selectedVolunteers
-              .filter((user) => user && user.accountId)
+              .filter((user) => user && user.credentialId)
               .map((user) => (
                 <div
-                  key={user.accountId}
+                  key={user.credentialId}
                   className="bg-[#fef3f0] border-2 border-[#a5c7d4] p-4 rounded-lg shadow-md animate-bounce-in"
                 >
                   <div className="flex justify-between">
@@ -149,7 +151,7 @@ export default function VolunteerMatch() {
               disabled={selectedVolunteers.length === 0}
               onClick={async () => {
                 if (selectedVolunteers.length > 0) {
-                  const selectedIds = selectedVolunteers.map((v) => v.accountId);
+                  const selectedIds = selectedVolunteers.map((v) => v.credentialId);
                   const updatedEvent = { ...event, assignedVolunteers: selectedIds };
 
                   try {
@@ -159,8 +161,8 @@ export default function VolunteerMatch() {
                     console.error("Failed to update event:", error);
                   }
 
-                  console.log("Finalized Volunteers (accountIds):", selectedIds);
-                  alert("Volunteers submitted!");
+                  console.log("Finalized Volunteers .credentialIds):", selectedIds);
+                  navigate("./manageevents");
                 }
               }}
 
@@ -177,7 +179,7 @@ export default function VolunteerMatch() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {matchedVolunteers.map((vol) => (
             <div
-              key={vol.accountId}
+              key={vol.credentialId}
               className={`border-2 rounded p-4 shadow-sm flex flex-col justify-between transition duration-200 ${
                 isSelected(vol)
                   ? "border-[#a5c7d4] bg-[#e6f2f5] scale-105 ring-2 ring-[#a5c7d4]"

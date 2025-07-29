@@ -71,19 +71,27 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   }, [setValue]);
 
   const onSubmit = async (data) => {
+    console.log("Available Dates before conversion: ", availableDates);
     const cleaned = {
       ...data,
+      
       availableDates: data.availableDates.map((d) => {
         try {
-          // react-multi-date-picker DateObject has `.toDate()` method
           const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
-          return jsDate instanceof Date && !isNaN(jsDate)
-            ? jsDate.toISOString().split("T")[0]
-            : "";
+          if (!(jsDate instanceof Date) || isNaN(jsDate)) return "";
+
+          // Format as YYYY-MM-DD in local time
+          const yyyy = jsDate.getFullYear();
+          const mm = String(jsDate.getMonth() + 1).padStart(2, "0");
+          const dd = String(jsDate.getDate()).padStart(2, "0");
+
+          return `${yyyy}-${mm}-${dd}`;
         } catch {
           return "";
         }
-    }),
+      }),
+
+    
 
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
