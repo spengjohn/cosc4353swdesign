@@ -13,6 +13,8 @@ export default function VolunteerMatch() {
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [event, setEvent] = useState(null);
   const [matchedVolunteers, setMatchedVolunteers] = useState([]);
+  const [message, setMessage] = useState("");
+  const [messageStyle, setMessageStyle] = useState("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
 
   useEffect(() => {
   const fetchData = async () => {
@@ -33,7 +35,7 @@ export default function VolunteerMatch() {
 
       if (assignedIds.length > 0) {
         const assignedProfiles = await Promise.all(
-          assignedIds.map((credentialId) => fetchUserProfile(credentialId))
+          assignedIds.map((credentialId) => fetchUserProfile(credentialId._id || credentialId.toString?.() || credentialId))
         );
         setSelectedVolunteers(assignedProfiles);
       } else {
@@ -73,8 +75,16 @@ export default function VolunteerMatch() {
   if (!event) return <div>Loading event info...</div>;
 
   else return (
+    
     <div className="flex flex-col min-h-screen">
+      {/* status*/}
+        {message && (
+          <div className={messageStyle}>
+            {message}
+          </div>
+        )}
       <div className="flex w-full">
+        
         {/* Event Card */}
         <div className="w-1/3 p-6">
           <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Event</h2>
@@ -105,8 +115,15 @@ export default function VolunteerMatch() {
           </div>
 
           <button
-            onClick={() => navigate("/manageevents")}
-            className="mt-4 ml-1 px-4 py-2 rounded-md bg-pink-200 hover:bg-pink-300 transition text-gray-800 font-semibold"
+            onClick={() => {
+              setMessage("Returning to Event Management Page.")
+              setTimeout(() => {
+                  navigate('../manageevents');
+                }, 1000);
+              
+              }
+              }
+            className="mt-4 ml-1 px-4 py-2 rounded-md bg-primary hover:bg-secondary hover:text-white transition text-dark font-semibold"
           >
             ← Back to Manage Events
           </button>
@@ -116,7 +133,7 @@ export default function VolunteerMatch() {
         <div className="w-2/3 p-6 space-y-4">
           <h2 className="text-2xl font-bold mb-2 text-[#3e7b91]">Matched Volunteers</h2>
 
-          {selectedVolunteers.length > 0 && (
+          {(
           <div className="space-y-2">
             {selectedVolunteers
               .filter((user) => user && user.credentialId)
@@ -143,27 +160,26 @@ export default function VolunteerMatch() {
 
           <div className="pt-6">
             <button
-              className={`w-full py-2 px-4 rounded font-semibold transition ${
-                selectedVolunteers.length > 0
-                  ? "bg-[#3e7b91] text-white hover:bg-[#336b7a]"
-                  : "bg-gray-300 text-white cursor-not-allowed"
-              }`}
-              disabled={selectedVolunteers.length === 0}
+              className={`w-full py-2 px-4 rounded font-semibold transition bg-primary text-dark hover:text-white hover:bg-secondary`}
+              
               onClick={async () => {
-                if (selectedVolunteers.length > 0) {
-                  const selectedIds = selectedVolunteers.map((v) => v.credentialId);
-                  const updatedEvent = { ...event, assignedVolunteers: selectedIds };
+                
+                const selectedIds = selectedVolunteers.map((v) => v.credentialId);
+                const updatedEvent = { ...event, assignedVolunteers: selectedIds };
 
-                  try {
-                    await updateEvent(eventId, updatedEvent);
-                    console.log("UpdatedEvent:", updatedEvent);
-                  } catch (error) {
-                    console.error("Failed to update event:", error);
-                  }
-
-                  console.log("Finalized Volunteers .credentialIds):", selectedIds);
-                  navigate("./manageevents");
+                try {
+                  await updateEvent(eventId, updatedEvent);
+                  console.log("UpdatedEvent:", updatedEvent);
+                } catch (error) {
+                  console.error("Failed to update event:", error);
                 }
+
+                console.log("Finalized Volunteers .credentialIds):", selectedIds);
+                setMessage("Assigned Volunteers successfully updated!")
+                setTimeout(() => {
+                  navigate('../manageevents');
+                }, 1000);
+                
               }}
 
             >

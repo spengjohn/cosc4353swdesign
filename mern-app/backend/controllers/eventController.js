@@ -47,7 +47,21 @@ export const updateEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     const updateData = req.body;
-
+    // Notification pseudocode:
+    // 1. findById for EventDetails
+    // Compare current details to update details:
+    // 4 scenarios:
+    // a) The list of assigned volunteers has changed because:
+      // a.1) Someone was added
+      // a.2) Someone was removed
+      // Possible for both to happen.
+    // b) Event Details like description, location, city, skills, etc. changed.
+      // Can make a generic announcement that the event changed
+      // Just need to send to EVERYONE who is currently assigned
+    // c) The Event was deleted
+    // Similar to b) just say the event was deleted.
+    // d) There are no actual changes. no need for any notification to be made.
+    // Finally we can update the event and return response.
     const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
 
     if (!updated) return res.status(404).json({ message: "Event not found" });
