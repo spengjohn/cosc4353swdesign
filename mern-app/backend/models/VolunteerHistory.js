@@ -12,7 +12,6 @@ const volunteerhistorySchema = new mongoose.Schema({
       event: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "EventDetails",
-        unique: true,
         required: true,
       },
       attended: {
