@@ -1,6 +1,6 @@
 import Notification from "../models/Notification.js";
 
-// Utility to get human-readable time ago string
+
 function timeAgo(date) {
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
@@ -13,12 +13,20 @@ function timeAgo(date) {
   return `${days} days ago`;
 }
 
-// GET: All notifications for a user (from MongoDB)
-export const getNotificationsByRecipient = async (req, res) => {
+
+export async function createNotification(recipient, type = "event assignment", message = "") {
+  const newNotification = new Notification({
+    recipient,
+    message,
+    type,
+    isRead: false,
+  });
+  return await newNotification.save();
+}
+
+export const getNotifications = async (req, res) => {
   try {
     const { recipientId } = req.params;
-    console.log("GET /api/notifications/:recipientId");
-    console.log("recipientId:", recipientId);
 
     const notifications = await Notification.find({ recipient: recipientId }).sort({ createdAt: -1 });
 
@@ -29,36 +37,15 @@ export const getNotificationsByRecipient = async (req, res) => {
 
     res.json(formatted);
   } catch (err) {
-    console.error("getNotificationsByRecipient error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("getNotifications error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// POST: Create a new notification (in MongoDB)
-export const createNotification = async (req, res) => {
-  try {
-    const { recipient, message, type } = req.body;
 
-    const newNotification = new Notification({
-      recipient,
-      message,
-      type: type || "event assignment",
-    });
-
-    const saved = await newNotification.save();
-
-    res.status(201).json(saved);
-  } catch (err) {
-    console.error("createNotification error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-// PATCH: Mark a notification as read (in MongoDB)
-export const markNotificationAsRead = async (req, res) => {
+export const updateNotification = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("PATCH /api/notifications/:id/read");
 
     const updated = await Notification.findByIdAndUpdate(
       id,
@@ -72,7 +59,25 @@ export const markNotificationAsRead = async (req, res) => {
 
     res.json(updated);
   } catch (err) {
-    console.error("markNotificationAsRead error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("updateNotification error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+export const deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await Notification.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Notification not found" });
+    }
+
+    res.json({ message: "Notification deleted", id });
+  } catch (err) {
+    console.error("deleteNotification error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
