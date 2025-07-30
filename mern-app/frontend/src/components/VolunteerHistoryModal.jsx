@@ -1,9 +1,7 @@
 import AttendanceCard from "../components/AttendanceCard.jsx";
-import { fetchUserHistory } from "../api/profile.js";
+import { getHistory } from "../api/volunteerHistory.js";
 import { fetchEvent } from "../api/event.js";
 import { useEffect, useState } from "react";
-//import { sampleAttend } from "../data/sampleAttend.js";
-//import { useState } from "react";
 
 export default function VolunteerHistoryModal({ user, onClose }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -13,16 +11,16 @@ export default function VolunteerHistoryModal({ user, onClose }) {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const rawHistory = await fetchUserHistory(user.accountId);
+        const rawHistory = await getHistory(user.credentialId);
         
         console.log(rawHistory);
         const fullEvents = await Promise.all(
-          rawHistory.map(async ({ eventId, attended }) => {
+          rawHistory.eventHistory.map(async ({ event, attended }) => {
             console.log("Raw attendance:", attended);
-            const event = await fetchEvent(eventId);
+            const Event = await fetchEvent(event);
             const isAttended = attended === true || attended === "true";
             return {
-              ...event,
+              ...Event,
               attendance: isAttended ? "Attended" : "Absent",
             };
           })
@@ -37,11 +35,11 @@ export default function VolunteerHistoryModal({ user, onClose }) {
     };
 
     loadHistory();
-  }, [user.accountId]);
+  }, [user.credentialId]);
 if (loading) return <div className="text-center mt-10">Loading...</div>;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-white max-w-4xl w-full mx-auto px-4 py-10 rounded-lg shadow-lg relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
@@ -52,15 +50,15 @@ if (loading) return <div className="text-center mt-10">Loading...</div>;
 
         <div className="flex flex-col items-center">
           <div className="text-4xl font-bold mb-6 text-secondary text-center">
-            <h1>{user.name}</h1>
+            <h1>{user.fullName}</h1>
             <h1>Attendance</h1>
           </div>
 
           <div className="flex flex-col gap-4">
-            {history.map((event, index) => (
+            {history.map((Event, index) => (
               <AttendanceCard
-                key={event.eventId}
-                event={event}
+                key={Event._id}
+                event={Event}
                 isExpanded={expandedIndex === index}
                 onToggle={() =>
                   setExpandedIndex(expandedIndex === index ? null : index)

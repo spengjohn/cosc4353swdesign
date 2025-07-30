@@ -15,18 +15,23 @@ export default function VolunteerMatch() {
   const [matchedVolunteers, setMatchedVolunteers] = useState([]);
   const [message, setMessage] = useState("");
   const [messageStyle, setMessageStyle] = useState("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+  const formattedDate = new Date(event?.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 
   useEffect(() => {
   const fetchData = async () => {
     try {
       // 1. Get matched volunteers
       const volunteers = await getMatch(eventId);
-      console.log("matched volunteers: ", volunteers);
+      //console.log("matched volunteers: ", volunteers);
       setMatchedVolunteers(volunteers);
 
       // 2. Get event
       const fetchedEvent = await fetchEvent(eventId);
-      console.log("fetched event: ", fetchedEvent);
+      //console.log("fetched event: ", fetchedEvent);
       setEvent(fetchedEvent);
 
       // 3. Fetch profile details of assigned volunteers (if any)
@@ -96,7 +101,7 @@ export default function VolunteerMatch() {
               </span>
             </div>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Date:</strong> {/*event.day*/} {event.date}
+              <strong>Date:</strong> {/*event.day*/} {formattedDate}
               {/*&nbsp;&nbsp;
               <strong>Time:</strong> {"time"}*/}
             </p>
@@ -169,12 +174,12 @@ export default function VolunteerMatch() {
 
                 try {
                   await updateEvent(eventId, updatedEvent);
-                  console.log("UpdatedEvent:", updatedEvent);
+                  //console.log("UpdatedEvent:", updatedEvent);
                 } catch (error) {
-                  console.error("Failed to update event:", error);
+                  //console.error("Failed to update event:", error);
                 }
 
-                console.log("Finalized Volunteers .credentialIds):", selectedIds);
+                //console.log("Finalized Volunteers .credentialIds):", selectedIds);
                 setMessage("Assigned Volunteers successfully updated!")
                 setTimeout(() => {
                   navigate('../manageevents');

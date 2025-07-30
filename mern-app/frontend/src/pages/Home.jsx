@@ -19,32 +19,44 @@ const sampleEvents = [
 
 export default function Home() {
   const [expandedIndex, setExpandedIndex] = useState(null);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [role, setRole] = useState("");
-  const [currentUser, setCurrentUser] = useState({ name: "" });
+  const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
+    //console.log("userId: ", userId);
     const userRole = localStorage.getItem("userRole");
-    if (!userId) return navigate("/login"); // redirect to login if not authenticated
+    //if (!userId) return navigate("/login"); // redirect to login if not authenticated
 
     setRole(userRole);
-
-    fetchUserProfile(userId)
-      .then((profile) => {
-        setCurrentUser({ name: profile.fullName });
-      })
-      .catch((err) => {
-        console.error("Failed to fetch profile on Home:", err);
-      });
+    const fetchData = async () => {
+      try{
+      const User = await fetchUserProfile(userId);
+      setCurrentUser(User);
+      }catch (error){
+        console.log("Error fetching user data:", error);
+      }
+    };
+    fetchData();
   }, []);
+
+  const handleViewHistory = (volunteer) => {
+    //console.log(volunteer);
+    if (volunteer?.credentialId) {
+    //setSelectedVolunteer(volunteer);
+    setShowHistoryModal(true);
+  } else {
+    alert("No account ID found for this volunteer.");
+    }
+  };
 
   return (
     <div className="p-6 max-w-screen-lg mx-auto space-y-6">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-secondary mb-2">
-          👋 Welcome back, {currentUser.name}!
+          👋 Welcome back, {currentUser?.fullName}!
         </h1>
         <p className="text-lg text-gray-700 max-w-2xl">
           {role === "admin"
@@ -62,13 +74,12 @@ export default function Home() {
               <Link to="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
                 👤 View My Profile
               </Link>
-              {/*<Link to="/volunteermatch" className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm">
-                🤝 Volunteer Matching
-              </Link>*/}
-              {/* THIS NEEDS TO BE CHANGED TO THE HISTORY MODAL POP_UP */}
-              <Link to="/" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm">
+              <button 
+                onClick={() => handleViewHistory(currentUser)} 
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm"
+              >
                 📋 View Volunteer History
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -97,6 +108,13 @@ export default function Home() {
                 showActions={false}
               />
             ))}
+            {/* history modal */}
+            {showHistoryModal && (
+              <VolunteerHistoryModal
+                user={currentUser}
+                onClose={() => setShowHistoryModal(false)}
+              />
+            )}
           </div>
         </>
       ) : (
@@ -110,7 +128,7 @@ export default function Home() {
               View My Profile
             </Link>
             <button
-              onClick={() => setShowHistory(true)}
+              onClick={() => handleViewHistory(currentUser)}
               className="text-white bg-secondary hover:bg-primary px-4 py-2 rounded text-sm"
             >
               📜 View My Volunteer History
@@ -127,15 +145,15 @@ export default function Home() {
             onToggle={() => setExpandedIndex(expandedIndex === 0 ? null : 0)}
             showActions={false}
           />
-
-          {/* history modal */}
-          {showHistory && (
-            <VolunteerHistoryModal
-              user={currentUser}
-              onClose={() => setShowHistory(false)}
-            />
-          )}
         </>
+      )}
+
+      {/* history modal */}
+      {showHistoryModal && (
+        <VolunteerHistoryModal
+          user={currentUser}
+          onClose={() => setShowHistoryModal(false)}
+        />
       )}
     </div>
   );
