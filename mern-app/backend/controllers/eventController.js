@@ -71,22 +71,80 @@ export const updateEvent = async (req, res) => {
     const updateData = req.body;
     // Notification pseudocode:
     // 1. findById for EventDetails
+    const currentEvent = await EventDetails.findById(eventId);
+    if (!currentEvent) return res.status(404).json({ message: "Event not found" });
+
+    const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
+    if (!updated) return res.status(404).json({ message: "Event not found" });
+
+    const notificationsToSend = [];
     // Compare current details to update details:
     // 4 scenarios:
     // a) The list of assigned volunteers has changed because:
       // a.1) Someone was added
       // a.2) Someone was removed
       // Possible for both to happen.
+    if (updateData.assignedVolunteers || 
+      (currentEvent.assignedVolunteers && updateData.assignedVolunteers)) {
+      const currentVolunteers = currentEvent.assignedVolunteers || [];
+      const newVolunteers = updated.assignedVolunteers || [];
+      
+      // a.1) Someone was added
+      const addedVolunteers = newVolunteers.filter(
+        volunteer => !currentVolunteers.includes(volunteer)
+      );
+      for (const volunteer of addedVolunteers) {
+        notificationsToSend.push(
+          createNotification(
+            volunteer,
+            "event assignment",
+            `You've been assigned to event: ${updated.title}`
+          )
+        );
+      }
+
+      // a.2) Someone was removed
+      const removedVolunteers = currentVolunteers.filter(
+        volunteer => !newVolunteers.includes(volunteer)
+      );
+      for (const volunteer of removedVolunteers) {
+        notificationsToSend.push(
+          createNotification(
+            volunteer,
+            "event unassignment",
+            `You've been unassigned from event: ${currentEvent.title}`
+          )
+        );
+      }
+    }
+
     // b) Event Details like description, location, city, skills, etc. changed.
       // Can make a generic announcement that the event changed
       // Just need to send to EVERYONE who is currently assigned
+    const detailFields = ['title', 'description', 'location', 'city', 'skills', 'date'];
+    const detailsChanged = detailFields.some(
+      field => JSON.stringify(currentEvent[field]) !== JSON.stringify(updated[field])
+    );
+
+    if (detailsChanged && updated.assignedVolunteers?.length > 0) {
+      for (const volunteer of updated.assignedVolunteers) {
+        notificationsToSend.push(
+          createNotification(
+            volunteer,
+            "event update",
+            `Event details have changed for: ${updated.title}`
+          )
+        );
+      }
+    }
     // c) The Event was deleted
-    // Similar to b) just say the event was deleted.
+    // Similar to b) just say the event was deleted. handles this in the function below
     // d) There are no actual changes. no need for any notification to be made.
     // Finally we can update the event and return response.
-    const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
+    //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
 
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    //if (!updated) return res.status(404).json({ message: "Event not found" });
+    await Promise.all(notificationsToSend);
 
     res.json({ message: "Event updated successfully", event: updated });
   } catch (err) {
@@ -99,9 +157,30 @@ export const deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
 
-    const deleted = await EventDetails.findByIdAndDelete(eventId);
+    // Find the event before deleting to get assigned volunteers
+    const eventToDelete = await EventDetails.findById(eventId);
+    if (!eventToDelete) return res.status(404).json({ message: "Event not found" });
 
+    // Scenario c: Event was deleted - notify all assigned volunteers
+    const notificationsToSend = [];
+    if (eventToDelete.assignedVolunteers?.length > 0) {
+      for (const volunteer of eventToDelete.assignedVolunteers) {
+        notificationsToSend.push(
+          createNotification(
+            volunteer,
+            "event cancellation",
+            `Event has been cancelled: ${eventToDelete.title}`
+          )
+        );
+      }
+    }
+
+    // Delete the event
+    const deleted = await EventDetails.findByIdAndDelete(eventId);
     if (!deleted) return res.status(404).json({ message: "Event not found" });
+
+    // Send all notifications
+    await Promise.all(notificationsToSend);
 
     res.json({ message: "Event deleted successfully" });
   } catch (err) {
