@@ -42,6 +42,22 @@ export const getCurrentEvents = async (req, res) => {
   }
 };
 
+export const getMyNextEvents = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const events = await EventDetails.find({ date: { $gte: today, assignedVolunteers: accountId} });
+    if (!events){
+      res.status(404);
+    }
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error"});
+  }
+};
+
 
 export const updateEvent = async (req, res) => {
   try {

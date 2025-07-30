@@ -7,7 +7,7 @@ export default function VolunteerHistoryModal({ user, onClose }) {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  //const NoHistory = false;
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -51,21 +51,26 @@ if (loading) return <div className="text-center mt-10">Loading...</div>;
         <div className="flex flex-col items-center">
           <div className="text-4xl font-bold mb-6 text-secondary text-center">
             <h1>{user.fullName}</h1>
-            <h1>Attendance</h1>
+            <h1>Volunteer History</h1>
           </div>
 
           <div className="flex flex-col gap-4">
-            {history.map((Event, index) => (
-              <AttendanceCard
-                key={Event._id}
-                event={Event}
-                isExpanded={expandedIndex === index}
-                onToggle={() =>
-                  setExpandedIndex(expandedIndex === index ? null : index)
-                }
-              />
-            ))}
+            {history.length === 0 ? (
+              <p className="text-gray-500 italic text-center">No user history found.</p>
+            ) : (
+              history.map((Event, index) => (
+                <AttendanceCard
+                  key={Event._id}
+                  event={Event}
+                  isExpanded={expandedIndex === index}
+                  onToggle={() =>
+                    setExpandedIndex(expandedIndex === index ? null : index)
+                  }
+                />
+              ))
+            )}
           </div>
+
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import EventCard from "../components/EventCard";
 import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchUserProfile } from "../api/profile";
+import { fetchMyNextEvents } from "../api/event";
 
 const sampleEvents = [
   {
@@ -76,9 +77,9 @@ export default function Home() {
               </Link>
               <button 
                 onClick={() => handleViewHistory(currentUser)} 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm"
+                className="text-white bg-secondary hover:bg-primary px-4 py-2 rounded text-sm"
               >
-                📋 View Volunteer History
+                📜 View My Volunteer History
               </button>
             </div>
           </div>
