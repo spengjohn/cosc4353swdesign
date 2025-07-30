@@ -132,6 +132,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
           label="Max Volunteers"
           name="maxVolunteers"
           type="number"
+          required
           placeholder="Enter a number"
           {...register("maxVolunteers", {
             required: "Max volunteers is required.",
