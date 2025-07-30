@@ -33,7 +33,7 @@ export const fetchCurrentEvents = async () => {
 
 export const fetchMyNextEvents = async (accountId) => {
   try {
-    const response = await axios.get(`/api/events/current/${accountId}`);
+    const response = await axios.get(`/api/events/mycurrent/${accountId}`);
     return response.data;
   } catch (error) {
     console.error("failed to fetch user's next events: ", error);

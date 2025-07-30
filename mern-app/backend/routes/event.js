@@ -5,7 +5,7 @@ const router = express.Router();
 //static first
 router.post("/create", createEvent);
 router.get("/current", getCurrentEvents);
-router.get("/current/:accountId", getMyNextEvents);
+router.get("/mycurrent/:accountId", getMyNextEvents);
 router.post("/delete/:eventId", deleteEvent);
 
 //then dynamic

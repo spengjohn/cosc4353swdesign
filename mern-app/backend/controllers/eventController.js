@@ -48,7 +48,13 @@ export const getMyNextEvents = async (req, res) => {
     const today = new Date();
     today.setHours(0,0,0,0);
 
-    const events = await EventDetails.find({ date: { $gte: today, assignedVolunteers: accountId} });
+    const events = await EventDetails.find({
+      date: { $gte: today },
+      assignedVolunteers: accountId, // this goes **outside** the date object
+    })
+    .sort({ date: 1 })
+    .limit(3);
+
     if (!events){
       res.status(404);
     }
