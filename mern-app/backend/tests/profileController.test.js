@@ -2,7 +2,6 @@ import { getProfile, updateProfile, getHistory, getAttendedHistory } from "../co
 import { mockProfiles } from "../mocks/mockProfiles.js";
 import { jest } from '@jest/globals';
 
-// Utility to mock Express res
 const mockResponse = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);

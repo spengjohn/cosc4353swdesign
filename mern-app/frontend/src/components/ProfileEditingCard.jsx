@@ -44,7 +44,8 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
       try {
         const userId = localStorage.getItem("userId");
         const profile = await fetchUserProfile(userId);
-
+        if (!profile) return;
+        
         // Convert dates to JS Date objects
         const dates = profile.availableDates?.map(d => new Date(d)) || [];
 
