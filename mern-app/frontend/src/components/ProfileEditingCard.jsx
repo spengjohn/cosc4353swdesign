@@ -42,10 +42,8 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Load profile data once on mount
   useEffect(() => {
     const loadProfile = async () => {
-      console.log(userProfileComplete);
       if (userProfileComplete) {
         try {
-          
           const profile = await fetchUserProfile(userId);
 
           // Convert dates to JS Date objects
@@ -91,8 +89,6 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
         }
       }),
 
-    
-
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
     address2: sanitizeInput(data.address2),
@@ -105,7 +101,6 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Send `cleaned` to backend instead of raw `data`
     
     try {
-      
       const result = await updateUserProfile(userId, cleaned);
       console.log("Profile updated:", result);
       localStorage.setItem('userProfileComplete', 'true');
@@ -114,9 +109,6 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
       console.error("Error updating profile:", err);
     }
   };
-
-  
-
 
   return (
     <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-full lg:w-lg">

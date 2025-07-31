@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PrimaryButton from "../components/Buttons";
 import Field from "../components/Field";
-import { registerUser } from "../api/auth";
+import { registerUser, loginUser } from "../api/auth";
 import cooglinklogo from "../assets/cooglinklogo.png";
 
 export default function Register() {
@@ -25,13 +25,28 @@ export default function Register() {
     const { status, data: result } = await registerUser(email, password, role);
 
     if (status === 201) {
-      setMessage("🎉 Registration successful! Redirecting to email verification ➤");
-      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
-      setRedirecting(true);
+      const { status, data: result } = await loginUser(email, password);
 
-      setTimeout(() => {
-        navigate('/emailverification');
-      }, 2000);
+      if (status === 200) {
+        localStorage.setItem('userToken', result.token);
+        localStorage.setItem('userRole', result.role);
+        localStorage.setItem('userId', result.id);
+        localStorage.setItem('userEmail', result.email);
+        localStorage.setItem('userVerified', result.isVerified);
+        localStorage.setItem('userProfileComplete', result.isProfileComplete);
+        setMessage("🎉 Registration successful! Redirecting to email verification ➤");
+        setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+        setRedirecting(true);
+
+        setTimeout(() => {
+          navigate('/emailverification');
+        }, 2000);
+      }
+      else {
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
 
     } else if (status === 409) {
       setMessage("❌ Email already registered.");
