@@ -42,42 +42,32 @@ export const getNotifications = async (req, res) => {
   }
 };
 
-
-export const updateNotification = async (req, res) => {
+export const updateAllNotification = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { recipient } = req.params;
 
-    const updated = await Notification.findByIdAndUpdate(
-      id,
-      { isRead: true },
-      { new: true }
+    const updated = await Notification.updateMany(
+      { recipient },              // find all notifications for this user
+      { $set: { isRead: true } }  // set all to read
     );
 
-    if (!updated) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
-
-    res.json(updated);
+    res.json({ message: "All notifications marked as read", modifiedCount: updated.modifiedCount });
   } catch (err) {
-    console.error("updateNotification error:", err);
+    console.error("updateAllNotification error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 
-export const deleteNotification = async (req, res) => {
+export const deleteAllNotification = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { recipient } = req.params;
 
-    const deleted = await Notification.findByIdAndDelete(id);
+    const result = await Notification.deleteMany({ recipient });
 
-    if (!deleted) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
-
-    res.json({ message: "Notification deleted", id });
+    res.json({ message: "All notifications deleted", deletedCount: result.deletedCount });
   } catch (err) {
-    console.error("deleteNotification error:", err);
+    console.error("deleteAllNotification error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

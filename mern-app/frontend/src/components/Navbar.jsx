@@ -3,13 +3,14 @@ import cooglinklogo from "../assets/cooglinklogo.png"
 import { useState, useEffect } from "react";
 import NotificationPanel from "./NotificationPanel";
 //import { sampleNotifications } from "../data/sampleNotifications";
-import { fetchNotifications } from "../api/notifications";
+import { fetchNotifications, updateAllNotifications, deleteAllNotifications } from "../api/notifications";
 
 export default function Navbar() {
   const userId = localStorage.getItem("userId");
   const [notifications, setNotifications] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
   const navigate  = useNavigate();
+
   useEffect(() => {
     const loadNotifications = async () => {
       try {
@@ -26,7 +27,26 @@ export default function Navbar() {
     loadNotifications();
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const handleMarkAllRead = async () => {
+    try {
+      await updateAllNotifications(userId); // assumes it marks all as read
+      const updated = await fetchNotifications(userId);
+      setNotifications(updated);
+    } catch (err) {
+      console.error("Failed to mark notifications as read:", err);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      await deleteAllNotifications(userId); // assumes it deletes all
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to delete notifications:", err);
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="relative">
@@ -104,6 +124,8 @@ export default function Navbar() {
           <NotificationPanel
             notifications={notifications}
             onClose={() => setShowPanel(false)}
+            onMarkAllRead={handleMarkAllRead}
+            onDeleteAll={handleDeleteAll}
           />
         </div>
       )}

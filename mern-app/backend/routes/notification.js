@@ -1,16 +1,20 @@
 import express from "express";
 import {
-  getNotificationsByRecipient,
-  createNotification,
-  markNotificationAsRead,
+  getNotifications,
+  deleteAllNotification,
+  updateAllNotification
 } from "../controllers/notificationsController.js";
 
 const router = express.Router();
 
-router.get("/:recipientId", getNotificationsByRecipient);
+router.patch("/update/all/:accountId", updateAllNotification);
+router.delete("/delete/all/:accountId", deleteAllNotification);
 
-router.post("/", createNotification);
+router.get("/:recipientId", getNotifications);
 
-router.patch("/:id/read", markNotificationAsRead);
+//router.post("/", createNotification);
+
+
+
 
 export default router;

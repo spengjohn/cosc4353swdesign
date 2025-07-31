@@ -145,6 +145,12 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
         {errors.maxVolunteers && (
           <p className="text-red-500 text-sm">{errors.maxVolunteers.message}</p>
         )}
+        
+        {/* Hidden assignedVolunteers */}
+        <input
+          type="hidden"
+          {...register("assignedVolunteers")}
+        />
 
         {/* Location */}
         <Field
@@ -271,7 +277,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
           >
             Cancel
           </button>
-
+          
           <PrimaryButton type="submit">Submit</PrimaryButton>
           {showConfirm && (
             <div className="fixed inset-0 z-50  flex items-center justify-center">
