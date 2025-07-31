@@ -51,12 +51,3 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-// HISTORY (keep mocked for now or upgrade later)
-export const getHistory = async (req, res) => {
-  res.status(501).json({ message: "Event history not implemented yet." });
-};
-
-export const getAttendedHistory = async (req, res) => {
-  res.status(501).json({ message: "Attended history not implemented yet." });
-};

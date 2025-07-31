@@ -12,7 +12,7 @@ function timeAgo(date) {
   return `${days} days ago`;
 }
 
-export async function createNotification(recipient, type = "event assignment", message = "") {
+export async function createNotification(recipient, type = "Event Assignment", message = "") {
   const newNotification = new Notification({
     recipient,
     message,
