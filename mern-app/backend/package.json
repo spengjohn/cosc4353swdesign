@@ -4,8 +4,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
+    "test:coverage": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "dev": "nodemon index.js",
     "start": "node index.js"
   },
@@ -21,6 +21,7 @@
     "mongoose": "^8.16.5"
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
     "jest": "^30.0.4",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.3"

@@ -1,67 +1,140 @@
-import { matchVolunteers } from "../utils/matchVolunteers.js";
-import { mockProfiles } from "../mocks/mockProfiles.js";
-import { mockEvents } from "../mocks/mockEvents.js";
+import request from "supertest";
+import {jest} from "@jest/globals"
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import express from "express";
+import { getMatches } from "../controllers/volunteerMatchingController.js";
+import EventDetails from "../models/Event.js";
+import UserProfile from "../models/UserProfile.js";
 
-describe("matchVolunteers - Updated Strict Matching", () => {
-  it("matches volunteers for Event 1: Community Cooking", () => {
-    const event = mockEvents[1];
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
+dotenv.config({ path: ".env.test" });
 
-    // Alice is the only match (correct state, available, has all skills)
-    expect(matches.length).toBe(2);
-    expect(matches[0].fullName).toBe("Alice");
-    expect(matches[1].fullName).toBe("Iggy");
+// Setup basic app
+const app = express();
+app.use(express.json());
+app.get("/api/match/:eventId", getMatches);
 
-    // Diana and Gio are same city but wrong state or skills
-    expect(matches.find(v => v.fullName === "Diana")).toBeUndefined();
-    expect(matches.find(v => v.fullName === "Gio")).toBeUndefined();
+describe("GET /api/match/:eventId", () => {
+  let event;
+  let matchingUser;
+  let nonMatchingUser;
+
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGO_URI_TEST, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
   });
 
-  it("matches volunteers for Event 2: Church Gardening", () => {
-    const event = mockEvents[2];
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
+  beforeEach(async () => {
+    await EventDetails.deleteMany({});
+    await UserProfile.deleteMany({});
 
-    // Bob is perfect match (skills, date, city, state)
-    expect(matches.length).toBe(1);
-    expect(matches[0].fullName).toBe("Bob");
+    // Create event
+    event = await EventDetails.create({
+      title: "Beach Cleanup",
+      description: "Clean the beach",
+      location: "Beach Park",
+      city: "Houston",
+      state: "TX",
+      date: new Date("2025-08-15"),
+      urgency: "High",
+      skillsRequired: ["Lifting", "Teamwork"],
+      maxVolunteers: 10,
+      assignedVolunteers: [],
+    });
 
-    // Eric has skills but wrong state, Hannah has correct state but wrong date
-    expect(matches.find(v => v.fullName === "Eric")).toBeUndefined();
-    expect(matches.find(v => v.fullName === "Hannah")).toBeUndefined();
+    // Matching user
+    matchingUser = await UserProfile.create({
+      credentialId: new mongoose.Types.ObjectId(),
+      fullName: "Alice Match",
+      address1: "123 Ocean Dr",
+      city: "Houston",
+      state: "TX",
+      zipcode: "77001",
+      skills: ["Lifting", "Teamwork"],
+      preferences: "Morning",
+      availableDates: [new Date("2025-08-15")],
+    });
+
+    // Non-matching user (wrong state)
+    nonMatchingUser = await UserProfile.create({
+      credentialId: new mongoose.Types.ObjectId(),
+      fullName: "Bob NoMatch",
+      address1: "456 Mountain Rd",
+      city: "Dallas",
+      state: "CA",
+      zipcode: "90210",
+      skills: ["Lifting"],
+      preferences: "Afternoon",
+      availableDates: [new Date("2025-08-15")],
+    });
+    // city mismatch
+    matchingUser2 = await UserProfile.create({
+      credentialId: new mongoose.Types.ObjectId(),
+      fullName: "City Mismatch",
+      address1: "456",
+      city: "Dallas",
+      state: "TX",
+      zipcode: "75001",
+      skills: ["Lifting", "Teamwork"],
+      availableDates: [event.date],
+    });
   });
 
-  it("matches volunteers for Event 3: Marathon Setup", () => {
-    const event = mockEvents[3];
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
-
-    // Charlie has *both* First-Aid and Team Skills in TX
-    expect(matches.length).toBe(1);
-    expect(matches[0].fullName).toBe("Charlie")
-    
+  afterAll(async () => {
+    await mongoose.disconnect();
   });
 
-  it("excludes volunteers from different states", () => {
-    const event = mockEvents[1]; // TX
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
-
-    // Diana is from AK, so should be excluded even though city matches
-    expect(matches.find(v => v.fullName === "Diana")).toBeUndefined();
+  it("should return only matching users for the event", async () => {
+    const res = await request(app).get(`/api/match/${event._id}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveLength(2);
+    expect(res.body[0].fullName).toBe("Alice Match");
   });
 
-  it("excludes volunteers without required skills", () => {
-    const event = { ...mockEvents[1], skillsRequired: ["Cooking", "Gardening"] };
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
-
-    // Nobody has both Cooking + Gardening in TX
-    expect(matches.length).toBe(0);
+  it("should return 404 if event not found", async () => {
+    const fakeId = new mongoose.Types.ObjectId();
+    const res = await request(app).get(`/api/match/${fakeId}`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Event not found");
   });
 
-  it("excludes volunteers not available on event date", () => {
-    const event = {...mockEvents[2], date: new Date("2025-08-07)")};
-    const matches = matchVolunteers(Object.values(mockProfiles), event);
+  
 
-    // No One is available on that date
-    expect(matches.length).toBe(0);
-    
+  it("should return 500 if an error occurs during matching", async () => {
+    // Temporarily mock EventDetails.findById to throw
+    const original = EventDetails.findById;
+    EventDetails.findById = jest.fn().mockRejectedValue(new Error("Mocked error"));
+
+    const res = await request(app).get(`/api/match/${event._id}`);
+    expect(res.statusCode).toBe(500);
+    expect(res.body.message).toBe("Internal server error");
+
+    // Restore
+    EventDetails.findById = original;
+  });
+
+  it("should sort matching users by city match (event.city)", async () => {
+  
+    const res = await request(app).get(`/api/match/${event._id}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.length).toBe(2);
+
+    // City match should come first
+    expect(res.body[0].city).toBe("Houston");
+  });
+
+  it("should return an empty array if no users match the event criteria", async () => {
+    // Remove matching skills from the only matching user
+    await UserProfile.findByIdAndUpdate(matchingUser._id, {
+      skills: ["Cooking"],
+    });
+    await UserProfile.findByIdAndUpdate(matchingUser2._id, {
+      skills: ["Cooking"],
+    });
+    const res = await request(app).get(`/api/match/${event._id}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual([]); // No matches
   });
 });
