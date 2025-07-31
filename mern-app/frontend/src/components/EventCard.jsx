@@ -43,7 +43,7 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions 
   return (
     <>
       <div
-        className="w-96 pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
+        className="w-96 lg:w-152 pb-12 bg-white shadow-md rounded-xl p-6 cursor-pointer border transition-all duration-300 relative"
         style={{ borderColor: "#72A7BC" }}
         onClick={onToggle}
       >

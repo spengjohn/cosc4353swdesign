@@ -50,7 +50,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-secondary mb-2">
           👋 Welcome back, {currentUser?.fullName}!
         </h1>
-        <p className="text-lg text-gray-700 max-w-2xl">
+        <p className="text-lg text-center text-gray-700 max-w-2xl">
           {role === "admin"
             ? "You are an ADMIN ⚙️. You can manage events and view volunteer profiles and histories."
             : "You are a VOLUNTEER 🙋‍♀️. You can view and edit your profile, check your upcoming events, and review your volunteer history."}
@@ -62,8 +62,8 @@ export default function Home() {
           {/* admin profile and tools */}
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-secondary">My Profile & Admin Tools</h2>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/manageprofile" className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
+            <div className="flex flex-col lg:flex-row justify-center gap-4">
+              <Link to="/manageprofile" className="bg-white text-center text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm">
                 👤 View My Profile
               </Link>
               <button 
@@ -74,7 +74,7 @@ export default function Home() {
               </button>
               <Link
                 to="/manageevents"
-                className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
+                className="bg-white text-secondary text-center border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
               >
                 🛠 Manage Events
               </Link>
@@ -85,7 +85,7 @@ export default function Home() {
 
           {/* upcoming events */}
           <h2 className="text-2xl font-semibold text-secondary">Your Next 3 Assigned Events</h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col items-center gap-4">
             {myNextEvents.length > 0 ? (
               myNextEvents.map((event, idx) => (
                 <EventCard
@@ -114,10 +114,10 @@ export default function Home() {
       ) : (
         <>
           {/* volunteer tools */}
-          <div className="max-w-xl w-full flex justify-start gap-4 mb-2">
+          <div className="flex flex-col lg:flex-row justify-center gap-4">
             <Link
               to="/manageprofile"
-              className="bg-white text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
+              className="bg-white text-center text-secondary border border-secondary hover:bg-secondary hover:text-white px-4 py-2 rounded text-sm"
             >
               View My Profile
             </Link>
@@ -133,7 +133,7 @@ export default function Home() {
 
           {/* next event */}
           <h2 className="text-2xl font-semibold text-secondary mt-4">Your Next 3 Assigned Events</h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col items-center gap-4">
           {myNextEvents.length > 0 ? (
             myNextEvents.map((event, idx) => (
               <EventCard

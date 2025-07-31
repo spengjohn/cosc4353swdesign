@@ -119,7 +119,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
 
 
   return (
-    <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-lg">
+    <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-full lg:w-lg">
       <form onSubmit={handleSubmit(onSubmit)} className="flex">
         <div className="flex flex-col size-full gap-2">
           <div className="flex flex-3 flex-col gap-2">
@@ -189,7 +189,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                     maxLength={9}
                     className="flex-1"
                     label="Zipcode"
-                    type="number"
+                    type="digit"
                     placeholder="12345"
                     errorMessage={errors.zipcode?.message}
                     {...field}

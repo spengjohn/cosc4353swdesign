@@ -26,12 +26,10 @@ export default function VolunteerMatch() {
     try {
       // 1. Get matched volunteers
       const volunteers = await getMatch(eventId);
-      //console.log("matched volunteers: ", volunteers);
       setMatchedVolunteers(volunteers);
 
       // 2. Get event
       const fetchedEvent = await fetchEvent(eventId);
-      //console.log("fetched event: ", fetchedEvent);
       setEvent(fetchedEvent);
 
       // 3. Fetch profile details of assigned volunteers (if any)
@@ -81,18 +79,19 @@ export default function VolunteerMatch() {
 
   else return (
     
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full lg:w-2/3">
       {/* status*/}
         {message && (
           <div className={messageStyle}>
             {message}
           </div>
         )}
-      <div className="flex w-full">
+      <div className="flex flex-col lg:flex-row w-full max-w-screen-xl mx-auto">
         
         {/* Event Card */}
-        <div className="w-1/3 p-6">
-          <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Event</h2>
+        <div className=" w-full p-4">
+
+          <h2 className="text-2xl font-bold mb-2 text-[#3e7b91]">Event</h2>
           <div className="bg-white border-2 border-[#3e7b91] rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-xl font-semibold text-[#3e7b91]">{event.title}</h3>
@@ -102,8 +101,6 @@ export default function VolunteerMatch() {
             </div>
             <p className="text-sm text-gray-700 mb-1">
               <strong>Date:</strong> {/*event.day*/} {formattedDate}
-              {/*&nbsp;&nbsp;
-              <strong>Time:</strong> {"time"}*/}
             </p>
             <p className="text-sm text-gray-700 mb-1">
               <strong>Description:</strong> {event.description}
@@ -135,8 +132,9 @@ export default function VolunteerMatch() {
         </div>
 
         {/* Selected Volunteers */}
-        <div className="w-2/3 p-6 space-y-4">
-          <h2 className="text-2xl font-bold mb-2 text-[#3e7b91]">Matched Volunteers</h2>
+        <div className=" w-full p-4">
+
+          <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Matched Volunteers</h2>
 
           {(
           <div className="space-y-2">
@@ -163,30 +161,22 @@ export default function VolunteerMatch() {
         )}
 
 
-          <div className="pt-6">
+          <div className="pt-4">
             <button
               className={`w-full py-2 px-4 rounded font-semibold transition bg-primary text-dark hover:text-white hover:bg-secondary`}
-              
               onClick={async () => {
-                
                 const selectedIds = selectedVolunteers.map((v) => v.credentialId);
                 const updatedEvent = { ...event, assignedVolunteers: selectedIds };
-
                 try {
                   await updateEvent(eventId, updatedEvent);
-                  //console.log("UpdatedEvent:", updatedEvent);
                 } catch (error) {
-                  //console.error("Failed to update event:", error);
+                  console.error("Failed to update event:", error);
                 }
-
-                //console.log("Finalized Volunteers .credentialIds):", selectedIds);
                 setMessage("Assigned Volunteers successfully updated!")
                 setTimeout(() => {
                   navigate('../manageevents');
                 }, 1000);
-                
               }}
-
             >
               Submit Final Decision
             </button>
@@ -197,7 +187,7 @@ export default function VolunteerMatch() {
       {/* Volunteer Selection */}
       <div className="px-6 pb-12">
         <h3 className="text-xl font-semibold text-[#3e7b91] mb-3">Please choose volunteers from the list below:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {matchedVolunteers.map((vol) => (
             <div
               key={vol.credentialId}
