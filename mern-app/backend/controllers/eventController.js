@@ -1,5 +1,6 @@
 import EventDetails from "../models/Event.js";
 import { createNotification } from "./notificationsController.js";
+import UserCredentials from "../models/UserCredentials.js";
 
 export const createEvent = async (req, res) => {
   try {
@@ -17,10 +18,15 @@ export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
     //console.log("GET /api/events/:eventId");
+  console.log("Fetching event with ID:", eventId);
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) {
+      
+      console.log("Event not found");
+      return res.status(404).json({ message: "Event not found" })};
 
+    console.log("Event found:", event);
     res.json(event);
   } catch (err) {
     console.error("getEvent error:", err);
