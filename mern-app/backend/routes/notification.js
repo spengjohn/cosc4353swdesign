@@ -12,9 +12,4 @@ router.delete("/delete/all/:accountId", deleteAllNotification);
 
 router.get("/:recipientId", getNotifications);
 
-//router.post("/", createNotification);
-
-
-
-
 export default router;

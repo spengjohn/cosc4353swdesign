@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 
 export default function NotificationPanel({ notifications, onClose, onMarkAllRead,
-  onDeleteAll, onMarkSingle, onDeleteSingle}) {
+  onDeleteAll}) {
   useEffect(() => {
     const escListener = (e) => {
       if (e.key === "Escape") onClose();
@@ -32,7 +32,7 @@ export default function NotificationPanel({ notifications, onClose, onMarkAllRea
         {notifications.length === 0 ? (
           <p className="p-4 text-sm text-gray-500">No notifications</p>
         ) : (
-          notifications.map((note, index) => (
+          notifications.map((note) => (
             <li key={note._id} className="p-4 text-sm">
               <div className="flex justify-between items-start">
                 <div>
@@ -55,7 +55,6 @@ export default function NotificationPanel({ notifications, onClose, onMarkAllRea
                 </div>
               </div>
             </li>
-
           ))
         )}
       </ul>

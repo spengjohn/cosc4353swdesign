@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import cooglinklogo from "../assets/cooglinklogo.png"
 import { useState, useEffect } from "react";
 import NotificationPanel from "./NotificationPanel";
-//import { sampleNotifications } from "../data/sampleNotifications";
 import { fetchNotifications, updateAllNotifications, deleteAllNotifications } from "../api/notifications";
 
 export default function Navbar() {
@@ -14,9 +13,6 @@ export default function Navbar() {
   useEffect(() => {
     const loadNotifications = async () => {
       try {
-        /*
-        const accountId = localStorage.getItem("accountId"); // or from context
-        if (!accountId) return;*/
         const data = await fetchNotifications(userId);
         setNotifications(data);
       } catch (err) {
@@ -29,7 +25,7 @@ export default function Navbar() {
 
   const handleMarkAllRead = async () => {
     try {
-      await updateAllNotifications(userId); // assumes it marks all as read
+      await updateAllNotifications(userId);
       const updated = await fetchNotifications(userId);
       setNotifications(updated);
     } catch (err) {
@@ -39,7 +35,7 @@ export default function Navbar() {
 
   const handleDeleteAll = async () => {
     try {
-      await deleteAllNotifications(userId); // assumes it deletes all
+      await deleteAllNotifications(userId);
       setNotifications([]);
     } catch (err) {
       console.error("Failed to delete notifications:", err);

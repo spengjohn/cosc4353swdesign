@@ -1,6 +1,5 @@
 import Notification from "../models/Notification.js";
 
-
 function timeAgo(date) {
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
@@ -12,7 +11,6 @@ function timeAgo(date) {
   const days = Math.floor(hours / 24);
   return `${days} days ago`;
 }
-
 
 export async function createNotification(recipient, type = "event assignment", message = "") {
   const newNotification = new Notification({
@@ -44,10 +42,10 @@ export const getNotifications = async (req, res) => {
 
 export const updateAllNotification = async (req, res) => {
   try {
-    const { recipient } = req.params;
+    const { accountId } = req.params;
 
     const updated = await Notification.updateMany(
-      { recipient },              // find all notifications for this user
+      { recipient: accountId },              // find all notifications for this user
       { $set: { isRead: true } }  // set all to read
     );
 
@@ -61,9 +59,9 @@ export const updateAllNotification = async (req, res) => {
 
 export const deleteAllNotification = async (req, res) => {
   try {
-    const { recipient } = req.params;
+    const { accountId } = req.params;
 
-    const result = await Notification.deleteMany({ recipient });
+    const result = await Notification.deleteMany({ recipient: accountId });
 
     res.json({ message: "All notifications deleted", deletedCount: result.deletedCount });
   } catch (err) {
