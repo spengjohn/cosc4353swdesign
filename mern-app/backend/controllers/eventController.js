@@ -17,7 +17,6 @@ export const createEvent = async (req, res) => {
 export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    // console.log("GET /api/events/:eventId");
   console.log("Fetching event with ID:", eventId);
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
@@ -151,11 +150,9 @@ export const updateEvent = async (req, res) => {
     // Similar to b) just say the event was deleted. handles this in the function below
     // d) There are no actual changes. no need for any notification to be made.
     // Finally we can update the event and return response.
-    //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
     const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
     // if (!updated) return res.status(404).json({ message: "Event not found" });
     await Promise.all(notificationsToSend);
-    // const updatedEvent = updated.toObject();// Check if 'updated' is a Mongoose document
     console.log(updated);
     res.json({ message: "Event updated successfully", event: updated });
     
