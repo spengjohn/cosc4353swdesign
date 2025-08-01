@@ -87,6 +87,21 @@ describe("GET /api/event/:eventId", () => {
      preferences: "Nothing outside",
      availableDates: [new Date("2025-08-28")],
    });
+
+   
+
+   //testUser for myNext... tests
+   testUserTwo = await UserProfile.create({
+     credentialId: new mongoose.Types.ObjectId(),
+     fullName: "Echo Foxtrot",
+     address1: "123 Road",
+     city: "Dallas",
+     state: "TX",
+     zipcode: "12345",
+     skills: ["Cooking"],
+     preferences: "No gardening",
+     availableDates: [new Date("2025-08-27")],
+   });
   });
 
 afterEach(async () => {
@@ -266,7 +281,7 @@ it("getEvent should properly get an event given a valid Id", async () => {
    }
   ]);
 
-  const res = await request(app).get(`/api/event/mycurrent/${testUser._id}`);
+  const res = await request(app).get(`/api/event/mycurrent/${testUserTwo._id}`);
 
   expect(res.statusCode).toBe(404); // expect it to fall to the no events case
   expect(res.body.message).toBe("No events found");
@@ -287,8 +302,158 @@ it("getEvent should properly get an event given a valid Id", async () => {
    spy.mockRestore();
   });
    
+it("updateEvent should properly update an event (attendee added) given a valid Id", async () => {
 
- it('deleteEvent should delete the event successfully and return 200', async () => {
+  const updatedData = {
+    assignedVolunteers: [testUser._id],
+  };
+
+  // Send the request to update the event
+  const res = await request(app)
+    .post(`/api/event/${event._id}`)
+    .send(updatedData);
+
+  // Convert both the response and updated data to string arrays
+  const updatedVolunteersStr = updatedData.assignedVolunteers.map(id => id.toString());
+  const responseVolunteersStr = res.body.event.assignedVolunteers.map(id => id.toString());
+
+  // Assertions
+  expect(res.statusCode).toBe(200);
+  expect(responseVolunteersStr).toEqual(updatedVolunteersStr);  // Compare as strings
+
+});
+
+it("updateEvent should properly update an event (attendee removed) given a valid Id", async () => {
+ // User event for updateEvent test
+   const attendeeEvent = await EventDetails.create({
+     title: "Attendee Event",
+     description: "Attendee event",
+     location: "Attendee Park",
+     city: "Attendee Village",
+     state: "TX",
+     date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+     urgency: "High",
+     skillsRequired: [],
+     maxVolunteers: 10,
+     assignedVolunteers: [testUser._id],
+   });
+
+  const updatedData = {
+    assignedVolunteers: [],
+  };
+
+  // Send the request to update the event
+  const res = await request(app)
+    .post(`/api/event/${attendeeEvent._id}`)
+    .send(updatedData);
+
+  // Convert both the response and updated data to string arrays
+  const updatedVolunteersStr = updatedData.assignedVolunteers.map(id => id.toString());
+  const responseVolunteersStr = res.body.event.assignedVolunteers.map(id => id.toString());
+
+  // Assertions
+  expect(res.statusCode).toBe(200);
+  expect(responseVolunteersStr).toEqual(updatedVolunteersStr);  // Compare as strings
+  
+  expect(responseVolunteersStr.length).toBe(0);  // Ensure the event's volunteers are removed (empty array)
+
+});
+
+
+it("updateEvent should properly update an event (attendees added and removed) given a valid Id", async () => {
+  // User event for updateEvent test
+   const attendeeEvent = await EventDetails.create({
+     title: "Attendee Event",
+     description: "Attendee event",
+     location: "Attendee Park",
+     city: "Attendee Village",
+     state: "TX",
+     date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+     urgency: "High",
+     skillsRequired: [],
+     maxVolunteers: 10,
+     assignedVolunteers: [testUser._id],
+   });
+  const updatedData = {
+    assignedVolunteers: [testUserTwo._id],
+  };
+
+  // Send the request to update the event
+  const res = await request(app)
+    .post(`/api/event/${attendeeEvent._id}`)
+    .send(updatedData);
+
+  // Convert both the response and updated data to string arrays
+  const updatedVolunteersStr = updatedData.assignedVolunteers.map(id => id.toString());
+  const responseVolunteersStr = res.body.event.assignedVolunteers.map(id => id.toString());
+
+  // Assertions
+  expect(res.statusCode).toBe(200);
+  expect(responseVolunteersStr).toEqual(updatedVolunteersStr);  // Compare as strings
+   expect(res.body.event.assignedVolunteers).toHaveLength(1);  // Ensure only 1 volunteer in the array after update
+  expect(res.body.event.assignedVolunteers[0].toString()).toBe(testUserTwo._id.toString());  // Ensure it matches the updated volunteer
+
+});
+
+it("updateEvent should properly update an event (detail change) given a valid Id", async () => {
+  const updatedData = {
+    title: "Updated Park Cleanup",
+    description: "Clean the local park and garden.",
+    date: "2025-09-01T10:00:00Z",
+    location: "Park Central",
+    assignedVolunteers: [testUserTwo._id],
+  };
+
+  // Send the request to update the event
+  const res = await request(app)
+    .post(`/api/event/${event._id}`)
+    .send(updatedData);
+
+  // Ensure the response status code is 200 (OK)
+  expect(res.statusCode).toBe(200);
+
+  // Ensure the response body has the updated fields
+
+  // Convert dates to Date objects and compare only the date portion
+  const receivedDate = new Date(res.body.event.date).toISOString().split('T')[0];
+  const expectedDate = new Date(updatedData.date).toISOString().split('T')[0];
+
+  // Compare only the date part (no time or milliseconds)
+  expect(receivedDate).toBe(expectedDate);
+
+  expect(res.body.event).toHaveProperty("_id", event._id.toString());
+  expect(res.body.event.title).toBe(updatedData.title);
+  expect(res.body.event.description).toBe(updatedData.description);
+  expect(res.body.event.location).toBe(updatedData.location);
+});
+
+  it("updateEvent should return 404 if event not found", async () => {
+  const updatedData = {
+    assignedVolunteers: [testUser._id],
+  };
+   const fakeId = new mongoose.Types.ObjectId();
+   const res = await request(app).post(`/api/event/${fakeId}`).send(updatedData);
+   expect(res.statusCode).toBe(404);
+   expect(res.body.message).toBe("Event not found");
+  });
+
+  it("updateEvent should return 500 if there is an internal server error", async () => {
+   const mockPopulate = jest.fn().mockRejectedValue(new Error("Mocked error"));
+   const spy = jest.spyOn(EventDetails, "findById").mockRejectedValue(new Error("Mocked error"));
+
+  const updatedData = {
+    assignedVolunteers: [testUser._id],
+  };
+   const fakeId = new mongoose.Types.ObjectId();
+   const res = await request(app).post(`/api/event/${fakeId}`).send(updatedData);
+
+   expect(res.statusCode).toBe(500);
+   expect(res.body.error).toBe("Internal Server Error");
+
+   spy.mockRestore();
+  });
+
+ it('deleteEvent should delete an event with no volunteers successfully and return 200', async () => {
   const res = await request(app).post(`/api/event/delete/${event._id}`);
 
   expect(res.statusCode).toBe(200);
@@ -296,6 +461,31 @@ it("getEvent should properly get an event given a valid Id", async () => {
 
   // Confirm event is deleted
   const deletedEvent = await EventDetails.findById(event._id); 
+  expect(deletedEvent).toBeNull();
+ });
+
+ 
+ it('deleteEvent should delete an event with volunteers successfully, return 200, and send a notification to its prior volunteers', async () => {
+  
+   const attendeeEvent = await EventDetails.create({
+     title: "Attendee Event",
+     description: "Attendee event",
+     location: "Attendee Park",
+     city: "Attendee Village",
+     state: "TX",
+     date: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
+     urgency: "High",
+     skillsRequired: [],
+     maxVolunteers: 10,
+     assignedVolunteers: [testUser._id],
+   });
+  const res = await request(app).post(`/api/event/delete/${attendeeEvent._id}`);
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.message).toBe("Event deleted successfully");
+
+  // Confirm event is deleted
+  const deletedEvent = await EventDetails.findById(attendeeEvent._id); 
   expect(deletedEvent).toBeNull();
  });
 

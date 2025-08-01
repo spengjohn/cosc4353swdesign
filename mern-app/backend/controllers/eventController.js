@@ -73,6 +73,7 @@ export const getMyNextEvents = async (req, res) => {
 
 export const updateEvent = async (req, res) => {
   try {
+        console.log('Incoming request body:', req.body);
     const { eventId } = req.params;
     const updateData = req.body;
     // Notification pseudocode:
@@ -94,7 +95,6 @@ export const updateEvent = async (req, res) => {
       (currentEvent.assignedVolunteers && updateData.assignedVolunteers)) {
       const currentVolunteers = (currentEvent.assignedVolunteers || []).map(v => v.toString());
       const newVolunteers = updateData.assignedVolunteers || [];
-      
       console.log("currentVolunteers:", currentVolunteers);
       console.log("newVolunteers:", newVolunteers);
 
@@ -153,10 +153,12 @@ export const updateEvent = async (req, res) => {
     // Finally we can update the event and return response.
     //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
     const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    // if (!updated) return res.status(404).json({ message: "Event not found" });
     await Promise.all(notificationsToSend);
-
+    // const updatedEvent = updated.toObject();// Check if 'updated' is a Mongoose document
+    console.log(updated);
     res.json({ message: "Event updated successfully", event: updated });
+    
   } catch (err) {
     console.error("updateEvent error:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -191,6 +193,7 @@ console.log("Fetched event to delete:", eventToDelete);
 
     // Delete the event
     const deleted = await EventDetails.findByIdAndDelete(eventId);
+  console.log('Event deleted:', deleted);
     if (!deleted) return res.status(404).json({ message: "Event not found" });
 
     // Send all notifications
