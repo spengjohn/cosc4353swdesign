@@ -1,5 +1,6 @@
 import EventDetails from "../models/Event.js";
 import { createNotification } from "./notificationsController.js";
+import UserCredentials from "../models/UserCredentials.js"; // added due to potential populate errors otherwise
 
 export const createEvent = async (req, res) => {
   try {
@@ -16,12 +17,17 @@ export const createEvent = async (req, res) => {
 export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    //console.log("GET /api/events/:eventId");
+    // console.log("GET /api/events/:eventId");
+  console.log("Fetching event with ID:", eventId);
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) {
+      console.log("Event not found");
+      return res.status(404).json({ message: "Event not found" })
+    };
 
-    res.json(event);
+    console.log("Event found:", event);
+    res.status(200).json(event);
   } catch (err) {
     console.error("getEvent error:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -34,7 +40,7 @@ export const getCurrentEvents = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const events = await EventDetails.find({ date: { $gte: today } });
+    const events = await EventDetails.find({ date: { $gte: today } }); 
 
     res.json(events);
   } catch (error) {
@@ -55,19 +61,19 @@ export const getMyNextEvents = async (req, res) => {
     })
     .sort({ date: 1 })
     .limit(3);
-
-    if (!events){
-      res.status(404);
-    }
-    res.status(200).json(events);
+    if (!events || events.length === 0) {
+      return res.status(404).json({ message: "No events found" });
+    } res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error"});
+    console.error("fetchMyNextEvents error: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 
 export const updateEvent = async (req, res) => {
   try {
+        console.log('Incoming request body:', req.body);
     const { eventId } = req.params;
     const updateData = req.body;
     // Notification pseudocode:
@@ -89,7 +95,6 @@ export const updateEvent = async (req, res) => {
       (currentEvent.assignedVolunteers && updateData.assignedVolunteers)) {
       const currentVolunteers = (currentEvent.assignedVolunteers || []).map(v => v.toString());
       const newVolunteers = updateData.assignedVolunteers || [];
-      
       console.log("currentVolunteers:", currentVolunteers);
       console.log("newVolunteers:", newVolunteers);
 
@@ -148,10 +153,12 @@ export const updateEvent = async (req, res) => {
     // Finally we can update the event and return response.
     //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
     const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    // if (!updated) return res.status(404).json({ message: "Event not found" });
     await Promise.all(notificationsToSend);
-
+    // const updatedEvent = updated.toObject();// Check if 'updated' is a Mongoose document
+    console.log(updated);
     res.json({ message: "Event updated successfully", event: updated });
+    
   } catch (err) {
     console.error("updateEvent error:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -164,7 +171,11 @@ export const deleteEvent = async (req, res) => {
 
     // Find the event before deleting to get assigned volunteers
     const eventToDelete = await EventDetails.findById(eventId);
-    if (!eventToDelete) return res.status(404).json({ message: "Event not found" });
+console.log("Fetched event to delete:", eventToDelete);
+    if (!eventToDelete) {
+      
+  console.log('Event to delete not found');
+  return res.status(404).json({ message: "Event not found" })};
 
     // Scenario c: Event was deleted - notify all assigned volunteers
     const notificationsToSend = [];
@@ -182,6 +193,7 @@ export const deleteEvent = async (req, res) => {
 
     // Delete the event
     const deleted = await EventDetails.findByIdAndDelete(eventId);
+  console.log('Event deleted:', deleted);
     if (!deleted) return res.status(404).json({ message: "Event not found" });
 
     // Send all notifications
