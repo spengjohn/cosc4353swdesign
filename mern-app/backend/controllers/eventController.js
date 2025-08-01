@@ -22,9 +22,9 @@ export const getEvent = async (req, res) => {
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
     if (!event) {
-      
       console.log("Event not found");
-      return res.status(404).json({ message: "Event not found" })};
+      return res.status(404).json({ message: "Event not found" })
+    };
 
     console.log("Event found:", event);
     res.status(200).json(event);
@@ -61,11 +61,9 @@ export const getMyNextEvents = async (req, res) => {
     })
     .sort({ date: 1 })
     .limit(3);
-
-   if (!events || events.length === 0) {
-  return res.status(404).json({ message: "No events found" });
-}
-    res.status(200).json(events);
+    if (!events || events.length === 0) {
+      return res.status(404).json({ message: "No events found" });
+    } res.status(200).json(events);
   } catch (error) {
     console.error("fetchMyNextEvents error: ", error);
     res.status(500).json({ error: "Internal server error" });
