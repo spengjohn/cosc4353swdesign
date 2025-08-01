@@ -27,7 +27,7 @@ export const getEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" })};
 
     console.log("Event found:", event);
-    res.json(event);
+    res.status(200).json(event);
   } catch (err) {
     console.error("getEvent error:", err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -40,7 +40,7 @@ export const getCurrentEvents = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const events = await EventDetails.find({ date: { $gte: today } });
+    const events = await EventDetails.find({ date: { $gte: today } }); 
 
     res.json(events);
   } catch (error) {
@@ -62,12 +62,13 @@ export const getMyNextEvents = async (req, res) => {
     .sort({ date: 1 })
     .limit(3);
 
-    if (!events){
-      res.status(404);
-    }
+   if (!events || events.length === 0) {
+  return res.status(404).json({ message: "No events found" });
+}
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error"});
+    console.error("fetchMyNextEvents error: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -184,7 +185,7 @@ export const deleteEvent = async (req, res) => {
           )
         );
       }
-    }
+    }s
 
     // Delete the event
     const deleted = await EventDetails.findByIdAndDelete(eventId);
