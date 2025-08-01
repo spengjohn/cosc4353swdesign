@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1753989953778" clover="3.2.0">
-  <project timestamp="1753989953778" name="All files">
-    <metrics statements="24" coveredstatements="24" conditionals="12" coveredconditionals="10" methods="6" coveredmethods="6" elements="42" coveredelements="40" complexity="0" loc="24" ncloc="24" packages="2" files="3" classes="3"/>
+<coverage generated="1754064858452" clover="3.2.0">
+  <project timestamp="1754064858453" name="All files">
+    <metrics statements="35" coveredstatements="35" conditionals="14" coveredconditionals="12" methods="7" coveredmethods="7" elements="56" coveredelements="54" complexity="0" loc="35" ncloc="35" packages="2" files="5" classes="5"/>
     <package name="controllers">
-      <metrics statements="21" coveredstatements="21" conditionals="12" coveredconditionals="10" methods="6" coveredmethods="6"/>
+      <metrics statements="31" coveredstatements="31" conditionals="14" coveredconditionals="12" methods="7" coveredmethods="7"/>
+      <file name="volunteerHistoryController.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\controllers\volunteerHistoryController.js">
+        <metrics statements="10" coveredstatements="10" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="7" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+      </file>
       <file name="volunteerMatchingController.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\controllers\volunteerMatchingController.js">
         <metrics statements="21" coveredstatements="21" conditionals="12" coveredconditionals="10" methods="6" coveredmethods="6"/>
         <line num="4" count="1" type="stmt"/>
@@ -30,13 +43,17 @@
       </file>
     </package>
     <package name="models">
-      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="Event.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\models\Event.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="3" count="1" type="stmt"/>
         <line num="52" count="1" type="stmt"/>
       </file>
       <file name="UserProfile.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\models\UserProfile.js">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="VolunteerHistory.js" path="C:\Users\mrsp3\Desktop\GitHub\COSC4353-Software-Design\mern-app\backend\models\VolunteerHistory.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="3" count="1" type="stmt"/>
       </file>
