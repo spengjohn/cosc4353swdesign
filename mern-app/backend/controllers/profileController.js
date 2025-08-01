@@ -10,7 +10,7 @@ export const getProfile = async (req, res) => {
     const profile = await UserProfile.findOne({ credentialId: accountId });
 
     if (!profile) {
-      return res.status(404).json({ message: "Profile not found." });
+      return res.status(200).json(null); // null if no profile yet
     }
 
     res.status(200).json(profile);
@@ -48,6 +48,26 @@ export const updateProfile = async (req, res) => {
     res.status(200).json({ message: "Profile saved", profile });
   } catch (err) {
     console.error("updateProfile error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// PATCH /api/verify/:accountId
+export const verifyUser = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const user = await UserCredentials.findById(accountId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    res.status(200).json({ message: "User verified successfully." });
+  } catch (err) {
+    console.error("verifyUser error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

@@ -3,6 +3,7 @@ import UserCredentials from '../models/UserCredentials.js';
 // LOGIN CONTROLLER
 export const login = async (req, res) => {
   try {
+    if (req.body.forceError) throw new Error("Forced login failure");
     const { email, password } = req.body;
 
     if (!email || !email.includes('@')) {
@@ -43,6 +44,8 @@ export const login = async (req, res) => {
 // REGISTER CONTROLLER
 export const register = async (req, res) => {
   try {
+    if (req.body.forceError) throw new Error("Forced failure");
+
     const { email, password, role } = req.body;
 
     if (!email || !email.includes('@')) {

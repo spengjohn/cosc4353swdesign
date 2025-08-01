@@ -1,7 +1,7 @@
-// jest.config.js
+// // jest.config.js
 export default {
-  testEnvironment: "node",
   transform: {},
+  testEnvironment: "node",
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },

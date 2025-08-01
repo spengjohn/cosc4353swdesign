@@ -10,7 +10,7 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
-  const [messageStyle, setMessageStyle] = useState("text-red-500");
+  const [messageStyle, setMessageStyle] = useState("");
 
   const onSubmit = async (data) => {
     const { status, data: result } = await loginUser(data.email, data.password);
@@ -26,7 +26,13 @@ export default function LoginPage() {
       setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
 
       setTimeout(() => {
-        navigate('/');
+        if (!result.isVerified) {
+          navigate('/emailverification');
+        } else if (!result.isProfileComplete) {
+          navigate('/createprofile');
+        } else {
+          navigate('/home');
+        }
       }, 1000);
 
     } else if (status === 401) {
@@ -40,14 +46,11 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center text-secondary w-full max-w-sm mx-auto">
-
       <img src={cooglinklogo} alt="CoogLinks Logo" className="h-24 mb-4" />
-
       <h1 className="text-center text-3xl font-semibold mb-4">
         Login to access your account.
       </h1>
 
-      {/* status*/}
       {message && (
         <div className={messageStyle}>
           {message}

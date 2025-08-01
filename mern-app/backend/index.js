@@ -11,7 +11,10 @@ import VolunteerHistoryRoutes from './routes/volunteerHistory.js';
 
 import connectDB from './config/db.js';
 
-dotenv.config();
+// dotenv.config();
+dotenv.config({
+  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+});
 
 const app = express();
 const FRONT_PORT = process.env.FRONT_PORT;
