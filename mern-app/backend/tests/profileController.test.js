@@ -1,4 +1,4 @@
-import { getProfile, updateProfile, getHistory, getAttendedHistory } from "../controllers/profileController.js";
+import { getProfile, updateProfile} from "../controllers/profileController.js";
 import { mockProfiles } from "../mocks/mockProfiles.js";
 import { jest } from '@jest/globals';
 

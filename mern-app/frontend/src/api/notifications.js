@@ -8,10 +8,24 @@ export const fetchNotifications = async (recipient) => {
         console.error("Failed to fetch user notifications: ", error);
         throw error;
     }
-}
-/*
-export const makeNotification = async (recipientId, notif) => {
-    try {
-        const response = await axios.post()
+};
+
+export const updateAllNotifications = async (accountId) => {
+    try{
+        const response = await axios.patch(`/api/notifications/update/all/${accountId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch user notifications: ", error);
+        throw error;
     }
-}*/
+};
+
+export const deleteAllNotifications = async (accountId) => {
+    try{
+        const response = await axios.delete(`/api/notifications/delete/all/${accountId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch user notifications: ", error);
+        throw error;
+    }
+};

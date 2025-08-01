@@ -1,6 +1,5 @@
-import { mockNotifications } from "../mocks/mockNotifications.js";
+import Notification from "../models/Notification.js";
 
-// Utility to get human-readable time ago string
 function timeAgo(date) {
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
@@ -13,75 +12,60 @@ function timeAgo(date) {
   return `${days} days ago`;
 }
 
-// GET: All notifications for a user
-export const getNotificationsByRecipient = async (req, res) => {
+export async function createNotification(recipient, type = "event assignment", message = "") {
+  const newNotification = new Notification({
+    recipient,
+    message,
+    type,
+    isRead: false,
+  });
+  return await newNotification.save();
+}
+
+export const getNotifications = async (req, res) => {
   try {
     const { recipientId } = req.params;
-    console.log("GET /api/notifications/:recipientId");
-    console.log("recipientId:", recipientId);
 
-    const userNotifications = mockNotifications
-      .filter((n) => n.recipient === recipientId)
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .map((notif) => ({
-        ...notif,
-        time: timeAgo(new Date(notif.createdAt)),
-      }));
+    const notifications = await Notification.find({ recipient: recipientId }).sort({ createdAt: -1 });
 
-    console.log("Returning notifications:", userNotifications);
-    res.json(userNotifications);
+    const formatted = notifications.map((notif) => ({
+      ...notif.toObject(),
+      time: timeAgo(notif.createdAt),
+    }));
+
+    res.json(formatted);
   } catch (err) {
-    console.error("getNotificationsByRecipient error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("getNotifications error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// POST: Create a new notification
-export const createNotification = async (req, res) => {
+export const updateAllNotification = async (req, res) => {
   try {
-    const { recipient, title, body, message, type } = req.body;
+    const { accountId } = req.params;
 
-    const newNotification = {
-      id: String(Date.now()),
-      recipient,
-      title: title || "Notification",
-      body: body || message || "",
-      type: type || "event assignment",
-      isRead: false,
-      createdAt: new Date(),
-    };
+    const updated = await Notification.updateMany(
+      { recipient: accountId },              // find all notifications for this user
+      { $set: { isRead: true } }  // set all to read
+    );
 
-    mockNotifications.push(newNotification);
-
-    console.log("POST /api/notifications");
-    console.log("Created:", newNotification);
-
-    res.status(201).json(newNotification);
+    res.json({ message: "All notifications marked as read", modifiedCount: updated.modifiedCount });
   } catch (err) {
-    console.error("createNotification error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("updateAllNotification error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// PATCH: Mark a notification as read
-export const markNotificationAsRead = async (req, res) => {
+
+export const deleteAllNotification = async (req, res) => {
   try {
-    const { id } = req.params;
-    console.log("PATCH /api/notifications/:id/read");
-    console.log("Notification ID:", id);
+    const { accountId } = req.params;
 
-    const notification = mockNotifications.find((n) => n.id === id);
+    const result = await Notification.deleteMany({ recipient: accountId });
 
-    if (!notification) {
-      return res.status(404).json({ error: "Notification not found" });
-    }
-
-    notification.isRead = true;
-
-    console.log("Updated:", notification);
-    res.json(notification);
+    res.json({ message: "All notifications deleted", deletedCount: result.deletedCount });
   } catch (err) {
-    console.error("markNotificationAsRead error:", err);
-    res.status(500).json({ error: "Server error" });
+    console.error("deleteAllNotification error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

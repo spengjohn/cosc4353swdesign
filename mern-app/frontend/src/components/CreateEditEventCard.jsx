@@ -1,20 +1,24 @@
 import { Controller, useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect , useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Field from "./Field";
 import Selector from "./Selector";
 import DropdownMenu from "./DropdownMenu";
 import PrimaryButton from "./Buttons";
-import TertiaryButton from "./TertiaryButton";
-import { updateEvent } from "../api/event";
+//import TertiaryButton from "./TertiaryButton";
+import { createEvent, updateEvent } from "../api/event";
 import states from "../data/states";
 import skills from "../data/skills";
-
+import { useNavigate } from "react-router-dom";
 
 export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const isEditMode = !!event;
-  const eventId = event?.eventId;
+  //const eventId = event?.eventId;
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageStyle, setMessageStyle] = useState("text-red-500");
+  const navigate = useNavigate();
   const {
     register,
     control,
@@ -25,7 +29,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
     defaultValues: {
       title: "",
       description: "",
-      address: "",
+      location: "",
       city: "",
       state: "",
       skillsRequired: [],
@@ -52,18 +56,25 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
 }, [event, setValue]);
 
   const handleFormSubmit = async (data) => {
-    try {
-    if (event) {
-      await updateEvent(eventId, data);
+  try {
+    if (isEditMode) {
+      console.log("event date: ", data.date);
+      await updateEvent(event._id, data);
+      setMessage("Event Updated!");
+      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+      if (onSubmit) onSubmit();
     } else {
-      onSubmit(data); // fallback create
-      console.log(data);
+      await createEvent(data); // call your real API
+      if (onSubmit) onSubmit(); // notify parent of new event
+      setMessage("Event Created");
+      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
     }
-    //navigate("/manageevents"); // or wherever you want to go after submission
+    navigate("/manageevents", { replace: true });
   } catch (err) {
     console.error("Failed to submit event form", err);
   }
-  };
+};
+
 
   return (
     <form
@@ -92,10 +103,10 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
         />
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
 
-        {/* Event Date & Time */}
+        {/* Event Date  */}
         <div className="flex flex-col">
           <label className="text-md font-medium block mb-1">
-            Event Date {/*& Time*/ }<span className="text-red-500">*</span>
+            Event Date <span className="text-red-500">*</span>
           </label>
           <Controller
             name="date"
@@ -121,6 +132,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
           label="Max Volunteers"
           name="maxVolunteers"
           type="number"
+          required
           placeholder="Enter a number"
           {...register("maxVolunteers", {
             required: "Max volunteers is required.",
@@ -133,11 +145,17 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
         {errors.maxVolunteers && (
           <p className="text-red-500 text-sm">{errors.maxVolunteers.message}</p>
         )}
+        
+        {/* Hidden assignedVolunteers */}
+        <input
+          type="hidden"
+          {...register("assignedVolunteers")}
+        />
 
         {/* Location */}
         <Field
           label="Location"
-          name="location "
+          name="location"
           placeholder="123 Main St"
           required
           {...register("location", {
@@ -209,7 +227,6 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
                   items={skills}
                   name={"skillsRequired"}
                   value={field.value}
-                  //onSelect={handleSkillSelect}
                   onChange={field.onChange}
                   errorMessage={errors.skillsRequired?.message}
             >
@@ -246,10 +263,56 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-4 mt-6">
-          <TertiaryButton type="button" onClick={onCancel}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowConfirm(true); // show confirmation box only
+            }}
+            className={`
+              text-[#B80C09] border-2 border-[#B80C09] rounded px-4 py-2 font-semibold
+              hover:bg-[#B80C09] hover:text-white transition-all duration-200
+              w-fit
+            `}
+          >
             Cancel
-          </TertiaryButton>
+          </button>
+          
           <PrimaryButton type="submit">Submit</PrimaryButton>
+          {showConfirm && (
+            <div className="fixed inset-0 z-50  flex items-center justify-center">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+                <p className="text-sm text-gray-800 mb-4">
+                  Confirm cancellation? Unsaved data will be lost.
+                </p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm(false);
+                      if (onCancel) onCancel();
+                      navigate("/manageevents", { replace: true });
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-100"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowConfirm(false);
+                    }}
+                    className="text-sm px-4 py-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       
     </form>

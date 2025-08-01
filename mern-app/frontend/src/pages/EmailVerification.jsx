@@ -90,35 +90,25 @@
 
 import PrimaryButton from "../components/Buttons";
 import Field from "../components/Field";
-
-import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from 'react';
+import { useForm, Controller } from "react-hook-form";
+import { updateCredentials } from "../api/auth";
 
 export default function EmailVerification() {
-  const { control, handleSubmit, formState: { errors } } = useForm();
+  const { register, control, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
+  const onSubmit = ({code}) => {
 
   const [message, setMessage] = useState("");
   const [messageStyle, setMessageStyle] = useState("");
 
-  const onSubmit = async ({ code }) => {
-    const userId = localStorage.getItem("userId");
-  
-    if (code === "654321") {
-      try {
-        await fetch(`http://localhost:5000/api/profile/verify/${userId}`, {
-          method: "PATCH",
-        });
-        setMessage("➤ Email verified successfully! Redirecting...");
-        setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
-  
-        setTimeout(() => {
-          navigate("/createprofile");
-        }, 1500);
-      } catch (err) {
-        alert("Verification succeeded, but failed to update the server.");
-      }
+    if (code === "654321")  {
+      localStorage.setItem("userVerified", "true");
+      // need to set on the database as well
+      const userId = localStorage.getItem('userId');
+      const userProfileComplete = localStorage.getItem('userProfileComplete');
+      updateCredentials(userId, true, userProfileComplete);
+      navigate('/createprofile');
     } else {
       setMessage("Invalid verification code.");
       setMessageStyle("bg-red-100 text-red-700 px-4 py-2 rounded text-center mb-4 font-medium");
