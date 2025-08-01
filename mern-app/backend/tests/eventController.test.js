@@ -31,22 +31,21 @@ describe("GET /api/event/:eventId", () => {
   });
 
   beforeEach(async () => {
-    await EventDetails.deleteMany({});
-
-     // Create event
+    
+  await EventDetails.deleteMany({});  // Clean up after each test
+ // Create event
     event = await EventDetails.create({
-      title: "Beach Cleanup",
-      description: "Clean the beach",
-      location: "Beach Park",
-      city: "Houston",
+      title: "Park Cleanup",
+      description: "Clean the local park",
+      location: "346 Drive",
+      city: "Dallas",
       state: "TX",
-      date: new Date("2025-08-15"),
-      urgency: "High",
-      skillsRequired: ["Lifting", "Teamwork"],
-      maxVolunteers: 10,
+      date: new Date(Date.now()),
+      urgency: "Low",
+      skillsRequired: ["Cleaning", "Teamwork"],
+      maxVolunteers: 14,
       assignedVolunteers: [],
     });
-    
         // Add a past event
     pastEvent = await EventDetails.create({
       title: "Old Event",
@@ -61,6 +60,7 @@ describe("GET /api/event/:eventId", () => {
       assignedVolunteers: [],
     });
 
+  // console.log("Created event:", event._id);
     // Add a future event (this one should appear)
     const futureEvent = await EventDetails.create({
       title: "Upcoming Event",
@@ -89,6 +89,10 @@ describe("GET /api/event/:eventId", () => {
     });
   });
 
+afterEach(async () => {
+  await EventDetails.deleteMany({});  // Clean up after each test
+});
+
   afterAll(async () => {
     await mongoose.disconnect();
   });
@@ -99,8 +103,8 @@ it("getEvent should properly get an event given a valid Id", async () => {
   expect(res.statusCode).toBe(200);
   expect(res.body).toHaveProperty("_id", event._id.toString()); 
 
-  expect(res.body.title).toBe("Beach Cleanup");
-  expect(res.body.description).toBe("Clean the beach");
+  expect(res.body.title).toBe("Park Cleanup");
+  expect(res.body.description).toBe("Clean the local park");
   });
 
   it("getEvent should return 404 if event not found", async () => {
@@ -215,18 +219,68 @@ it("getEvent should properly get an event given a valid Id", async () => {
    expect(res.body.message).toBe("No events found");
    });
    
-//     it("getCurrentEvents should return 500 if there is an internal server error", async () => {
-// const spy = jest.spyOn(EventDetails, "find").mockRejectedValue(new Error("Mocked error"));
+    it("getMyNextEvents should return 500 if there is an internal server error", async () => {
+      const spy = jest.spyOn(EventDetails, "find").mockReturnValue({
+       sort: () => ({
+        limit: () => Promise.reject(new Error("Mocked error")),
+       }),
+      });
 
+      const res = await request(app).get(`/api/event/mycurrent/${testUser._id}`);
 
-// const res = await request(app).get(`/api/event/mycurrent/${testUser._id}`);
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty("error", "Internal server error");
 
-
-
-// expect(res.statusCode).toBe(500);
-// expect(res.body.error).toBe("Internal server error");
-
-// spy.mockRestore();
-//      });
+      spy.mockRestore();
+     });
    
+
+  it('deleteEvent should delete the event successfully and return 200', async () => {
+    const res = await request(app).post(`/api/event/delete/${event._id}`);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("Event deleted successfully");
+
+    // Verify event is actually deleted
+    const deletedEvent = await EventDetails.findById(event._id);
+    expect(deletedEvent).toBeNull();
+  });
+
+   it('deleteEvent should return 404 if event is not found', async () => {
+  const nonexistentEventId = new mongoose.Types.ObjectId().toString();
+    const res = await request(app)
+      .post(`/api/event/delete/${nonexistentEventId}`); // An invalid ID
+    console.log(res.statusCode);
+    console.log(res.body.message);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Event not found");
+  });
+
+  it('deleteEvent should return 404 if event deletion fails', async () => {
+    // Mock the delete function to simulate a failure
+    jest.spyOn(EventDetails, 'findByIdAndDelete').mockResolvedValue(null);
+
+    const res = await request(app).post(`/api/event/delete/${event._id}`);
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.message).toBe("Event not found");
+  });
+
+  it('deleteEvent should return 500 if there is an internal server error', async () => {
+  const eventId = new mongoose.Types.ObjectId().toString();  // Generate a valid ObjectId
+
+  // Mock the EventDetails.findByIdAndDelete to simulate a failure (e.g., DB issue)
+  jest.spyOn(EventDetails, 'findByIdAndDelete').mockRejectedValue(new Error("Database error"));
+
+  const res = await request(app).post(`/api/event/delete/${eventId}invalid`);
+
+  // Verify the response is a 500 error and contains the appropriate message
+  expect(res.statusCode).toBe(500);
+  expect(res.body.error).toBe("Internal Server Error");
+
+  // Optional: Restore the mock to avoid affecting other tests
+  jest.restoreAllMocks();
+  });
+
 });

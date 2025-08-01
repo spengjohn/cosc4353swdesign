@@ -17,7 +17,7 @@ export const createEvent = async (req, res) => {
 export const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    //console.log("GET /api/events/:eventId");
+    // console.log("GET /api/events/:eventId");
   console.log("Fetching event with ID:", eventId);
     const event = await EventDetails.findById(eventId).populate("assignedVolunteers");
 
@@ -171,7 +171,11 @@ export const deleteEvent = async (req, res) => {
 
     // Find the event before deleting to get assigned volunteers
     const eventToDelete = await EventDetails.findById(eventId);
-    if (!eventToDelete) return res.status(404).json({ message: "Event not found" });
+console.log("Fetched event to delete:", eventToDelete);
+    if (!eventToDelete) {
+      
+  console.log('Event to delete not found');
+  return res.status(404).json({ message: "Event not found" })};
 
     // Scenario c: Event was deleted - notify all assigned volunteers
     const notificationsToSend = [];
@@ -185,7 +189,7 @@ export const deleteEvent = async (req, res) => {
           )
         );
       }
-    }s
+    }
 
     // Delete the event
     const deleted = await EventDetails.findByIdAndDelete(eventId);
