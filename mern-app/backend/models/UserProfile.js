@@ -42,7 +42,10 @@ const userProfileSchema = new mongoose.Schema({
     required: true
   }],
   preferences: String,
-  availableDates: [Date],
+  availableDates: {
+    type: [Date], 
+    required:true,
+  },
   
 }, {
   timestamps: true,

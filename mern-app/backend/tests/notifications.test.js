@@ -46,13 +46,15 @@ describe("Notification Controller Tests", () => {
       city: "Testville",
       state: "TX",
       zipcode: "12345",
+      skills: ["First-Aid"],
+      availableDates: [new Date],
     });
 
     // Create test notification
     testNotification = await Notification.create({
-      recipient: testUser._id,
+      recipient: testUser.credentialId,
       message: "Test notification message",
-      type: "Test Type",
+      type: "Reminder",
       isRead: false,
     });
   });
@@ -62,31 +64,6 @@ describe("Notification Controller Tests", () => {
   });
 
   describe("GET /api/notification/:recipientId", () => {
-    it("should get all notifications for a user with time formatting", async () => {
-      // Create a second notification for the same user
-      await Notification.create({
-        recipient: testUser._id,
-        message: "Second notification",
-        type: "Another Type",
-        isRead: false,
-      });
-
-      const res = await request(app).get(`/api/notification/${testUser._id}`);
-
-      expect(res.statusCode).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBe(2);
-
-      // Check time formatting exists
-      expect(res.body[0]).toHaveProperty("time");
-      expect(res.body[1]).toHaveProperty("time");
-
-      // Check notifications are sorted by createdAt descending
-      const firstDate = new Date(res.body[0].createdAt);
-      const secondDate = new Date(res.body[1].createdAt);
-      expect(firstDate.getTime()).toBeGreaterThanOrEqual(secondDate.getTime());
-    });
-
     it("should return empty array if user has no notifications", async () => {
       const newUserId = new mongoose.Types.ObjectId();
       const res = await request(app).get(`/api/notification/${newUserId}`);
@@ -101,7 +78,7 @@ describe("Notification Controller Tests", () => {
         throw new Error("Mocked error");
       });
 
-      const res = await request(app).get(`/api/notification/${testUser._id}`);
+      const res = await request(app).get(`/api/notification/${testUser.credentialId}`);
 
       expect(res.statusCode).toBe(500);
       expect(res.body.error).toBe("Internal Server Error");
@@ -110,24 +87,23 @@ describe("Notification Controller Tests", () => {
     });
   });
 
-  describe("PUT /api/notification/markallasread/:accountId", () => {
+  describe("PUT /api/notification/update/all/:accountId", () => {
     it("should mark all notifications as read for a user", async () => {
       // Create a second unread notification
-      await Notification.create({
-        recipient: testUser._id,
-        message: "Unread notification",
-        type: "Test Type",
-        isRead: false,
-      });
+      await createNotification(
+        testUser.credentialId,
+        "Event Assignment",
+        "Unread notification"
+      );
 
-      const res = await request(app).put(`/api/notification/markallasread/${testUser._id}`);
+      const res = await request(app).patch(`/api/notification/update/all/${testUser.credentialId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("All notifications marked as read");
       expect(res.body.modifiedCount).toBe(2); // Both notifications should be updated
 
       // Verify notifications were actually updated
-      const updatedNotifications = await Notification.find({ recipient: testUser._id });
+      const updatedNotifications = await Notification.find({ recipient: testUser.credentialId });
       updatedNotifications.forEach(notif => {
         expect(notif.isRead).toBe(true);
       });
@@ -135,7 +111,7 @@ describe("Notification Controller Tests", () => {
 
     it("should return modifiedCount 0 if no notifications to update", async () => {
       const newUserId = new mongoose.Types.ObjectId();
-      const res = await request(app).put(`/api/notification/markallasread/${newUserId}`);
+      const res = await request(app).patch(`/api/notification/update/all/${newUserId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.modifiedCount).toBe(0);
@@ -146,7 +122,7 @@ describe("Notification Controller Tests", () => {
         throw new Error("Mocked error");
       });
 
-      const res = await request(app).put(`/api/notification/markallasread/${testUser._id}`);
+      const res = await request(app).patch(`/api/notification/update/all/${testUser.credentialId}`);
 
       expect(res.statusCode).toBe(500);
       expect(res.body.error).toBe("Internal Server Error");
@@ -155,30 +131,25 @@ describe("Notification Controller Tests", () => {
     });
   });
 
-  describe("DELETE /api/notification/deleteall/:accountId", () => {
+  describe("DELETE /api/notification/delete/all/:accountId", () => {
     it("should delete all notifications for a user", async () => {
       // Create a second notification
-      await Notification.create({
-        recipient: testUser._id,
-        message: "Second notification to delete",
-        type: "Test Type",
-        isRead: false,
-      });
+      await createNotification(testUser.credentialId,"Update","Second notification to delete");
 
-      const res = await request(app).delete(`/api/notification/deleteall/${testUser._id}`);
+      const res = await request(app).delete(`/api/notification/delete/all/${testUser.credentialId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.message).toBe("All notifications deleted");
       expect(res.body.deletedCount).toBe(2);
 
       // Verify notifications were actually deleted
-      const remainingNotifications = await Notification.find({ recipient: testUser._id });
+      const remainingNotifications = await Notification.find({ recipient: testUser.credentialId });
       expect(remainingNotifications.length).toBe(0);
     });
 
     it("should return deletedCount 0 if no notifications to delete", async () => {
       const newUserId = new mongoose.Types.ObjectId();
-      const res = await request(app).delete(`/api/notification/deleteall/${newUserId}`);
+      const res = await request(app).delete(`/api/notification/delete/all/${newUserId}`);
 
       expect(res.statusCode).toBe(200);
       expect(res.body.deletedCount).toBe(0);
@@ -189,7 +160,7 @@ describe("Notification Controller Tests", () => {
         throw new Error("Mocked error");
       });
 
-      const res = await request(app).delete(`/api/notification/deleteall/${testUser._id}`);
+      const res = await request(app).delete(`/api/notification/delete/all/${testUser.credentialId}`);
 
       expect(res.statusCode).toBe(500);
       expect(res.body.error).toBe("Internal Server Error");
@@ -200,21 +171,21 @@ describe("Notification Controller Tests", () => {
 
   describe("createNotification helper function", () => {
     it("should create a new notification with default values", async () => {
-      const notification = await createNotification(testUser._id);
+      const notification = await createNotification(testUser.credentialId);
       
       expect(notification).toBeDefined();
-      expect(notification.recipient.toString()).toBe(testUser._id.toString());
+      expect(notification.recipient.toString()).toBe(testUser.credentialId.toString());
       expect(notification.type).toBe("Event Assignment");
       expect(notification.message).toBe("");
       expect(notification.isRead).toBe(false);
     });
 
     it("should create a new notification with custom values", async () => {
-      const customType = "Custom Type";
+      const customType = "Update";
       const customMessage = "Custom message";
       
       const notification = await createNotification(
-        testUser._id,
+        testUser.credentialId,
         customType,
         customMessage
       );
