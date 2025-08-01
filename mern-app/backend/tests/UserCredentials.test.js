@@ -1,104 +1,147 @@
-import mongoose from 'mongoose';
-import UserCredentials from '../models/UserCredentials.js';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import UserCredentials from "../models/UserCredentials.js";
+import { jest } from '@jest/globals';
+import dotenv from 'dotenv';
 
-jest.setTimeout(20000);
+dotenv.config({ path: ".env.test" });
 
-beforeAll(async () => {
-  await mongoose.connect('mongodb://127.0.0.1:27017/test-users', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-});
-
-afterAll(async () => {
-  await mongoose.connection.dropDatabase();
-  await mongoose.connection.close();
-});
-
-describe('UserCredentials Model', () => {
-  it('should hash password using pre-save middleware', async () => {
-    const user = new UserCredentials({
-      email: 'hashme@example.com',
-      password: 'PlainPass123!',
-      role: 'volunteer',
+describe("UserCredentials Model (Real DB)", () => {
+  beforeAll(async () => {
+    jest.setTimeout(20000);
+    await mongoose.connect(process.env.MONGO_URI_TEST, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
-
-    await user.save();
-
-    expect(user.password).not.toBe('PlainPass123!');
-    expect(await user.matchPassword('PlainPass123!')).toBe(true);
   });
 
-  it('should match password correctly', async () => {
+  afterEach(async () => {
+    await UserCredentials.deleteMany({});
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.disconnect();
+  });
+
+  it("should hash the password before saving", async () => {
     const user = new UserCredentials({
-      email: 'match@example.com',
-      password: 'MatchMe123!',
-      role: 'admin',
+      email: "hash@example.com",
+      password: "Secret123!",
+      role: "admin",
     });
 
-    await user.save();
-
-    const isMatch = await user.matchPassword('MatchMe123!');
+    const savedUser = await user.save();
+    expect(savedUser.password).not.toBe("Secret123!");
+    const isMatch = await bcrypt.compare("Secret123!", savedUser.password);
     expect(isMatch).toBe(true);
   });
 
-  it('should not rehash password if not modified', async () => {
-    const original = new UserCredentials({
-      email: 'norehash@example.com',
-      password: 'MyPass123!',
-      role: 'volunteer',
-    });
-
-    await original.save();
-    const originalHash = original.password;
-
-    original.email = 'updated@example.com';
-    await original.save();
-
-    expect(original.password).toBe(originalHash);
-  });
-
-  it('should rehash password if modified', async () => {
+  it("should correctly match a valid password using matchPassword method", async () => {
     const user = new UserCredentials({
-      email: 'rehash@example.com',
-      password: 'OldPassword123!',
-      role: 'admin',
+      email: "match@example.com",
+      password: "MyPass456!",
+      role: "volunteer",
     });
-
-    await user.save();
-    const oldHash = user.password;
-
-    user.password = 'NewPassword123!';
     await user.save();
 
-    expect(user.password).not.toBe(oldHash);
-    expect(await user.matchPassword('NewPassword123!')).toBe(true);
+    const found = await UserCredentials.findOne({ email: "match@example.com" });
+    const result = await found.matchPassword("MyPass456!");
+    expect(result).toBe(true);
   });
 
-  it('should fail if password is incorrect', async () => {
+  it("should not match an incorrect password", async () => {
     const user = new UserCredentials({
-      email: 'wrongpass@example.com',
-      password: 'CorrectPass123!',
-      role: 'volunteer',
+      email: "failmatch@example.com",
+      password: "CorrectPass1!",
+      role: "volunteer",
     });
-
     await user.save();
 
-    const isMatch = await user.matchPassword('WrongPassword!');
-    expect(isMatch).toBe(false);
+    const found = await UserCredentials.findOne({ email: "failmatch@example.com" });
+    const result = await found.matchPassword("WrongPass");
+    expect(result).toBe(false);
   });
 
-  it('should require email, password, and role', async () => {
-    const user = new UserCredentials({});
-    let err;
+  it("should throw validation error when email is missing", async () => {
+    let error;
     try {
-      await user.validate();
-    } catch (e) {
-      err = e;
+      await new UserCredentials({ password: "Pass123!", role: "admin" }).save();
+    } catch (err) {
+      error = err;
     }
-
-    expect(err.errors.email).toBeDefined();
-    expect(err.errors.password).toBeDefined();
-    expect(err.errors.role).toBeDefined();
+    expect(error).toBeDefined();
+    expect(error.errors.email).toBeDefined();
   });
+
+  it("should throw validation error for invalid email format", async () => {
+    let error;
+    try {
+      await new UserCredentials({ email: "bademail", password: "Pass123!", role: "admin" }).save();
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeDefined();
+    expect(error.errors.email).toBeDefined();
+  });
+
+  it("should throw validation error when password is missing", async () => {
+    let error;
+    try {
+      await new UserCredentials({ email: "nopass@example.com", role: "admin" }).save();
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeDefined();
+    expect(error.errors.password).toBeDefined();
+  });
+
+  it("should default isVerified and isProfileComplete to false", async () => {
+    const user = new UserCredentials({
+      email: "defaults@example.com",
+      password: "DefaultPass123!",
+      role: "admin",
+    });
+    const savedUser = await user.save();
+    expect(savedUser.isVerified).toBe(false);
+    expect(savedUser.isProfileComplete).toBe(false);
+  });
+
+  it("should throw validation error when role is missing", async () => {
+    let error;
+    try {
+      await new UserCredentials({ email: "norole@example.com", password: "Pass123!" }).save();
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeDefined();
+    expect(error.errors.role).toBeDefined();
+  });
+
+  it("should throw validation error for invalid role", async () => {
+    let error;
+    try {
+      await new UserCredentials({ email: "invalidrole@example.com", password: "Pass123!", role: "guest" }).save();
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeDefined();
+    expect(error.errors.role).toBeDefined();
+  });
+
+  it("should skip password hashing if password is not modified", async () => {
+    const user = new UserCredentials({
+      email: "unmodified@example.com",
+      password: "SamePassword1!",
+      role: "admin",
+    });
+    await user.save();
+  
+    user.role = "admin"; 
+    const originalHash = user.password;
+    await user.save(); 
+  
+    expect(user.password).toBe(originalHash);
+  });
+  
 });

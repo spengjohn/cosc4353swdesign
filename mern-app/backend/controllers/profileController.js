@@ -6,7 +6,6 @@ export const getProfile = async (req, res) => {
   try {
     const { accountId } = req.params;
     console.log("GET /api/profile/:accountId", accountId);
-
     
     const profile = await UserProfile.findOne({ credentialId: accountId });
 

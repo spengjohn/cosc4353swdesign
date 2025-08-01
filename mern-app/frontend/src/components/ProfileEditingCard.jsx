@@ -42,13 +42,12 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Load profile data once on mount
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        const userId = localStorage.getItem("userId");
-        const profile = await fetchUserProfile(userId);
-        if (!profile) return;
-        
-        // Convert dates to JS Date objects
-        const dates = profile.availableDates?.map(d => new Date(d)) || [];
+      if (userProfileComplete) {
+        try {
+          const profile = await fetchUserProfile(userId);
+
+          // Convert dates to JS Date objects
+          const dates = profile.availableDates?.map(d => new Date(d)) || [];
 
           // Set values
           setValue("fullName", profile.fullName);
@@ -64,6 +63,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
           console.error("Error loading profile:", err);
         }
       }
+    };
 
     loadProfile();
   }, [setValue]);
