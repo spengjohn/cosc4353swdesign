@@ -1,4 +1,9 @@
 const AttendanceCard = ({ event, isExpanded, onToggle }) => {
+  const formattedDate = new Date(event.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
   return (
     <div
       className="w-[360px] bg-white shadow-md rounded p-4 cursor-pointer border border-secondary transition-all duration-300"
@@ -19,7 +24,7 @@ const AttendanceCard = ({ event, isExpanded, onToggle }) => {
       </div>
 
       <p className="text-secondary mt-2 text-sm">
-        <strong>Date:</strong> {event.day} {event.date} &nbsp;
+        <strong>Date:</strong> {formattedDate} &nbsp;
       </p>
 
       <div

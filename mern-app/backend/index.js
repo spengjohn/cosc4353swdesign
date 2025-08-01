@@ -1,11 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from "dotenv";
+
 import profileRoutes from "./routes/profile.js";
 import loginRegisterRoutes from "./routes/loginRegister.js"; 
 import notificationRoutes from "./routes/notification.js";
 import volunteerMatchRoutes from "./routes/volunteerMatching.js";
 import eventRoutes from "./routes/event.js";
+import VolunteerHistoryRoutes from './routes/volunteerHistory.js';
+
 import connectDB from './config/db.js';
 
 dotenv.config();
@@ -28,6 +31,7 @@ app.use("/api/auth", loginRegisterRoutes);
 app.use("/api/volmatch", volunteerMatchRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/history", VolunteerHistoryRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

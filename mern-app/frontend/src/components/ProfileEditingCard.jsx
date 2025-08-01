@@ -1,6 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
-//import { fetchUserProfile, updateUserProfile } from "../api/user"; // your API helper
 import { fetchUserProfile, updateUserProfile } from "../api/profile";
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
@@ -11,10 +10,14 @@ import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
-import { sanitizeInput, useSanitize } from "../hooks/useSanitize";
+import { sanitizeInput} from "../hooks/useSanitize";
+import { useNavigate } from "react-router-dom";
 
 
 export default function ProfileEditingCard({ defaultValues = {} }) {
+  const navigate = useNavigate();
+  const userProfileComplete = localStorage.getItem('userProfileComplete') === 'true';
+  const userId = localStorage.getItem("userId");
   const {
     register,
     control,
@@ -39,24 +42,26 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Load profile data once on mount
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        const profile = await fetchUserProfile("123"); // use real user ID later
+      if (userProfileComplete) {
+        try {
+          const profile = await fetchUserProfile(userId);
 
-        // Convert dates to JS Date objects
-        const dates = profile.availableDates?.map(d => new Date(d)) || [];
+          // Convert dates to JS Date objects
+          const dates = profile.availableDates?.map(d => new Date(d)) || [];
 
-        // Set values
-        setValue("fullName", profile.fullName);
-        setValue("address1", profile.address1);
-        setValue("address2", profile.address2);
-        setValue("zipcode", profile.zipcode);
-        setValue("city", profile.city);
-        setValue("state", profile.state);
-        setValue("skills", profile.skills);
-        setValue("preferences", profile.preferences);
-        setValue("availableDates", dates);
-      } catch (err) {
-        console.error("Error loading profile:", err);
+          // Set values
+          setValue("fullName", profile.fullName);
+          setValue("address1", profile.address1);
+          setValue("address2", profile.address2);
+          setValue("zipcode", profile.zipcode);
+          setValue("city", profile.city);
+          setValue("state", profile.state);
+          setValue("skills", profile.skills);
+          setValue("preferences", profile.preferences);
+          setValue("availableDates", dates);
+        } catch (err) {
+          console.error("Error loading profile:", err);
+        }
       }
     };
 
@@ -64,19 +69,25 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   }, [setValue]);
 
   const onSubmit = async (data) => {
+    console.log("Available Dates before conversion: ", availableDates);
     const cleaned = {
       ...data,
+      
       availableDates: data.availableDates.map((d) => {
         try {
-          // react-multi-date-picker DateObject has `.toDate()` method
           const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
-          return jsDate instanceof Date && !isNaN(jsDate)
-            ? jsDate.toISOString().split("T")[0]
-            : "";
+          if (!(jsDate instanceof Date) || isNaN(jsDate)) return "";
+
+          // Format as YYYY-MM-DD in local time
+          const yyyy = jsDate.getFullYear();
+          const mm = String(jsDate.getMonth() + 1).padStart(2, "0");
+          const dd = String(jsDate.getDate()).padStart(2, "0");
+
+          return `${yyyy}-${mm}-${dd}`;
         } catch {
           return "";
         }
-    }),
+      }),
 
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
@@ -90,18 +101,17 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   // Send `cleaned` to backend instead of raw `data`
     
     try {
-      const result = await updateUserProfile("1", cleaned); // mock ID for now
+      const result = await updateUserProfile(userId, cleaned);
       console.log("Profile updated:", result);
+      localStorage.setItem('userProfileComplete', 'true');
+      navigate("/home");
     } catch (err) {
       console.error("Error updating profile:", err);
     }
   };
 
-  
-
-
   return (
-    <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-lg">
+    <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-full lg:w-lg">
       <form onSubmit={handleSubmit(onSubmit)} className="flex">
         <div className="flex flex-col size-full gap-2">
           <div className="flex flex-3 flex-col gap-2">
@@ -171,7 +181,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                     maxLength={9}
                     className="flex-1"
                     label="Zipcode"
-                    type="number"
+                    type="digit"
                     placeholder="12345"
                     errorMessage={errors.zipcode?.message}
                     {...field}
@@ -288,116 +298,3 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     </div>
   );
 }
-
-/*import { useState } from "react";
-import Field from "./Field";
-import MultiDatePickerField from "./MultiDatePickerField";
-import DropdownMenu from "./DropdownMenu";
-import Selector from "./Selector";
-import TertiaryButton from "./TertiaryButton";
-import PrimaryButton from "./Buttons";
-import CommentBox from "./CommentBox";
-import states from "../data/states"
-import skills from "../data/skills"
-
-
-const handleStateSelect = (state) => {
-  console.log("Selected state:", state);
-  // update form input or context state
-};
-
-export default function ProfileEditingCard() {
-  return (
-    <div
-      className={`bg-white text-secondary px-4 py-2 rounded border-2 border-solid  w-lg`}
-    >
-      <form action="" className={`flex`}>
-        <div className={"flex flex-col size-full gap-2"}>
-          <div className={"flex flex-3 flex-col gap-2"}>
-            {/* <div className="">
-            <img src={examplepic} width={200} height={200}></img>
-          </div> //}
-            <Field
-              label="Name"
-              name="name"
-              type="text"
-              placeholder="John Doe"
-              required
-            />
-            <Field
-              label="Address 1"
-              name="address1"
-              type="text"
-              placeholder="Penny Lane"
-              required
-            />
-            <div className={"flex gap-4"}>
-              <Field
-                className={"flex-3"}
-                label="Address 2"
-                name="address2"
-                type="text"
-                placeholder="Mailbox 1"
-              />
-              <Field
-                className={"flex-1"}
-                label="Zipcode"
-                name="zipcode"
-                type="number"
-                placeholder="12345"
-                required
-              />
-            </div>
-            <div className={"flex gap-4"}>
-              <Field
-                className={"flex-3"}
-                label="City"
-                name="city"
-                type="text"
-                placeholder="Albuquerque"
-                required
-              />
-              <div className={"flex-1 self-baseline-last flex-col flex"}>
-                <div>
-                  State<span className="text-red-500">*</span>
-                </div>
-                <DropdownMenu items={states} onSelect={handleStateSelect}>
-                  State select
-                </DropdownMenu>
-              </div>
-            </div>
-          </div>
-          <div></div>
-          <div className={"flex flex-2 row-span-full gap-4"}>
-            <div className={"flex-1 flex flex-col "}>
-              <div>
-                Skills<span className="text-red-500">*</span>
-                <Selector className={"self-baseline"} items={skills}>
-                  Skill select
-                </Selector>
-                <CommentBox
-                  label="Preferences"
-                  name="preferences"
-                  placeholder="Gardening, cooking..."
-                />
-              </div>
-            </div>
-            <div className={"flex-1"}>
-              <p>
-                Availability <span className="text-red-500">*</span>
-              </p>
-              <MultiDatePickerField required />
-            </div>
-          </div>
-          <div className={"flex gap-8"}>
-            <TertiaryButton className={"flex-1"}>Cancel</TertiaryButton>
-            <div className={"flex-1"}></div>
-            <PrimaryButton type="submit" className={"flex-1"}>
-              Save
-            </PrimaryButton>
-          </div>
-        </div>
-      </form>
-    </div>
-  );
-}*/

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const userCredientialsSchema = new mongoose.Schema({
+const userCredentialsSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -31,4 +32,18 @@ const userCredientialsSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.model("UserCredentials", userCredientialsSchema);
+// Hash password before saving
+userCredentialsSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// Make sure password match
+userCredentialsSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const UserCredentials = mongoose.model("UserCredentials", userCredentialsSchema);
+export default UserCredentials;

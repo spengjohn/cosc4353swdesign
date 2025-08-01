@@ -1,4 +1,5 @@
 import EventDetails from "../models/Event.js";
+import { createNotification } from "./notificationsController.js";
 
 export const createEvent = async (req, res) => {
   try {
@@ -48,7 +49,13 @@ export const getMyNextEvents = async (req, res) => {
     const today = new Date();
     today.setHours(0,0,0,0);
 
-    const events = await EventDetails.find({ date: { $gte: today, assignedVolunteers: accountId} });
+    const events = await EventDetails.find({
+      date: { $gte: today },
+      assignedVolunteers: accountId, // this goes **outside** the date object
+    })
+    .sort({ date: 1 })
+    .limit(3);
+
     if (!events){
       res.status(404);
     }
@@ -68,8 +75,8 @@ export const updateEvent = async (req, res) => {
     const currentEvent = await EventDetails.findById(eventId);
     if (!currentEvent) return res.status(404).json({ message: "Event not found" });
 
-    const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
+    //if (!updated) return res.status(404).json({ message: "Event not found" });
 
     const notificationsToSend = [];
     // Compare current details to update details:
@@ -80,9 +87,12 @@ export const updateEvent = async (req, res) => {
       // Possible for both to happen.
     if (updateData.assignedVolunteers || 
       (currentEvent.assignedVolunteers && updateData.assignedVolunteers)) {
-      const currentVolunteers = currentEvent.assignedVolunteers || [];
-      const newVolunteers = updated.assignedVolunteers || [];
+      const currentVolunteers = (currentEvent.assignedVolunteers || []).map(v => v.toString());
+      const newVolunteers = updateData.assignedVolunteers || [];
       
+      console.log("currentVolunteers:", currentVolunteers);
+      console.log("newVolunteers:", newVolunteers);
+
       // a.1) Someone was added
       const addedVolunteers = newVolunteers.filter(
         volunteer => !currentVolunteers.includes(volunteer)
@@ -91,8 +101,8 @@ export const updateEvent = async (req, res) => {
         notificationsToSend.push(
           createNotification(
             volunteer,
-            "event assignment",
-            `You've been assigned to event: ${updated.title}`
+            "Event Assignment",
+            `You've been assigned to event: ${updateData.title}`
           )
         );
       }
@@ -105,7 +115,7 @@ export const updateEvent = async (req, res) => {
         notificationsToSend.push(
           createNotification(
             volunteer,
-            "event unassignment",
+            "Event Assignment",
             `You've been unassigned from event: ${currentEvent.title}`
           )
         );
@@ -115,18 +125,19 @@ export const updateEvent = async (req, res) => {
     // b) Event Details like description, location, city, skills, etc. changed.
       // Can make a generic announcement that the event changed
       // Just need to send to EVERYONE who is currently assigned
-    const detailFields = ['title', 'description', 'location', 'city', 'skills', 'date'];
+    const detailFields = ['title', 'description', 'location', 'city', 'skillsRequired', 'date', 'maxVolunteers', 'urgency'];
     const detailsChanged = detailFields.some(
-      field => JSON.stringify(currentEvent[field]) !== JSON.stringify(updated[field])
+      field => JSON.stringify(currentEvent[field]) !== JSON.stringify(updateData[field])
     );
 
-    if (detailsChanged && updated.assignedVolunteers?.length > 0) {
-      for (const volunteer of updated.assignedVolunteers) {
+    if (detailsChanged && updateData.assignedVolunteers?.length > 0) {
+      for (const volunteer of updateData.assignedVolunteers) {
+        console.log("Send notification to volunteer: ", volunteer)
         notificationsToSend.push(
           createNotification(
             volunteer,
-            "event update",
-            `Event details have changed for: ${updated.title}`
+            "Update",
+            `Event details have changed for: ${updateData.title}`
           )
         );
       }
@@ -136,8 +147,8 @@ export const updateEvent = async (req, res) => {
     // d) There are no actual changes. no need for any notification to be made.
     // Finally we can update the event and return response.
     //const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
-
-    //if (!updated) return res.status(404).json({ message: "Event not found" });
+    const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
+    if (!updated) return res.status(404).json({ message: "Event not found" });
     await Promise.all(notificationsToSend);
 
     res.json({ message: "Event updated successfully", event: updated });
@@ -162,7 +173,7 @@ export const deleteEvent = async (req, res) => {
         notificationsToSend.push(
           createNotification(
             volunteer,
-            "event cancellation",
+            "Update",
             `Event has been cancelled: ${eventToDelete.title}`
           )
         );

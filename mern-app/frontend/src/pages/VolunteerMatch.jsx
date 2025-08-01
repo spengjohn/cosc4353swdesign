@@ -13,6 +13,13 @@ export default function VolunteerMatch() {
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [event, setEvent] = useState(null);
   const [matchedVolunteers, setMatchedVolunteers] = useState([]);
+  const [message, setMessage] = useState("");
+  const [messageStyle, setMessageStyle] = useState("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+  const formattedDate = new Date(event?.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 
   useEffect(() => {
   const fetchData = async () => {
@@ -31,7 +38,7 @@ export default function VolunteerMatch() {
 
       if (assignedIds.length > 0) {
         const assignedProfiles = await Promise.all(
-          assignedIds.map((accountId) => fetchUserProfile(accountId))
+          assignedIds.map((credentialId) => fetchUserProfile(credentialId._id || credentialId.toString?.() || credentialId))
         );
         setSelectedVolunteers(assignedProfiles);
       } else {
@@ -46,9 +53,9 @@ export default function VolunteerMatch() {
 }, [eventId]);
 
   const handleSelect = (volunteer) => {
-    const alreadySelected = selectedVolunteers.some((v) => v.accountId === volunteer.accountId);
+    const alreadySelected = selectedVolunteers.some((v) => v.credentialId === volunteer.credentialId);
     if (alreadySelected) {
-      setSelectedVolunteers((prev) => prev.filter((v) => v.accountId !== volunteer.accountId));
+      setSelectedVolunteers((prev) => prev.filter((v) => v.credentialId !== volunteer.credentialId));
     } else {
       if (event && selectedVolunteers.length < event.maxVolunteers) {
         setSelectedVolunteers((prev) => [...prev, volunteer]);
@@ -57,7 +64,7 @@ export default function VolunteerMatch() {
   };
 
   const handleViewHistory = (volunteer) => {
-    if (volunteer?.accountId) {
+    if (volunteer?.credentialId) {
     setSelectedVolunteer(volunteer);
     setShowHistoryModal(true);
   } else {
@@ -65,17 +72,26 @@ export default function VolunteerMatch() {
     }
   };
 
-  const isSelected = (vol) => selectedVolunteers.some((v) => v.accountId === vol.accountId);
+  const isSelected = (vol) => selectedVolunteers.some((v) => v.credentialId === vol.credentialId);
   const isMaxReached = event ? selectedVolunteers.length >= event.maxVolunteers : false;
 
   if (!event) return <div>Loading event info...</div>;
 
   else return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex w-full">
+    
+    <div className="flex flex-col min-h-screen w-full lg:w-2/3">
+      {/* status*/}
+        {message && (
+          <div className={messageStyle}>
+            {message}
+          </div>
+        )}
+      <div className="flex flex-col lg:flex-row w-full max-w-screen-xl mx-auto">
+        
         {/* Event Card */}
-        <div className="w-1/3 p-6">
-          <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Event</h2>
+        <div className=" w-full p-4">
+
+          <h2 className="text-2xl font-bold mb-2 text-[#3e7b91]">Event</h2>
           <div className="bg-white border-2 border-[#3e7b91] rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-xl font-semibold text-[#3e7b91]">{event.title}</h3>
@@ -84,9 +100,7 @@ export default function VolunteerMatch() {
               </span>
             </div>
             <p className="text-sm text-gray-700 mb-1">
-              <strong>Date:</strong> {/*event.day*/} {event.date}
-              &nbsp;&nbsp;
-              <strong>Time:</strong> {"time"}
+              <strong>Date:</strong> {/*event.day*/} {formattedDate}
             </p>
             <p className="text-sm text-gray-700 mb-1">
               <strong>Description:</strong> {event.description}
@@ -103,24 +117,32 @@ export default function VolunteerMatch() {
           </div>
 
           <button
-            onClick={() => navigate("/manageevents")}
-            className="mt-4 ml-1 px-4 py-2 rounded-md bg-pink-200 hover:bg-pink-300 transition text-gray-800 font-semibold"
+            onClick={() => {
+              setMessage("Returning to Event Management Page.")
+              setTimeout(() => {
+                  navigate('../manageevents');
+                }, 1000);
+              
+              }
+              }
+            className="mt-4 ml-1 px-4 py-2 rounded-md bg-primary hover:bg-secondary hover:text-white transition text-dark font-semibold"
           >
             ← Back to Manage Events
           </button>
         </div>
 
         {/* Selected Volunteers */}
-        <div className="w-2/3 p-6 space-y-4">
-          <h2 className="text-2xl font-bold mb-2 text-[#3e7b91]">Matched Volunteers</h2>
+        <div className=" w-full p-4">
 
-          {selectedVolunteers.length > 0 && (
+          <h2 className="text-2xl font-bold mb-4 text-[#3e7b91]">Matched Volunteers</h2>
+
+          {(
           <div className="space-y-2">
             {selectedVolunteers
-              .filter((user) => user && user.accountId)
+              .filter((user) => user && user.credentialId)
               .map((user) => (
                 <div
-                  key={user.accountId}
+                  key={user.credentialId}
                   className="bg-[#fef3f0] border-2 border-[#a5c7d4] p-4 rounded-lg shadow-md animate-bounce-in"
                 >
                   <div className="flex justify-between">
@@ -139,31 +161,22 @@ export default function VolunteerMatch() {
         )}
 
 
-          <div className="pt-6">
+          <div className="pt-4">
             <button
-              className={`w-full py-2 px-4 rounded font-semibold transition ${
-                selectedVolunteers.length > 0
-                  ? "bg-[#3e7b91] text-white hover:bg-[#336b7a]"
-                  : "bg-gray-300 text-white cursor-not-allowed"
-              }`}
-              disabled={selectedVolunteers.length === 0}
+              className={`w-full py-2 px-4 rounded font-semibold transition bg-primary text-dark hover:text-white hover:bg-secondary`}
               onClick={async () => {
-                if (selectedVolunteers.length > 0) {
-                  const selectedIds = selectedVolunteers.map((v) => v.accountId);
-                  const updatedEvent = { ...event, assignedVolunteers: selectedIds };
-
-                  try {
-                    await updateEvent(eventId, updatedEvent);
-                    console.log("UpdatedEvent:", updatedEvent);
-                  } catch (error) {
-                    console.error("Failed to update event:", error);
-                  }
-
-                  console.log("Finalized Volunteers (accountIds):", selectedIds);
-                  alert("Volunteers submitted!");
+                const selectedIds = selectedVolunteers.map((v) => v.credentialId);
+                const updatedEvent = { ...event, assignedVolunteers: selectedIds };
+                try {
+                  await updateEvent(eventId, updatedEvent);
+                } catch (error) {
+                  console.error("Failed to update event:", error);
                 }
+                setMessage("Assigned Volunteers successfully updated!")
+                setTimeout(() => {
+                  navigate('../manageevents');
+                }, 1000);
               }}
-
             >
               Submit Final Decision
             </button>
@@ -174,10 +187,10 @@ export default function VolunteerMatch() {
       {/* Volunteer Selection */}
       <div className="px-6 pb-12">
         <h3 className="text-xl font-semibold text-[#3e7b91] mb-3">Please choose volunteers from the list below:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {matchedVolunteers.map((vol) => (
             <div
-              key={vol.accountId}
+              key={vol.credentialId}
               className={`border-2 rounded p-4 shadow-sm flex flex-col justify-between transition duration-200 ${
                 isSelected(vol)
                   ? "border-[#a5c7d4] bg-[#e6f2f5] scale-105 ring-2 ring-[#a5c7d4]"

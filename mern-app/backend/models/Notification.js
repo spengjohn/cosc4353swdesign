@@ -12,7 +12,7 @@ const notificationSchema = new mongoose.Schema({
 },
   type: { 
     type: String, 
-    enum: ["event assignment", "reminder", "update"], 
+    enum: ["Event Assignment", "Reminder", "Update"], 
     default: "event assignment" 
 },
   isRead: { 

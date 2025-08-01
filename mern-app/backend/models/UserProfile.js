@@ -32,10 +32,10 @@ const userProfileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  stateId: {
-    type: mongoose.Schema.Types.ObjectId,
-        ref: "State",
-        required: true,
+  state: {
+    type: String,
+    required: true,
+    maxlength: 2,
   },
   skills: [{
     type: String,

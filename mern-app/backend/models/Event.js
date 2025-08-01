@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const eventDetailsSchema = new mongoose.Schema({
-title: {
+  title: {
     type: String,
     required: true,
     trim: true,
@@ -19,10 +19,10 @@ title: {
     type: String,
     required: true,
   },
-  stateId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "State",
+  state: {
+    type: String,
     required: true,
+    maxlength: 2,
   },
   date: {
     type: Date,
@@ -44,7 +44,6 @@ title: {
   assignedVolunteers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserCredentials",
-    unique: true,
   }],
 }, {
   timestamps: true,
