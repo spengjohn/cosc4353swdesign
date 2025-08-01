@@ -32,36 +32,35 @@ describe("GET /api/event/:eventId", () => {
 
   beforeEach(async () => {
     
-  await EventDetails.deleteMany({});  // Clean up after each test
- // Create event
+  await EventDetails.deleteMany({});  // Clean up before each test
+ // Main test event
     event = await EventDetails.create({
       title: "Park Cleanup",
       description: "Clean the local park",
       location: "346 Drive",
       city: "Dallas",
       state: "TX",
-      date: new Date(Date.now()),
+      date: new Date(Date.now()), // Today
       urgency: "Low",
       skillsRequired: ["Cleaning", "Teamwork"],
       maxVolunteers: 14,
       assignedVolunteers: [],
     });
-        // Add a past event
+        // Add a past event for myNext... tests
     pastEvent = await EventDetails.create({
       title: "Old Event",
       description: "This is a past event",
       location: "Old Place",
       city: "Austin",
       state: "TX",
-      date: new Date("2023-01-01"),
+      date: new Date("2023-01-01"),// date in the past
       urgency: "Low",
       skillsRequired: [],
       maxVolunteers: 5,
       assignedVolunteers: [],
     });
 
-  // console.log("Created event:", event._id);
-    // Add a future event (this one should appear)
+    // Future event for myNext... tests
     const futureEvent = await EventDetails.create({
       title: "Upcoming Event",
       description: "Future event",
@@ -75,7 +74,7 @@ describe("GET /api/event/:eventId", () => {
       assignedVolunteers: [],
     });
 
-    
+    //testUser for myNext... tests
     testUser = await UserProfile.create({
       credentialId: new mongoose.Types.ObjectId(),
       fullName: "Bravo Delta",
@@ -135,7 +134,6 @@ it("getEvent should properly get an event given a valid Id", async () => {
     expect(res.body.length).toBe(2); 
 
     const returnedEvent = res.body[0];
-    // expect(returnedEvent.title).toBe("Upcoming Event");
    });
    
 
@@ -155,9 +153,9 @@ it("getEvent should properly get an event given a valid Id", async () => {
 
   await EventDetails.create([
     {
-      title: "Assigned Event",
+      title: "Assigned Event",  // future event assigned to testUser
       description: "User is assigned here",
-      date: upcomingDate,
+      date: upcomingDate, 
       assignedVolunteers: [testUser._id],
       location: "Park",
       city: "Testville",
@@ -167,10 +165,10 @@ it("getEvent should properly get an event given a valid Id", async () => {
       maxVolunteers: 5,
     },
     {
-      title: "Unassigned Event",
+      title: "Unassigned Event", // future event not assigned to testUser
       description: "Not for this user",
       date: upcomingDate,
-      assignedVolunteers: [], // not assigned to user
+      assignedVolunteers: [], 
       location: "Library",
       city: "Testville",
       state: "TX",
@@ -180,22 +178,20 @@ it("getEvent should properly get an event given a valid Id", async () => {
     }
   ]);
 
-  // Assume the route accepts a query param ?userId=...
   const res = await request(app).get(`/api/event/mycurrent/${testUser._id}`);
 
   expect(res.statusCode).toBe(200);
   expect(Array.isArray(res.body)).toBe(true);
 
   const eventTitles = res.body.map(e => e.title);
-  expect(eventTitles).toContain("Assigned Event");
-  expect(eventTitles).not.toContain("Unassigned Event");
+  expect(eventTitles).toContain("Assigned Event"); // expect to return the assigned event
+  expect(eventTitles).not.toContain("Unassigned Event"); // expect to Not return the unassigned event
 
-  // Optional: expect the correct number
-  expect(res.body.length).toBe(1);
+  expect(res.body.length).toBe(1); // Expect to return just the one event assigned to the user
    });
 
    it("getMyNextEvents should return 404 and handle no events properly", async () => {
- const upcomingDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // today
+ const upcomingDate = new Date(Date.now() + 24 * 60 * 60 * 1000); // tomorrow
 
   await EventDetails.create([
     {
@@ -212,10 +208,9 @@ it("getEvent should properly get an event given a valid Id", async () => {
     }
   ]);
 
-  // Assume the route accepts a query param ?userId=...
   const res = await request(app).get(`/api/event/mycurrent/${testUser._id}`);
 
-  expect(res.statusCode).toBe(404);
+  expect(res.statusCode).toBe(404); // expect it to fall to the no events case
    expect(res.body.message).toBe("No events found");
    });
    
@@ -241,24 +236,21 @@ it("getEvent should properly get an event given a valid Id", async () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toBe("Event deleted successfully");
 
-    // Verify event is actually deleted
-    const deletedEvent = await EventDetails.findById(event._id);
+    // Confirm event is deleted
+    const deletedEvent = await EventDetails.findById(event._id); 
     expect(deletedEvent).toBeNull();
   });
 
    it('deleteEvent should return 404 if event is not found', async () => {
   const nonexistentEventId = new mongoose.Types.ObjectId().toString();
     const res = await request(app)
-      .post(`/api/event/delete/${nonexistentEventId}`); // An invalid ID
-    console.log(res.statusCode);
-    console.log(res.body.message);
-
-    expect(res.statusCode).toBe(404);
+      .post(`/api/event/delete/${nonexistentEventId}`); // ID that should not correspond to an existing event sent
+      
+    expect(res.statusCode).toBe(404); // expect to fall into the nonexistent event case
     expect(res.body.message).toBe("Event not found");
   });
 
   it('deleteEvent should return 404 if event deletion fails', async () => {
-    // Mock the delete function to simulate a failure
     jest.spyOn(EventDetails, 'findByIdAndDelete').mockResolvedValue(null);
 
     const res = await request(app).post(`/api/event/delete/${event._id}`);
@@ -268,18 +260,15 @@ it("getEvent should properly get an event given a valid Id", async () => {
   });
 
   it('deleteEvent should return 500 if there is an internal server error', async () => {
-  const eventId = new mongoose.Types.ObjectId().toString();  // Generate a valid ObjectId
+  const eventId = new mongoose.Types.ObjectId().toString();  // Generate a valid but nonexistent event ID
 
-  // Mock the EventDetails.findByIdAndDelete to simulate a failure (e.g., DB issue)
-  jest.spyOn(EventDetails, 'findByIdAndDelete').mockRejectedValue(new Error("Database error"));
+  jest.spyOn(EventDetails, 'findByIdAndDelete').mockRejectedValue(new Error("Internal server error"));
 
-  const res = await request(app).post(`/api/event/delete/${eventId}invalid`);
+  const res = await request(app).post(`/api/event/delete/${eventId}invalid`); // sending a completely invalid event ID to cause an error
 
-  // Verify the response is a 500 error and contains the appropriate message
-  expect(res.statusCode).toBe(500);
+  expect(res.statusCode).toBe(500); // Expect to fall into the proper error case
   expect(res.body.error).toBe("Internal Server Error");
 
-  // Optional: Restore the mock to avoid affecting other tests
   jest.restoreAllMocks();
   });
 

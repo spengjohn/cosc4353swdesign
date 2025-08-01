@@ -1,6 +1,6 @@
 import EventDetails from "../models/Event.js";
 import { createNotification } from "./notificationsController.js";
-import UserCredentials from "../models/UserCredentials.js";
+import UserCredentials from "../models/UserCredentials.js"; // added due to potential populate errors otherwise
 
 export const createEvent = async (req, res) => {
   try {
