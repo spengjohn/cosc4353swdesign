@@ -24,6 +24,7 @@ connectDB();
 
 app.use(cors({
   origin: `${FRONT_URL}`, // Adjust if your frontend is on a different port
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true
 }));
 app.use(express.json());
