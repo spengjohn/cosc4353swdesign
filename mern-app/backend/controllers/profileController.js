@@ -5,7 +5,6 @@ import UserCredentials from '../models/UserCredentials.js';
 export const getProfile = async (req, res) => {
   try {
     const { accountId } = req.params;
-    console.log("GET /api/profile/:accountId", accountId);
     
     const profile = await UserProfile.findOne({ credentialId: accountId });
 
@@ -25,9 +24,6 @@ export const updateProfile = async (req, res) => {
   try {
     const { accountId } = req.params;
     const updatedProfile = req.body;
-
-    console.log("POST /api/profile/:accountId", accountId);
-    console.log("Profile data received:", updatedProfile);
 
     const user = await UserCredentials.findById(accountId);
     if (!user) {

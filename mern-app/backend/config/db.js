@@ -1,14 +1,8 @@
 import mongoose from 'mongoose';
-const uri = process.env.NODE_ENV === 'test'
-  ? process.env.MONGO_URI_TEST
-  : process.env.MONGODB_URI;
 
 const connectDB = async () => {
   try {
-    const mongoURI =
-      process.env.NODE_ENV === 'test'
-        ? process.env.MONGO_URI_TEST
-        : process.env.MONGODB_URI;
+    const mongoURI = process.env.MONGODB_URI;
 
     const conn = await mongoose.connect(mongoURI, {
       useNewUrlParser: true,

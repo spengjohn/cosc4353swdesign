@@ -7,8 +7,6 @@ export const getHistory = async (req, res) => {
     if (!history){
       return res.status(404).json({message: "Volunteer History not found."});
     }
-
-    console.log("Returning full history:", history);
     res.status(200).json(history);
   } catch (err) {
     console.error("getHistory error:", err);
