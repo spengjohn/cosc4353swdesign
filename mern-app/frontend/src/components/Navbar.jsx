@@ -1,12 +1,48 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import cooglinklogo from "../assets/cooglinklogo.png"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NotificationPanel from "./NotificationPanel";
-import { sampleNotifications } from "../data/sampleNotifications";
+import { fetchNotifications, updateAllNotifications, deleteAllNotifications } from "../api/notifications";
 
 export default function Navbar() {
+  const userId = localStorage.getItem("userId");
+  const [notifications, setNotifications] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
-  const unreadCount = sampleNotifications.filter(n => !n.read).length;
+  const navigate  = useNavigate();
+
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        const data = await fetchNotifications(userId);
+        setNotifications(data);
+      } catch (err) {
+        console.error("Failed to load notifications:", err);
+      }
+    };
+
+    loadNotifications();
+  }, []);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await updateAllNotifications(userId);
+      const updated = await fetchNotifications(userId);
+      setNotifications(updated);
+    } catch (err) {
+      console.error("Failed to mark notifications as read:", err);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      await deleteAllNotifications(userId);
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to delete notifications:", err);
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="relative">
@@ -63,7 +99,10 @@ export default function Navbar() {
                     )}
                 </button>
                 {/*  Log Out Button */}
-                <button>
+                <button onClick={() => {
+                  localStorage.clear();
+                  navigate("/login");
+                }}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 -scale-x-100">
                         <path fillRule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 
                         0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 
@@ -79,8 +118,10 @@ export default function Navbar() {
       {showPanel && (
         <div className="absolute top-full right-4 mt-2 z-50">
           <NotificationPanel
-            notifications={sampleNotifications}
+            notifications={notifications}
             onClose={() => setShowPanel(false)}
+            onMarkAllRead={handleMarkAllRead}
+            onDeleteAll={handleDeleteAll}
           />
         </div>
       )}

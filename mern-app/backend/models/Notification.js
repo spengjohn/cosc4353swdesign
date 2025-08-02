@@ -1,20 +1,19 @@
-// models/Notification.js
 import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema({
   recipient: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: "Account", 
+    ref: "UserCredentials", 
     required: true 
 },
   message: { 
-    type: String, 
-    required: true 
+    type: String,
+    default: "",
 },
   type: { 
     type: String, 
-    enum: ["event assignment", "reminder", "update"], 
-    default: "event assignment" 
+    enum: ["Event Assignment", "Reminder", "Update"], 
+    default: "Event Assignment" 
 },
   isRead: { 
     type: Boolean, 

@@ -1,8 +1,15 @@
-import { getProfile, updateProfile } from "../controllers/profileController.js";
-import { mockProfiles } from "../mocks/mockProfiles.js";
 import { jest } from '@jest/globals';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import UserCredentials from "../models/UserCredentials.js";
+import UserProfile from "../models/UserProfile.js";
+import { getProfile, updateProfile, verifyUser } from "../controllers/profileController.js";
 
-// Utility to mock Express res
+// test env
+dotenv.config({ path: ".env.test" });
+
+jest.setTimeout(15000);
+
 const mockResponse = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
@@ -10,94 +17,106 @@ const mockResponse = () => {
   return res;
 };
 
-describe("Profile Controller", () => {
-  describe("getProfile", () => {
-    it("returns a complete profile", async () => {
-      const req = { params: { accountId: mockProfiles.complete.accountId } };
-      const res = mockResponse();
+describe("Profile Controller (Real DB)", () => {
+  let user;
 
-      await getProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockProfiles.complete);
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGO_URI_TEST, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
 
-    it("returns an incomplete profile structure", async () => {
-      const req = { params: { accountId: mockProfiles.incomplete.accountId } };
-      const res = mockResponse();
+    await UserCredentials.deleteMany({});
+    await UserProfile.deleteMany({});
 
-      await getProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockProfiles.incomplete);
-    });
-
-    it("returns admin profile", async () => {
-      const req = { params: { accountId: mockProfiles.admin.accountId } };
-      const res = mockResponse();
-
-      await getProfile(req, res);
-      expect(res.json).toHaveBeenCalledWith(mockProfiles.admin);
-    });
-
-    it("handles missing accountId", async () => {
-      const req = { params: {} };
-      const res = mockResponse();
-
-      await getProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        accountId: undefined,
-      }));
+    user = await UserCredentials.create({
+      email: "profiletest@example.com",
+      password: "SecretPass1!",
+      role: "volunteer",
     });
   });
 
-  describe("updateProfile", () => {
-    it("successfully updates profile", async () => {
-      const req = {
-        params: { accountId: "123" },
-        body: mockProfiles.complete,
-      };
-      const res = mockResponse();
-
-      await updateProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Mock profile updated",
-        profile: mockProfiles.complete,
-      });
-    });
-
-    it("accepts partial updates", async () => {
-      const partial = {
-        fullName: "New Name",
-        city: "Dallas",
-      };
-      const req = {
-        params: { accountId: "123" },
-        body: partial,
-      };
-      const res = mockResponse();
-
-      await updateProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Mock profile updated",
-        profile: partial,
-      });
-    });
-
-    it("handles empty body safely", async () => {
-      const req = {
-        params: { accountId: "123" },
-        body: {},
-      };
-      const res = mockResponse();
-
-      await updateProfile(req, res);
-
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Mock profile updated",
-        profile: {},
-      });
-    });
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.disconnect();
   });
+
+  it("updates profile", async () => {
+    const req = {
+      params: { accountId: user._id },
+      body: {
+        fullName: "Jane Doe",
+        city: "Houston",
+        skills: ["Cleaning"],
+      },
+    };
+    const res = mockResponse();
+    await updateProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      profile: expect.objectContaining({ fullName: "Jane Doe" })
+    }));
+  });
+
+  it("retrieves the updated profile", async () => {
+    const req = { params: { accountId: user._id } };
+    const res = mockResponse();
+    await getProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      fullName: "Jane Doe"
+    }));
+  });
+
+  it("verifies the user", async () => {
+    const req = { params: { accountId: user._id } };
+    const res = mockResponse();
+    await verifyUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: "User verified successfully." });
+  });
+
+  it("returns null when no profile exists", async () => {
+    const newUser = await UserCredentials.create({
+      email: "noprofile@example.com",
+      password: "Test1234!",
+      role: "volunteer",
+    });
+
+    const req = { params: { accountId: newUser._id } };
+    const res = mockResponse();
+    await getProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(null);
+  });
+
+  it("returns 404 when updating profile for non-existent user", async () => {
+    const req = {
+      params: { accountId: new mongoose.Types.ObjectId() },
+      body: { city: "Austin" },
+    };
+    const res = mockResponse();
+    await updateProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "User not found." });
+  });
+
+  it("returns 404 when verifying non-existent user", async () => {
+    const req = {
+      params: { accountId: new mongoose.Types.ObjectId() },
+    };
+    const res = mockResponse();
+    await verifyUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "User not found." });
+  });
+
+  it("returns 500 if verifyUser throws an error", async () => {
+    const req = { params: { accountId: "invalid" } };
+    const res = mockResponse();
+    await verifyUser(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Internal Server Error" });
+  });  
+  
 });

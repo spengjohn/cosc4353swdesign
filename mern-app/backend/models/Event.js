@@ -1,7 +1,6 @@
-// models/Event.js
 import mongoose from "mongoose";
 
-const eventSchema = new mongoose.Schema({
+const eventDetailsSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -23,13 +22,7 @@ const eventSchema = new mongoose.Schema({
   state: {
     type: String,
     required: true,
-    uppercase: true,
-    minlength: 2,
     maxlength: 2,
-    validate: {
-      validator: v => /^[A-Z]{2}$/.test(v),
-      message: props => `${props.value} is not a valid 2-letter state code!`
-    }
   },
   date: {
     type: Date,
@@ -37,20 +30,24 @@ const eventSchema = new mongoose.Schema({
   },
   urgency: {
     type: String,
+    enum: ["Low", "Medium", "High"],
     required: true,
   },
   skillsRequired: [{
     type: String,
     required: true,
   }],
-  assignedVolunteers: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Account",
-    unique: true,
+  maxVolunteers: {
+    type: Number,
+    required: true,
+  },
+  assignedVolunteers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserCredentials",
   }],
 }, {
   timestamps: true,
 });
 
-const Event = mongoose.model("Event", eventSchema);
+const Event = mongoose.model("EventDetails", eventDetailsSchema);
 export default Event;
