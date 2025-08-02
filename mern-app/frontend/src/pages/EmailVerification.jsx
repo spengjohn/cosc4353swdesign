@@ -4,6 +4,7 @@ import Field from "../components/Field";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from 'react';
+import { verifyUser } from "../api/profile";
 
 export default function EmailVerification() {
   const { control, handleSubmit, formState: { errors } } = useForm();
@@ -17,9 +18,7 @@ export default function EmailVerification() {
   
     if (code === "654321") {
       try {
-        await fetch(`http://localhost:5000/api/profile/verify/${userId}`, {
-          method: "PATCH",
-        });
+        await verifyUser(userId);
     
         localStorage.setItem("userVerified", "true");  // optional, helps with gates
     

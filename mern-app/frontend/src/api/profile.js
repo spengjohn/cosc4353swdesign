@@ -30,3 +30,13 @@ export const updateUserProfile = async (userId, profileData) => {
     throw error;
   }
 };
+
+export const verifyUser = async (userId) => {
+  try {
+    const response = await axios.patch(`${API_BASE}/profile/verify/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to verify user: ", error);
+    throw error;
+  }
+}
