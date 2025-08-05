@@ -4,6 +4,7 @@ import VolunteerHistoryModal from "../components/VolunteerHistoryModal";
 import { Link } from "react-router-dom";
 import { fetchUserProfile } from "../api/profile";
 import { fetchMyNextEvents } from "../api/event";
+import { downloadVolunteerJSON, downloadVolunteerCSV, downloadEventJSON, downloadEventCSV } from "../api/report";
 
 export default function Home() {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -84,6 +85,54 @@ export default function Home() {
 
           <hr className="my-6 border-gray-300" />
 
+          {/* Admin Reports Section */}
+          <div className="mt-6">
+            <h2 className="text-2xl font-semibold text-secondary mb-4">Admin Reports</h2>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+              <label htmlFor="reportFormat" className="text-md font-medium text-gray-700">Select Report Format:</label>
+              <select
+                id="reportFormat"
+                value={selectedFormat}
+                onChange={(e) => setSelectedFormat(e.target.value)}
+                className="border border-gray-300 bg-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+              >
+                <option value="json">JSON</option>
+                <option value="csv">CSV</option>
+                {/*<option value="pdf">PDF</option>*/}
+              </select>
+            </div>
+
+            <div className="flex flex-col justify-center sm:flex-row gap-4">
+              <button
+                className="bg-secondary text-white px-4 py-2 rounded text-sm transition hover:opacity-80"
+                onClick={() => {
+                  if (selectedFormat === 'csv') {
+                    downloadVolunteerCSV();
+                  } else {
+                    downloadVolunteerJSON();
+                  }
+                }}
+              >
+                📄 Get Volunteer History Report
+              </button>
+              <button
+                className="bg-secondary text-white px-4 py-2 rounded text-sm transition hover:opacity-80"
+                onClick={() => {
+                  if (selectedFormat === 'csv') {
+                    downloadEventCSV();
+                  } else {
+                    downloadEventJSON();
+                  }
+                }}
+              >
+                🗂 Get Events Report
+              </button>
+            </div>
+          </div>
+
+          <hr className="my-6 border-gray-300" />
+
           {/* upcoming events */}
           <h2 className="text-2xl font-semibold text-secondary">Your Next 3 Assigned Events</h2>
           <div className="flex flex-col items-center gap-4">
@@ -112,44 +161,7 @@ export default function Home() {
             )}
           </div>
 
-          <hr className="my-6 border-gray-300" />
-
-          {/* Admin Reports Section */}
-          <div className="mt-6">
-            <h2 className="text-2xl font-semibold text-secondary mb-4">Admin Reports</h2>
-
-            <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
-              <label htmlFor="reportFormat" className="text-sm font-medium text-gray-700">Select Report Format:</label>
-              <select
-                id="reportFormat"
-                value={selectedFormat}
-                onChange={(e) => setSelectedFormat(e.target.value)}
-                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
-              >
-                <option value="csv">CSV</option>
-                <option value="json">JSON</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                className="bg-secondary text-white px-4 py-2 rounded text-sm transition hover:opacity-80"
-                onClick={() =>
-                  alert(`Generating Volunteer History Report in ${selectedFormat.toUpperCase()} format...`)
-                }
-              >
-                📄 Get Volunteer History Report
-              </button>
-              <button
-                className="bg-secondary text-white px-4 py-2 rounded text-sm transition hover:opacity-80"
-                onClick={() =>
-                  alert(`Generating Events Report in ${selectedFormat.toUpperCase()} format...`)
-                }
-              >
-                🗂 Get Events Report
-              </button>
-            </div>
-          </div>
+          
         </>
       ) : (
         <>

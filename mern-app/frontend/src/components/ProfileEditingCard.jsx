@@ -74,20 +74,11 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
       ...data,
       
       availableDates: data.availableDates.map((d) => {
-        try {
-          const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
-          if (!(jsDate instanceof Date) || isNaN(jsDate)) return "";
+  const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
+  if (!(jsDate instanceof Date) || isNaN(jsDate)) return "";
+  return jsDate.toISOString(); // Preserve full date + time
+}),
 
-          // Format as YYYY-MM-DD in local time
-          const yyyy = jsDate.getFullYear();
-          const mm = String(jsDate.getMonth() + 1).padStart(2, "0");
-          const dd = String(jsDate.getDate()).padStart(2, "0");
-
-          return `${yyyy}-${mm}-${dd}`;
-        } catch {
-          return "";
-        }
-      }),
 
     fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
     address1: sanitizeInput(data.address1),
