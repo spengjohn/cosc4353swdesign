@@ -172,7 +172,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                     maxLength={9}
                     className="flex-1"
                     label="Zipcode"
-                    type="digit"
+                    type="number"
                     placeholder="12345"
                     errorMessage={errors.zipcode?.message}
                     {...field}
