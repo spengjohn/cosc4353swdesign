@@ -10,7 +10,7 @@ import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
-import { sanitizeInput} from "../hooks/useSanitize";
+//import { sanitizeInput} from "../hooks/useSanitize";
 import { useNavigate } from "react-router-dom";
 
 
@@ -80,15 +80,15 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
 }),
 
 
-    fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
-    address1: sanitizeInput(data.address1),
-    address2: sanitizeInput(data.address2),
-    zipcode: sanitizeInput(data.zipcode),
-    city: sanitizeInput(data.city),
-    state: sanitizeInput(data.state),
-    preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
+    //fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
+    //address1: sanitizeInput(data.address1),
+    //address2: sanitizeInput(data.address2),
+    //zipcode: sanitizeInput(data.zipcode),
+    //city: sanitizeInput(data.city),
+    //state: sanitizeInput(data.state),
+    //preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
     }
-    console.log("Sanitized data:", cleaned);
+    //console.log("Sanitized data:", cleaned);
   // Send `cleaned` to backend instead of raw `data`
     
     try {
@@ -118,7 +118,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                 maxLength={50} 
                 label="Name" 
                 placeholder="John Doe" 
-                errorMessage={errors.name?.message} 
+                errorMessage={errors.fullName?.message} 
                 {...field} 
                 />
               )}
