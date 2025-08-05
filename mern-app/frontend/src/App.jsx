@@ -93,6 +93,7 @@ import AdminGate from '../gates/AdminGate.jsx';
 
 import Layout from './components/Layout.jsx';
 import LayoutNoNav from './components/LayoutNoNav.jsx';
+import LayoutLogout from './components/LayoutLogout.jsx';
 import './App.css';
 
 import LoginPage from "./pages/LoginPage.jsx";
@@ -120,7 +121,7 @@ function App() {
         {/* Email Verification Required */}
         <Route element={<AuthGate />}>
           <Route element={<InverseEmailGate />}>
-            <Route element={<LayoutNoNav />}>
+            <Route element={<LayoutLogout />}>
               <Route path="/emailverification" element={<EmailVerification />} />
             </Route>
           </Route>
@@ -130,7 +131,7 @@ function App() {
         <Route element={<AuthGate />}>
           <Route element={<EmailVerificationGate />}>
             <Route element={<InverseProfileGate />}>
-              <Route element={<LayoutNoNav />}>
+              <Route element={<LayoutLogout />}>
                 <Route path="/createprofile" element={<CreateProfile />} />
               </Route>
             </Route>
