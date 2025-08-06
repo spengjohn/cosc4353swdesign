@@ -18,6 +18,12 @@ export const updateUserProfile = async (userId, profileData) => {
     return response.data;
   } catch (error) {
     console.error("Failed to update user profile:", error);
-    throw error;
+
+    // Extract server-side error message if present
+    const errorMessage =
+      error.response?.data?.error || "Failed to update user profile.";
+
+    // Rethrow with custom error message
+    throw new Error(errorMessage);
   }
 };

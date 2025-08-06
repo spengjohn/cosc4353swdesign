@@ -71,8 +71,9 @@ const isSameSkills =
 
 const isSameCity = event.city === data.city;
 const isSameState = event.state === data.state;
+const isSameMaxVolunteers = event.maxVolunteers === data.maxVolunteers;
 
-if ((isSameDate && isSameSkills && isSameCity && isSameState) || assignedCount === 0) {
+if ((isSameDate && isSameSkills && isSameCity && isSameState && isSameMaxVolunteers) || assignedCount === 0) {
   await updateEvent(event._id, data);
   setMessage("Event Updated!");
   setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
@@ -82,7 +83,7 @@ if ((isSameDate && isSameSkills && isSameCity && isSameState) || assignedCount =
     }, 1500); // 1.5 seconds delay
   }
 } else {
-  setMessage("Please remove all assigned volunteers before making changes to City, State, Date, or Skills fields.");
+  setMessage("Please remove all assigned volunteers before making changes to City, State, Date, Skills, or Max Volunteers fields.");
   setMessageStyle("bg-red-100 text-red-700 px-4 py-2 rounded text-center mb-4 font-medium");
 }
 

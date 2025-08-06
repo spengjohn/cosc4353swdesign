@@ -1,9 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { fetchUserProfile, updateUserProfile } from "../api/profile";
 import Field from "./Field";
-import MultiDatePickerField from "./MultiDatePickerField";
-
 import SimpleMultiDatePicker from "./SimpleDatePickerField";
 
 import DropdownMenu from "./DropdownMenu";
@@ -13,22 +11,22 @@ import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
-//import { sanitizeInput} from "../hooks/useSanitize";
 import { useNavigate } from "react-router-dom";
+
 
 
 export default function ProfileEditingCard({ defaultValues = {} }) {
   const navigate = useNavigate();
   const userProfileComplete = localStorage.getItem('userProfileComplete') === 'true';
   const userId = localStorage.getItem("userId");
-  
+  const [message, setMessage] = useState("");
+  const [messageStyle, setMessageStyle] = useState("");
 
   const {
     register,
     control,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -93,17 +91,9 @@ setValue("availableDates", dates);
 
     loadProfile();
   }, [setValue]);
-useEffect(() => {
-  const subscription = watch((value, { name }) => {
-    if (name === "availableDates") {
-      console.log("WATCHED availableDates:", value.availableDates);
-    }
-  });
 
-  return () => subscription.unsubscribe();
-}, [watch]);
   const onSubmit = async (data) => {
-    console.log("Available Dates before conversion: ", data.availableDates);
+    
     const cleaned = {
       ...data,
       
@@ -116,16 +106,20 @@ useEffect(() => {
     
     try {
       const result = await updateUserProfile(userId, cleaned);
-      console.log("Profile updated:", result);
-      localStorage.setItem('userProfileComplete', 'true');
+      setMessage("Profile updated successfully!");
+      setMessageStyle("mt-4 bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+      localStorage.setItem("userProfileComplete", "true");
       navigate("/home");
     } catch (err) {
-      console.error("Error updating profile:", err);
+      setMessage(err.message || "An unexpected error occurred.");
+      setMessageStyle("mt-4 bg-red-100 text-red-700 px-4 py-2 rounded text-center mb-4 font-medium");
     }
   };
 
   return (
     <div className="bg-white text-secondary px-4 py-2 rounded border-2 border-solid w-full lg:w-lg">
+      
+
       <form onSubmit={handleSubmit(onSubmit)} className="flex">
         <div className="flex flex-col size-full gap-2">
           <div className="flex flex-3 flex-col gap-2">
@@ -306,7 +300,9 @@ useEffect(() => {
             </PrimaryButton>
           </div>
         </div>
+        
       </form>
+      {message && <div className={messageStyle}>{message}</div>}
     </div>
   );
 }
