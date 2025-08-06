@@ -1,8 +1,6 @@
-// components/MultiDatePickerField.jsx
 import DatePicker from "react-multi-date-picker";
 
 export default function MultiDatePickerField({
-  label,
   value,
   onChange,
   name,
@@ -12,16 +10,22 @@ export default function MultiDatePickerField({
 }) {
   return (
     <div className="mb-4">
-      
       <DatePicker
         id={name}
         name={name}
+        //key={JSON.stringify(value)}
         multiple
         value={value}
-        onChange={onChange}
+        onChange={(dates) => {
+          console.log("Picker onChange dates:", dates);
+          const jsDates = Array.isArray(dates)
+            ? dates.map(d => (typeof d.toDate === "function" ? d.toDate() : d))
+            : [];
+          onChange(jsDates);  // <-- call the onChange prop, NOT field.onChange
+        }}
         format={format}
         minDate={minDate}
-        inputClass="w-full border border-gray-300 rounded-md p-2" // Use inputClass instead of className
+        inputClass="w-full border border-gray-300 rounded-md p-2"
       />
       {errorMessage && (
         <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
@@ -29,6 +33,8 @@ export default function MultiDatePickerField({
     </div>
   );
 }
+
+
 
 
 /*import { useState } from "react";

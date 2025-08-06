@@ -75,7 +75,7 @@ export default function EmailVerification() {
                 <Field
                   required
                   label="Code"
-                  placeholder="123456"
+                  placeholder="654321"
                   type="number"
                   errorMessage={errors.code?.message}
                   {...field}

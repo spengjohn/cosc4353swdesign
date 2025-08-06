@@ -143,7 +143,7 @@ export default function VolunteerMatch() {
               .map((user) => (
                 <div
                   key={user.credentialId}
-                  className="bg-[#fef3f0] border-2 border-[#a5c7d4] p-4 rounded-lg shadow-md animate-bounce-in"
+                  className="bg-[#fef3f0] border-2 border-[#a5c7d4] p-2 rounded-lg shadow-md animate-bounce-in"
                 >
                   <div className="flex justify-between">
                     <div>
@@ -163,7 +163,7 @@ export default function VolunteerMatch() {
 
           <div className="pt-4">
             <button
-              className={`w-full py-2 px-4 rounded font-semibold transition bg-primary text-dark hover:text-white hover:bg-secondary`}
+              className={`w-full py-2 px-2 rounded font-semibold transition bg-primary text-dark hover:text-white hover:bg-secondary`}
               onClick={async () => {
                 const selectedIds = selectedVolunteers.map((v) => v.credentialId);
                 const updatedEvent = { ...event, assignedVolunteers: selectedIds };

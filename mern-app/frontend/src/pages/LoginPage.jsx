@@ -85,7 +85,7 @@ export default function LoginPage() {
         />
 
         <div className="mt-6 text-xl">
-          <PrimaryButton type="submit">Log in</PrimaryButton>
+          <PrimaryButton type="submit" className="block mx-auto">Log in</PrimaryButton>
         </div>
       </form>
 

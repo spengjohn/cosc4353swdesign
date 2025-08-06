@@ -3,6 +3,9 @@ import { useEffect } from "react";
 import { fetchUserProfile, updateUserProfile } from "../api/profile";
 import Field from "./Field";
 import MultiDatePickerField from "./MultiDatePickerField";
+
+import SimpleMultiDatePicker from "./SimpleDatePickerField";
+
 import DropdownMenu from "./DropdownMenu";
 import Selector from "./Selector";
 import TertiaryButton from "./TertiaryButton";
@@ -10,7 +13,7 @@ import PrimaryButton from "./Buttons";
 import CommentBox from "./CommentBox";
 import states from "../data/states";
 import skills from "../data/skills";
-import { sanitizeInput} from "../hooks/useSanitize";
+//import { sanitizeInput} from "../hooks/useSanitize";
 import { useNavigate } from "react-router-dom";
 
 
@@ -18,11 +21,14 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
   const navigate = useNavigate();
   const userProfileComplete = localStorage.getItem('userProfileComplete') === 'true';
   const userId = localStorage.getItem("userId");
+  
+
   const {
     register,
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -39,6 +45,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
     },
   });
 
+
   // Load profile data once on mount
   useEffect(() => {
     const loadProfile = async () => {
@@ -47,7 +54,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
           const profile = await fetchUserProfile(userId);
 
           // Convert dates to JS Date objects
-          const dates = profile.availableDates?.map(d => new Date(d)) || [];
+          //const dates = profile.availableDates?.map(d => new Date(d)) || [];
 
           // Set values
           setValue("fullName", profile.fullName);
@@ -58,7 +65,26 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
           setValue("state", profile.state);
           setValue("skills", profile.skills);
           setValue("preferences", profile.preferences);
+          const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+const dates = profile.availableDates
+  ?.map((d) => {
+    if (typeof d === "string") {
+      return d.length > 10 ? d.slice(0, 10) : d;
+    }
+    if (d instanceof Date) {
+      return d.toISOString().slice(0, 10);
+    }
+    return "";
+  })
+  .filter((dateStr) => dateStr && dateStr >= today); // <-- filter out past dates
+
+setValue("availableDates", dates);
+
+
           setValue("availableDates", dates);
+          console.log("Loaded dates setValue:", dates);
+
         } catch (err) {
           console.error("Error loading profile:", err);
         }
@@ -67,38 +93,26 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
 
     loadProfile();
   }, [setValue]);
+useEffect(() => {
+  const subscription = watch((value, { name }) => {
+    if (name === "availableDates") {
+      console.log("WATCHED availableDates:", value.availableDates);
+    }
+  });
 
+  return () => subscription.unsubscribe();
+}, [watch]);
   const onSubmit = async (data) => {
-    console.log("Available Dates before conversion: ", availableDates);
+    console.log("Available Dates before conversion: ", data.availableDates);
     const cleaned = {
       ...data,
       
-      availableDates: data.availableDates.map((d) => {
-        try {
-          const jsDate = typeof d.toDate === "function" ? d.toDate() : d;
-          if (!(jsDate instanceof Date) || isNaN(jsDate)) return "";
-
-          // Format as YYYY-MM-DD in local time
-          const yyyy = jsDate.getFullYear();
-          const mm = String(jsDate.getMonth() + 1).padStart(2, "0");
-          const dd = String(jsDate.getDate()).padStart(2, "0");
-
-          return `${yyyy}-${mm}-${dd}`;
-        } catch {
-          return "";
-        }
-      }),
-
-    fullName: sanitizeInput(data.fullName, { allowCharacters: "'-" }),
-    address1: sanitizeInput(data.address1),
-    address2: sanitizeInput(data.address2),
-    zipcode: sanitizeInput(data.zipcode),
-    city: sanitizeInput(data.city),
-    state: sanitizeInput(data.state),
-    preferences: sanitizeInput(data.preferences, { allowCharacters: "/.,-" }),
+      availableDates: data.availableDates.map(d => {
+  const jsDate = new Date(d);
+  if (isNaN(jsDate)) return null; // or skip, or throw error
+  return jsDate.toISOString();
+}).filter(Boolean),
     }
-    console.log("Sanitized data:", cleaned);
-  // Send `cleaned` to backend instead of raw `data`
     
     try {
       const result = await updateUserProfile(userId, cleaned);
@@ -127,7 +141,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                 maxLength={50} 
                 label="Name" 
                 placeholder="John Doe" 
-                errorMessage={errors.name?.message} 
+                errorMessage={errors.fullName?.message} 
                 {...field} 
                 />
               )}
@@ -181,7 +195,7 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
                     maxLength={9}
                     className="flex-1"
                     label="Zipcode"
-                    type="digit"
+                    type="number"
                     placeholder="12345"
                     errorMessage={errors.zipcode?.message}
                     {...field}
@@ -266,17 +280,15 @@ export default function ProfileEditingCard({ defaultValues = {} }) {
               <label className="block text-md font-medium mb-1">
                 Availability<span className="text-red-500"> *</span>
               </label>
+              
               <Controller
                 name="availableDates"
                 control={control}
                 rules={{ required: "Please select at least one date." }}
                 render={({ field }) => (
-                  <MultiDatePickerField
-                    label="Availability"
-                    name="availableDates"
-                    value={field.value}
+                  <SimpleMultiDatePicker
+                    value={field.value || []}
                     onChange={field.onChange}
-                    errorMessage={errors.availableDates?.message}
                   />
                 )}
               />

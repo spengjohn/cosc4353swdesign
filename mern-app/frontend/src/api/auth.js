@@ -16,6 +16,7 @@ export const registerUser = async (email, password, role) => {
     const response = await axios.post(`${API_BASE}/auth/register`, { email, password, role });
     return { status: response.status, data: response.data };
   } catch (error) {
+    console.log(error)
     return { status: error.response?.status || 500, data: error.response?.data || {} };
   }
 };

@@ -151,7 +151,7 @@ export const updateEvent = async (req, res) => {
     // d) There are no actual changes. no need for any notification to be made.
     // Finally we can update the event and return response.
     const updated = await EventDetails.findByIdAndUpdate(eventId, updateData, { new: true });
-    // if (!updated) return res.status(404).json({ message: "Event not found" });
+    if (!updated) return res.status(404).json({ message: "Event not found" });
     await Promise.all(notificationsToSend);
     console.log(updated);
     res.json({ message: "Event updated successfully", event: updated });
@@ -168,7 +168,7 @@ export const deleteEvent = async (req, res) => {
 
     // Find the event before deleting to get assigned volunteers
     const eventToDelete = await EventDetails.findById(eventId);
-console.log("Fetched event to delete:", eventToDelete);
+    console.log("Fetched event to delete:", eventToDelete);
     if (!eventToDelete) {
       
   console.log('Event to delete not found');
