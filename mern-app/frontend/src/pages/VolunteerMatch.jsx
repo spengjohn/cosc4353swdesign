@@ -109,6 +109,12 @@ export default function VolunteerMatch() {
               <strong>Location:</strong> {event.location}
             </p>
             <p className="text-sm text-gray-700 mb-1">
+              <strong>City:</strong> {event.city}
+            </p>
+            <p className="text-sm text-gray-700 mb-1">
+              <strong>State:</strong> {event.state}
+            </p>
+            <p className="text-sm text-gray-700 mb-1">
               <strong>Required Skills:</strong> {event.skillsRequired.join(", ")}
             </p>
             <p className="text-sm text-gray-700 mt-3">
