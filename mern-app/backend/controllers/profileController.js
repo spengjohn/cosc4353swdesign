@@ -42,7 +42,7 @@ const conflictingEvents = await EventDetails.find({
 });
 
     const hasConflict = conflictingEvents.some((event) => {
-  const cityMismatch = event.city !== updatedProfile.city;
+  //const cityMismatch = event.city !== updatedProfile.city;
   const stateMismatch = event.state !== updatedProfile.state;
 
   const skillsMismatch = event.skillsRequired.some(
@@ -63,14 +63,14 @@ console.log("Profile dates:", updatedProfile.availableDates.map(d => new Date(d)
 console.log("Event skills:", event.skillsRequired);
 console.log("Profile skills:", updatedProfile.skills);
 
-  return cityMismatch || stateMismatch || skillsMismatch || dateMismatch;
+  return stateMismatch || skillsMismatch || dateMismatch;
   
 });
 
 
     if (hasConflict) {
       return res.status(400).json({
-        error: "Cannot update profile. You are assigned to events that require your current city, state, skills, or available dates.",
+        error: "Cannot update profile. You are assigned to events that require your current state, skills, or available dates.",
       });
     }
 
