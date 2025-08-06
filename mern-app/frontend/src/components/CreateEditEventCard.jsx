@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const isEditMode = !!event;
-  //const eventId = event?.eventId;
   const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
   const [messageStyle, setMessageStyle] = useState("text-red-500");
@@ -58,18 +57,45 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
   const handleFormSubmit = async (data) => {
   try {
     if (isEditMode) {
-      console.log("event date: ", data.date);
-      await updateEvent(event._id, data);
-      setMessage("Event Updated!");
-      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
-      if (onSubmit) onSubmit();
+      const assignedCount = event.assignedVolunteers?.length || 0;
+
+const isSameDate =
+  new Date(event.date).toISOString().slice(0, 10) ===
+  new Date(data.date).toISOString().slice(0, 10);
+
+const isSameSkills =
+  Array.isArray(event.skillsRequired) &&
+  Array.isArray(data.skillsRequired) &&
+  event.skillsRequired.length === data.skillsRequired.length &&
+  event.skillsRequired.every(skill => data.skillsRequired.includes(skill));
+
+const isSameCity = event.city === data.city;
+const isSameState = event.state === data.state;
+
+if ((isSameDate && isSameSkills && isSameCity && isSameState) || assignedCount === 0) {
+  await updateEvent(event._id, data);
+  setMessage("Event Updated!");
+  setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+  if (onSubmit) {
+    setTimeout(() => {
+      onSubmit();
+    }, 1500); // 1.5 seconds delay
+  }
+} else {
+  setMessage("Please remove all assigned volunteers before making changes to City, State, Date, or Skills fields.");
+  setMessageStyle("bg-red-100 text-red-700 px-4 py-2 rounded text-center mb-4 font-medium");
+}
+
     } else {
       await createEvent(data); // call your real API
-      if (onSubmit) onSubmit(); // notify parent of new event
+      if (onSubmit) {
+      setTimeout(() => {
+        onSubmit();
+      }, 1500); // 1.5 seconds delay
+  }
       setMessage("Event Created");
-      setMessageStyle("bg-green-100 text-green-700 px-4 py-2 rounded text-center mb-4 font-medium");
+      setMessageStyle("bg-red-100 text-red-700 px-4 py-2 rounded text-center mb-4 font-medium");
     }
-    navigate("/manageevents", { replace: true });
   } catch (err) {
     console.error("Failed to submit event form", err);
   }
@@ -81,6 +107,7 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="bg-white text-secondary px-6 py-4 rounded border-2 border-solid flex flex-col w-full max-w-2xl h-[90vh] overflow-auto"
     >
+      
       <h2 className="text-2xl font-bold mb-4">
         {event ? "Edit Event" : "Create Event"}
       </h2>
@@ -314,7 +341,12 @@ export default function CreateEditEventCard({ onCancel, onSubmit, event }) {
           )}
 
         </div>
-      
+      {message && (
+  <div className={messageStyle}>
+    {message}
+  </div>
+)}
+
     </form>
   );
 }
