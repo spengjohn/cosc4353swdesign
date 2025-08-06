@@ -68,12 +68,19 @@ const EventCard = ({ event, isExpanded, onToggle, onEdit, onDelete, showActions 
         <p className="mt-2 text-base text-gray-700">
           <strong>Date:</strong> {/*event.day*/} {formattedDate} {/*<strong>Time:</strong> {event.time}*/}
         </p>
+        
+        <p className="mt-1 text-gray-700 text-base">
+          <strong>State:</strong> {event.state}
+        </p>
         <p className="mt-1 text-gray-700 text-base">
           <strong>Description:</strong> {event.description}
         </p>
 
         <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? "max-h-[500px] mt-4" : "max-h-0"}`}>
           <p className="text-base text-gray-700"><strong>Location:</strong> {event.location}</p>
+          <p className="mt-1 text-gray-700 text-base">
+          <strong>City:</strong> {event.city}
+          </p>
           <p className="text-base text-gray-700"><strong>Required Skills:</strong> {event.skillsRequired?.join(", ") || "N/A"}</p>
           <p className="text-base text-gray-700"><strong>Urgency:</strong> {event.urgency}</p>
 

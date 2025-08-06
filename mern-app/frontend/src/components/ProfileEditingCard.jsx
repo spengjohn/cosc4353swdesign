@@ -98,11 +98,11 @@ setValue("availableDates", dates);
       ...data,
       
       availableDates: data.availableDates.map(d => {
-  const jsDate = new Date(d);
-  if (isNaN(jsDate)) return null; // or skip, or throw error
-  return jsDate.toISOString();
-}).filter(Boolean),
-    }
+          const jsDate = new Date(d);
+          if (isNaN(jsDate)) return null; // or skip, or throw error
+          return jsDate.toISOString();
+        }).filter(Boolean),
+      }
     
     try {
       const result = await updateUserProfile(userId, cleaned);
@@ -291,10 +291,10 @@ setValue("availableDates", dates);
           </div>
 
           <div className="flex gap-8 mt-4">
-            <TertiaryButton type="button" className="flex-1">
+            {/*<TertiaryButton type="button" className="flex-1">
               Cancel
             </TertiaryButton>
-            <div className="flex-1" />
+            <div className="flex-1" />*/}
             <PrimaryButton type="submit" className="flex-1">
               Save
             </PrimaryButton>
